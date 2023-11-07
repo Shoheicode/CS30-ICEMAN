@@ -23,16 +23,19 @@ class Protester: virtual public Actor {
 public:
 //setVisible(bool shouldIDisplay);
 void moveTo(int x, int y) {}
+virtual ~Protestor() {}
 };
 class HardcoreProtester: virtual public Protester {
 public:
 //…
+virtual ~HardcoreProtesor() {}
 };
 
 class Prop : virtual public Actor{
 private:
     
 public:
+virtual ~Prop() {}
 };
 
 class IceMan : virtual public Actor{
@@ -46,6 +49,7 @@ public:
     	else{
         	return false;
     	}
+	}
 //    	void Iceman::doSomething()
 //    	{
 //    	...
@@ -69,8 +73,8 @@ public:
 //    	}
 //    	...
 //    	}
-
-	}
+virtual ~IceMan() {}
+	
 };
 
 #endif // ACTOR_H_
