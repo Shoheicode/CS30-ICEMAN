@@ -27,7 +27,21 @@ virtual ~Protestor() {}
 };
 class HardcoreProtester: virtual public Protester {
 public:
-//…
+// virtual void doSomething() 
+// { 
+// If I am facing the Iceman and he is next to me, then  
+// Shout at the Iceman (to annoy him)
+// 11 
+// Else if the Iceman is visible via direct line of sight, then  
+// Switch direction to face the Iceman 
+// Move one square in this direction 
+// Else if I’m about to run into an obstacle, then  
+// Pick a new direction 
+// Move one square in this direction 
+// Else 
+// Move one square in my current direction 
+// } 
+// ... 
 virtual ~HardcoreProtesor() {}
 };
 
