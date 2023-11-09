@@ -22,8 +22,8 @@ public:
 class Protester: virtual public Actor {
 public:
 //setVisible(bool shouldIDisplay);
-void moveTo(int x, int y) {}
-virtual ~Protestor() {}
+    void moveTo(int x, int y) {};
+    virtual ~Protester() {};
 };
 class HardcoreProtester: virtual public Protester {
 public:
@@ -42,7 +42,7 @@ public:
 // Move one square in my current direction 
 // } 
 // ... 
-virtual ~HardcoreProtesor() {}
+    virtual ~HardcoreProtester() {};
 };
 
 class Prop : virtual public Actor{
@@ -89,6 +89,48 @@ public:
 //    	}
 virtual ~IceMan() {}
 	
+};
+
+class Water : virtual public Prop {
+public:
+    //setVisible(bool shouldIDisplay);
+    void moveTo(int x, int y) {}
+    virtual ~Water() {}
+};
+
+class Oil : virtual public Prop {
+public:
+    //setVisible(bool shouldIDisplay);
+    void moveTo(int x, int y) {}
+    virtual ~Oil() {}
+};
+
+class Boulders : virtual public Prop {
+public:
+    //setVisible(bool shouldIDisplay);
+    void moveTo(int x, int y) {}
+    virtual ~Boulders() {}
+};
+
+class Gold : virtual public Prop {
+public:
+    //setVisible(bool shouldIDisplay);
+    void moveTo(int x, int y) {}
+    virtual ~Gold() {}
+};
+
+class SonarKit : virtual public Prop {
+public:
+    //setVisible(bool shouldIDisplay);
+    void moveTo(int x, int y) {}
+    virtual ~SonarKit() {}
+};
+
+class WaterRefill : virtual public Prop {
+public:
+    //setVisible(bool shouldIDisplay);
+    void moveTo(int x, int y) {}
+    virtual ~WaterRefill() {}
 };
 
 #endif // ACTOR_H_
