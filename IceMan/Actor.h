@@ -5,18 +5,33 @@
 
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
 class Actor: virtual public GraphObject {
+private:
+string imageID;
+int xCoord;
+int yCoord;
+//amount of ticks?
 public:
-	int getX() const{ return 0;}
-	int getY() const{return 0;}
-    	virtual void doSomething(){
-        	//	void Ask_all_actors_to_do_something()
-        	//	{
-        	//	for each actor on the level:
-        	//	if (the actor is still alive)
-        	//	tell the actor to doSomething();
-        	//	}
-    	}
-    	virtual ~Actor() {}
+    Actor();
+    void setVisible(bool shouldIDisplay);
+//unsigned int getScore() const;
+unsigned int getLevel() const;
+void increaseScore(unsigned int howMuch);
+void setGameStatText(string text);
+bool getKey(int& value);
+//void playSound(int soundID);
+    void moveTo(int x, int y);
+    int getX() const{ return 0;}
+    int getY() const{return 0;}
+
+        virtual void doSomething(){ //set to 0? so that every derived object can do a different //thing when asked to do something
+            //
+            //    for each actor on the level: // range or for loop
+            //    if (the actor is still alive)//bool func, func object?
+            //    tell the actor to doSomething();
+            //    }
+        }
+    
+        virtual ~Actor() {}
   //  …
 };
 class Protester: virtual public Actor {
