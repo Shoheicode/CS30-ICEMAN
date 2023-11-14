@@ -62,8 +62,19 @@ public:
 
 class Prop : virtual public Actor{
 private:
+    int tickRange;
     
 public:
+    Prop(int imageID, int startX, int startY, float size); //student world
+    bool setVisible(){return true;}
+    bool canPickUp() {return true;}
+    bool pickUp(){return true;}
+    bool disappear(int numTicks){return true;}
+    bool updateStock(Prop* a) {return true;} //update Iceman's prop stock put in iceman?
+    int getTicks(){return 0;}
+    int decrementTick(){return 0;}
+    int setTicks(){return 0;} //prop appears for x number of ticks
+    
 virtual ~Prop() {}
 };
 
@@ -105,46 +116,52 @@ public:
 virtual ~IceMan() {}
 	
 };
-
 class Water : virtual public Prop {
 public:
-    //setVisible(bool shouldIDisplay);
-    void moveTo(int x, int y) {}
+    //constructor set up stuff in initialization list
+//    Water (int x, int y) : Prop () { //stuff in ()s
+//        setVisible();
+//        //pick up able?
+//    }
+    virtual void doSomething(){}
     virtual ~Water() {}
 };
 
 class Oil : virtual public Prop {
 public:
-    //setVisible(bool shouldIDisplay);
-    void moveTo(int x, int y) {}
+    //constructor set up stuff in initialization list
+    virtual void doSomething(){}
     virtual ~Oil() {}
 };
 
 class Boulders : virtual public Prop {
 public:
-    //setVisible(bool shouldIDisplay);
-    void moveTo(int x, int y) {}
+    //constructor set up stuff in initialization list
+    virtual void doSomething(){}
     virtual ~Boulders() {}
+    
+private:
+    //state 0 1 2 falling
 };
 
 class Gold : virtual public Prop {
 public:
-    //setVisible(bool shouldIDisplay);
-    void moveTo(int x, int y) {}
+    //constructor set up stuff in initialization list
+    virtual void doSomething(){}
     virtual ~Gold() {}
 };
 
 class SonarKit : virtual public Prop {
 public:
-    //setVisible(bool shouldIDisplay);
-    void moveTo(int x, int y) {}
+    //constructor set up stuff in initialization list
+    virtual void doSomething(){}
     virtual ~SonarKit() {}
 };
 
 class WaterRefill : virtual public Prop {
 public:
-    //setVisible(bool shouldIDisplay);
-    void moveTo(int x, int y) {}
+    //constructor set up stuff in initialization list
+    virtual void doSomething(){}
     virtual ~WaterRefill() {}
 };
 
