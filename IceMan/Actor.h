@@ -82,7 +82,7 @@ class IceMan : virtual public Actor{
 private:
 	int lives;
 public:
-	virtual bool isAlive(int lives){
+	virtual bool isAlive(int lives){//put code in actor.cpp when finished
     	if (lives > 0){
         	return true;
     	}
@@ -90,6 +90,21 @@ public:
         	return false;
     	}
 	}
+int getLives(int a) { return a; }
+    virtual bool isAlive(int lives){//put code in actor.cpp when finished
+        if (lives > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    virtual int isDead(){//put code in actor.cpp when finished
+        if (lives == 0){
+            return GWSTATUS_PLAYER_DIED;//ends level, terminates game
+        }
+        return 0;
+    }
 //    	void Iceman::doSomething()
 //    	{
 //    	...
