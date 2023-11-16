@@ -3,7 +3,10 @@
 
 #include "GameWorld.h"
 #include "GameConstants.h"
+#include "Actor.h"
 #include <string>
+#include <list>
+using namespace std;
 
 // Students:  Add code to this file, StudentWorld.cpp, Actor.h, and Actor.cpp
 
@@ -29,7 +32,10 @@ public:
 
 	virtual int init()
 	{
-		
+
+		characterList.push_back(new IceMan(30, 60));
+
+
 		return GWSTATUS_CONTINUE_GAME;
 	}
 
@@ -56,8 +62,20 @@ public:
 	{
 		// This code is here merely to allow the game to build, run, and terminate after you hit enter a few times.
 		// Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
-		decLives();
-		return GWSTATUS_PLAYER_DIED;
+
+		for (Actor* a : characterList) {
+			a->doSomething();
+		}
+
+		if (false) {
+			decLives();
+		}
+
+		if (getLives() == 0) {
+			return GWSTATUS_PLAYER_DIED;
+		}
+
+		return GWSTATUS_CONTINUE_GAME;
 	}
 	/*
 	
@@ -71,6 +89,8 @@ public:
 	}
 
 private:
+	Actor* a;
+	list<Actor*> characterList;
 };
 
 #endif // STUDENTWORLD_H_

@@ -2,22 +2,24 @@
 #define ACTOR_H_
 
 #include "GraphObject.h"
+using namespace std;
 
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
 class Actor: virtual public GraphObject {
-private:
-string imageID;
+protected:
+int imageID;
 int xCoord;
 int yCoord;
 //amount of ticks?
 public:
-    Actor();
-    void setVisible(bool shouldIDisplay);
-//unsigned int getScore() const;
-unsigned int getLevel() const;
-void increaseScore(unsigned int howMuch);
-void setGameStatText(string text);
-bool getKey(int& value);
+    Actor(int imageID, int startX, int startY, Direction dir = right, double size = 1.0, unsigned int depth = 0) :
+        GraphObject(imageID, startX, startY, left, 1.0, depth) {};
+    //void setVisible(bool shouldIDisplay);
+    //unsigned int getScore() const;
+    unsigned int getLevel() const;
+    void increaseScore(unsigned int howMuch);
+    void setGameStatText(string text);
+    bool getKey(int& value);
 //void playSound(int soundID);
     void moveTo(int x, int y);
     int getX() const{ return 0;}
@@ -35,9 +37,17 @@ bool getKey(int& value);
   //  …
 };
 class Protester: virtual public Actor {
+protected:
+    int hitPoints;
+    bool leave_the_oil_field;
+    int numSquaresToMoveInCurrentDirection;
+    string direction = "left";
 public:
 //setVisible(bool shouldIDisplay);
     void moveTo(int x, int y) {};
+    void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
+    bool overlap(Actor object); // Checks if overlap with specific object
+    bool checkDistance(int objectX, int objectY);
     virtual ~Protester() {};
 };
 class HardcoreProtester: virtual public Protester {
@@ -82,6 +92,9 @@ class IceMan : virtual public Actor{
 private:
 	int lives;
 public:
+    IceMan(int startX, int startY) : Actor(IID_PLAYER, startX, startY, left), GraphObject(IID_PLAYER, startX, startY, left) {
+        setVisible(true);
+    };
 	virtual bool isAlive(int lives){
     	if (lives > 0){
         	return true;
@@ -165,4 +178,4 @@ public:
     virtual ~WaterRefill() {}
 };
 
-#endif // ACTOR_H_
+#endif ACTOR_H_
