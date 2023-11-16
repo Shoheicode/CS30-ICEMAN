@@ -5,21 +5,25 @@
 using namespace std;
 
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
+class StudentWorld; //already initialized added bc need to use dataType
+
 class Actor: virtual public GraphObject {
-protected:
-int imageID;
+private:
+    int m_life;
+   StudentWorld* myWorld;
+string imageID;
+double size;
 int xCoord;
 int yCoord;
-//amount of ticks?
 public:
-    Actor(int imageID, int startX, int startY, Direction dir = right, double size = 1.0, unsigned int depth = 0) :
-        GraphObject(imageID, startX, startY, left, 1.0, depth) {};
-    //void setVisible(bool shouldIDisplay);
-    //unsigned int getScore() const;
-    unsigned int getLevel() const;
-    void increaseScore(unsigned int howMuch);
-    void setGameStatText(string text);
-    bool getKey(int& value);
+    Actor(int imageID, int startX, int startY, StudentWorld* sw, Direction startDirection, float size, int depth):GraphObject(imageID, startX, startY, startDirection, size, depth)
+         {};
+    void setVisible(bool shouldIDisplay);
+//unsigned int getScore() const;
+unsigned int getLevel() const;
+void increaseScore(unsigned int howMuch);
+void setGameStatText(string text);
+bool getKey(int& value);
 //void playSound(int soundID);
     void moveTo(int x, int y);
     int getX() const{ return 0;}
@@ -103,6 +107,21 @@ public:
         	return false;
     	}
 	}
+int getLives(int a) { return a; }
+    virtual bool isAlive(int lives){//put code in actor.cpp when finished
+        if (lives > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    virtual int isDead(){//put code in actor.cpp when finished
+        if (lives == 0){
+            return GWSTATUS_PLAYER_DIED;//ends level, terminates game
+        }
+        return 0;
+    }
 //    	void Iceman::doSomething()
 //    	{
 //    	...
@@ -129,6 +148,17 @@ public:
 virtual ~IceMan() {}
 	
 };
+
+class Ice : public Actor{
+public:
+    Ice(int startX, int startY, StudentWorld* sw): Actor (IID_ICE, startX, startY, sw, right, 0.25, 3)
+        {
+            setVisible(true);
+        }
+    virtual void doSomething(){}
+    virtual ~Ice() {}
+};
+
 class Water : virtual public Prop {
 public:
     //constructor set up stuff in initialization list
