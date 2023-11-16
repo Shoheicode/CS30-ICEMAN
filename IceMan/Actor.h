@@ -16,7 +16,7 @@ double size;
 int xCoord;
 int yCoord;
 public:
-    Actor(int imageID, int startX, int startY, StudentWorld* sw, Direction startDirection, float size, int depth):GraphObject(imageID, startX, startY, startDirection, size, depth)
+    Actor(int imageID, int startX, int startY, Direction startDirection):GraphObject(imageID, startX, startY, startDirection)
          {};
     void setVisible(bool shouldIDisplay);
 //unsigned int getScore() const;
