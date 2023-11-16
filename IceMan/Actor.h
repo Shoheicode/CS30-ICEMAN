@@ -4,14 +4,19 @@
 #include "GraphObject.h"
 
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
+class StudentWorld; //already initialized added bc need to use dataType
+
 class Actor: virtual public GraphObject {
 private:
+    int m_life;
+   StudentWorld* myWorld;
 string imageID;
+double size;
 int xCoord;
 int yCoord;
-//amount of ticks?
 public:
-    Actor();
+    Actor(int imageID, int startX, int startY, StudentWorld* sw, Direction startDirection, float size, int depth):GraphObject(imageID, startX, startY, startDirection, size, depth)
+         {};
     void setVisible(bool shouldIDisplay);
 //unsigned int getScore() const;
 unsigned int getLevel() const;
@@ -131,6 +136,17 @@ int getLives(int a) { return a; }
 virtual ~IceMan() {}
 	
 };
+
+class Ice : public Actor{
+public:
+    Ice(int startX, int startY, StudentWorld* sw): Actor (IID_ICE, startX, startY, sw, right, 0.25, 3)
+        {
+            setVisible(true);
+        }
+    virtual void doSomething(){}
+    virtual ~Ice() {}
+};
+
 class Water : virtual public Prop {
 public:
     //constructor set up stuff in initialization list
