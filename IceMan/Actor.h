@@ -41,10 +41,15 @@ protected:
     int numSquaresToMoveInCurrentDirection;
     string direction = "left";
 public:
-    Protester(int startX, int startY) : Actor (IID_PROTESTER, startX, startY, left), GraphObject(IID_PROTESTER, startX, startY, left) {
+    Protester(int startX, int startY) : Actor (IID_PROTESTER, startX, startY, left), GraphObject(IID_PROTESTER, startX, startY, left, 1.0, 0) {
+        numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
+        hitPoints = 5;
+        leave_the_oil_field = false;
         setVisible(true);
     };
     void moveTo(int x, int y) {};
+    virtual void isAnnoyed(){};
+    virtual void isProPickUp(){}; //pickUp gold
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
     virtual void doSomething() override{}
     bool overlap(Actor object); // Checks if overlap with specific object
@@ -53,6 +58,13 @@ public:
 };
 class HardcoreProtester: virtual public Protester {
 public:
+    HardcoreProtester(int startX, int startY) : Protester (startX, startY), Actor (IID_HARD_CORE_PROTESTER, startX, startY, left), GraphObject(IID_HARD_CORE_PROTESTER, startX, startY, left, 1.0, 0) {
+        //decide how many numSquaresToMoveInCurrentDirection between 8 and 60
+        numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
+        leave_the_oil_field = false;
+        hitPoints = 20;
+        setVisible(true);
+    };
     virtual void doSomething() override{}
 // virtual void doSomething()
 // {
