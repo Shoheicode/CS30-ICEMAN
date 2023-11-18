@@ -2,6 +2,7 @@
 #define ACTOR_H_
 
 #include "GraphObject.h"
+#include<cstdlib>
 using namespace std;
 
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
@@ -10,11 +11,13 @@ class StudentWorld; //already initialized added bc need to use dataType
 class Actor: virtual public GraphObject {
 private:
     int m_life;
-   StudentWorld* myWorld;
 string imageID;
 double size;
 int xCoord;
 int yCoord;
+protected:
+    int hitPoints;
+    StudentWorld* myWorld;
 public:
     Actor(int imageID, int startX, int startY, Direction startDirection):GraphObject(imageID, startX, startY, startDirection)
          {};
@@ -36,7 +39,6 @@ bool getKey(int& value);
 };
 class Protester: virtual public Actor {
 protected:
-    int hitPoints;
     bool leave_the_oil_field;
     int numSquaresToMoveInCurrentDirection;
     string direction = "left";
@@ -51,7 +53,7 @@ public:
     virtual void isAnnoyed(){};
     virtual void isProPickUp(){}; //pickUp gold
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
-    virtual void doSomething() override{}
+    virtual void doSomething() override;
     bool overlap(Actor object); // Checks if overlap with specific object
     bool checkDistance(int objectX, int objectY);
     virtual ~Protester() {};
@@ -65,7 +67,7 @@ public:
         hitPoints = 20;
         setVisible(true);
     };
-    virtual void doSomething() override{}
+    virtual void doSomething() override;
 // virtual void doSomething()
 // {
 // If I am facing the Iceman and he is next to me, then
@@ -95,7 +97,7 @@ public:
             }
     bool setVisible(){return true;}
     bool canPickUp() {return true;}
-    virtual void doSomething() override{}
+    virtual void doSomething() override;
     bool pickUp(){return true;}
     bool disappear(int numTicks){return true;}
     bool updateStock(Prop* a) {return true;} //update Iceman's prop stock put in iceman?
@@ -109,40 +111,25 @@ virtual ~Prop() {}
 class IceMan : virtual public Actor{
 private:
     int lives;
+    int damage;
+    int waterSq;
+    int sC;
+    int gold;
 public:
-    IceMan(int startX, int startY) : Actor(IID_PLAYER, startX, startY, left), GraphObject(IID_PLAYER, startX, startY, left) {
+    IceMan(int startX, int startY) : Actor(IID_PLAYER, startX, startY, left), GraphObject(IID_PLAYER, startX, startY, left, 1.0, 0) {
+        hitPoints = 10;
+        waterSq = 5;
+        sC =1;
+        gold = 0;
         setVisible(true);
     };
-    
-    virtual int isDead(){//put code in actor.cpp when finished
-        if (lives == 0){
-            return GWSTATUS_PLAYER_DIED;//ends level, terminates game
-        }
-        return 0;
-    }
-    
-    virtual void doSomething() override{}
-//        {
-//        ...
-//        int ch;
-//        if (getWorld()->getKey(ch) == true)
-//        {
-//        // user hit a key this tick!
-//        switch (ch)
-//        {
-//        case KEY_PRESS_LEFT:
-//        ... move player to the left ...;
-//        break;
-//        case KEY_PRESS_RIGHT:
-//        ... move player to the right ...;
-//        break;
-//        case KEY_PRESS_SPACE:
-//        ... add a Squirt in front of the player...;
-//        break;
-//        // etc…
-//        }
-//        }
-
+    bool isAlive();
+    virtual int isDead();
+    void getAnnoyed(int dAmage);
+    int getGold() { return gold;}
+    int getSonarCount() { return sC;}
+    int getSquirt() { return waterSq;}
+    virtual void doSomething() override;
 virtual ~IceMan() {}
     
 };
@@ -152,7 +139,6 @@ public:
     Ice(int startX, int startY) : Actor (IID_ICE, startX, startY, left), GraphObject(IID_ICE, startX, startY, left) {
         setVisible(true);
     };
-    virtual void doSomething() override{}
     virtual ~Ice() {}
 };
 
@@ -164,9 +150,10 @@ public:
                distance = 4;
                GraphObject::setVisible(true);
        }
-    virtual void doSomething() override{}
+    virtual void doSomething() override;
     virtual ~Squirt() {}
 private:
+   // Direction d = IceMan.Direction;
     int distance;
 };
 
@@ -177,7 +164,7 @@ public:
                GraphObject::setVisible(true);
        }
     
-    virtual void doSomething() override{}
+    virtual void doSomething() override;
     virtual ~Oil() {}
 };
 
@@ -188,7 +175,7 @@ public:
            : Prop(IID_BOULDER, startX, startY, size, depth, down), Actor(IID_BOULDER, startX, startY, down), GraphObject(IID_BOULDER, startX, startY,down, 1.0 , 1) {
                GraphObject::setVisible(true);
        }
-    virtual void doSomething() override{}
+    virtual void doSomething() override;
     virtual ~Boulder() {}
     
 private:
@@ -210,7 +197,7 @@ public:
                //pick-up able by Protestors
                //will remain in temp state (will disappear if Protestor picks up or disappear if they don't pick up}
        }
-    virtual void doSomething() override{}
+    virtual void doSomething() override;
     virtual ~Gold() {}
 };
 
@@ -223,7 +210,7 @@ public:
                //will be in temp state (limited num of ticks b4 disappearing
                // numTicks will exist T = max(100, 300 – 10*current_level_number)
        }
-    virtual void doSomething() override{}
+    virtual void doSomething() override;
     virtual ~SonarKit() {}
 };
 
@@ -236,7 +223,7 @@ public:
                //will be in temp state (limited num of ticks b4 disappearing
                // numTicks will exist T = max(100, 300 – 10*current_level_number)
        }
-    virtual void doSomething() override{}
+    virtual void doSomething() override;
     virtual ~WaterPool() {}
 };
 
