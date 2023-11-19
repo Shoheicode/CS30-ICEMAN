@@ -17,23 +17,23 @@ int xCoord;
 int yCoord;
 protected:
     int hitPoints;
-    StudentWorld* myWorld;
+    StudentWorld* studW;
 public:
     Actor(int imageID, int startX, int startY, Direction startDirection):GraphObject(imageID, startX, startY, startDirection)
          {};
     virtual void setVisible(bool shouldIDisplay);
 //unsigned int getScore() const;
+StudentWorld* getWorld() { return studW; }
 unsigned int getLevel() const;
 void increaseScore(unsigned int howMuch);
 void setGameStatText(string text);
 bool getKey(int& value);
-//void playSound(int soundID);
+virtual void playSound(int soundID);
     void moveTo(int x, int y);
     int getX() const{ return 0;}
     int getY() const{return 0;}
 
     virtual void doSomething() = 0;
-    
         virtual ~Actor() {}
   //  …
 };
@@ -114,6 +114,7 @@ private:
     int damage;
     int waterSq;
     int sC;
+    string state;
     int gold;
 public:
     IceMan(int startX, int startY) : Actor(IID_PLAYER, startX, startY, left), GraphObject(IID_PLAYER, startX, startY, left, 1.0, 0) {
@@ -129,6 +130,8 @@ public:
     int getGold() { return gold;}
     int getSonarCount() { return sC;}
     int getSquirt() { return waterSq;}
+    string getState() { return state; }
+    void setState(string a) {a = state;}
     virtual void doSomething() override;
 virtual ~IceMan() {}
     
@@ -139,6 +142,7 @@ public:
     Ice(int startX, int startY) : Actor (IID_ICE, startX, startY, left), GraphObject(IID_ICE, startX, startY, left) {
         setVisible(true);
     };
+    virtual void doSomething() override; //must be here or else it will be an abstract class
     virtual ~Ice() {}
 };
 
