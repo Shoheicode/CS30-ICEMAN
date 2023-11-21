@@ -18,12 +18,11 @@ void IceMan::doSomething(){
         //destroys Ice from the 4x4 area occupied by the Iceman (from x, y to x+3,y+3 inclusive)
         //playSound(SOUND_DIG);
         //}
-        
         int a;
         if (getWorld()->getKey(a) == true) { //player pressed key
             switch (a){
                 case KEY_PRESS_ESCAPE:
-                    isDead();
+                    //isDead();
                     break;
                 case KEY_PRESS_SPACE:
                     //shoot water
@@ -34,6 +33,7 @@ void IceMan::doSomething(){
                     else{
                         //move if nothing blocks it
                         moveTo(getX() - 1, getY());
+                        studW->increaseScore(100);
                     }
                     break;
                 case KEY_PRESS_RIGHT:
@@ -43,11 +43,12 @@ void IceMan::doSomething(){
                     else{
                         //move if nothing blocks it
                         moveTo(getX() + 1, getY());
+                        
                     }
                     break;
                 case KEY_PRESS_UP:
                     if (getDirection() != up){
-                        setDirection(down); //turn direction DON'T MOVE
+                        setDirection(up); //turn direction DON'T MOVE
                     }
                     else{
                         //move if nothing blocks it

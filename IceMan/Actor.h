@@ -19,19 +19,19 @@ protected:
     int hitPoints;
     StudentWorld* studW;
 public:
-    Actor(int imageID, int startX, int startY, Direction startDirection):GraphObject(imageID, startX, startY, startDirection)
+    Actor(int imageID, int startX, int startY, Direction startDirection): GraphObject(imageID, startX, startY, startDirection)
          {};
-    virtual void setVisible(bool shouldIDisplay);
+    //virtual void setVisible(bool shouldIDisplay);
 //unsigned int getScore() const;
 StudentWorld* getWorld() { return studW; }
-unsigned int getLevel() const;
-void increaseScore(unsigned int howMuch);
-void setGameStatText(string text);
+//unsigned int getLevel() const;
+//void increaseScore(unsigned int howMuch);
+//void setGameStatText(string text);
 bool getKey(int& value);
-virtual void playSound(int soundID);
-    void moveTo(int x, int y);
-    int getX() const{ return 0;}
-    int getY() const{return 0;}
+//virtual void playSound(int soundID);
+    //virtual void moveTo(int x, int y);
+    //int getX() const{ return 0;}
+    //int getY() const{return 0;}
 
     virtual void doSomething() = 0;
         virtual ~Actor() {}
@@ -43,7 +43,7 @@ protected:
     int numSquaresToMoveInCurrentDirection;
     string direction = "left";
 public:
-    Protester(int startX, int startY) : Actor (IID_PROTESTER, startX, startY, left), GraphObject(IID_PROTESTER, startX, startY, left, 1.0, 0) {
+    Protester(int startX, int startY) : Actor (IID_PROTESTER, startX, startY, left), GraphObject(IID_PROTESTER, startX, startY, left, 1.0, 0) {//, GraphObject(IID_PROTESTER, startX, startY, left, 1.0, 0)
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
         hitPoints = 5;
         leave_the_oil_field = false;
@@ -117,15 +117,18 @@ private:
     string state;
     int gold;
 public:
-    IceMan(int startX, int startY) : Actor(IID_PLAYER, startX, startY, left), GraphObject(IID_PLAYER, startX, startY, left, 1.0, 0) {
+    IceMan(int startX, int startY, StudentWorld* world) : Actor(IID_PLAYER, startX, startY, left), GraphObject(IID_PLAYER, startX, startY, left, 1.0, 0) {
         hitPoints = 10;
+        studW = world;
         waterSq = 5;
         sC =1;
         gold = 0;
+        damage = 100;
+        lives = 3;
         setVisible(true);
     };
     bool isAlive();
-    virtual int isDead();
+    bool isDead();
     void getAnnoyed(int dAmage);
     int getGold() { return gold;}
     int getSonarCount() { return sC;}
@@ -139,10 +142,12 @@ virtual ~IceMan() {}
 
 class Ice : public Actor{
 public:
-    Ice(int startX, int startY) : Actor (IID_ICE, startX, startY, left), GraphObject(IID_ICE, startX, startY, left) {
+    Ice(int startX, int startY) : Actor (IID_ICE, startX, startY, left), GraphObject(IID_ICE, startX, startY, left, 0.25, 3) {
         setVisible(true);
     };
-    virtual void doSomething() override; //must be here or else it will be an abstract class
+    virtual void doSomething() override {
+
+    }; //must be here or else it will be an abstract class
     virtual ~Ice() {}
 };
 

@@ -34,11 +34,16 @@ public:
 	{
 		setGameStatText("HELLO");
 
-		for (int i = -8; i < 48; i+=4) {
-			characterList.push_back(new Ice(i, 60, this));
+		for (int i = 0; i <= 64; i++) {
+			for (int j = 0; j <= 59; j++) {
+				if (!(i <= 33 && i >= 30 && j >= 4)) {
+					characterList.push_back(new Ice(i, j));
+				}
+			}
 		}
 
 		characterList.push_back(new IceMan(30, 60, this));
+		characterList.push_back(new Protester(60, 60));
 
 
 		return GWSTATUS_CONTINUE_GAME;
@@ -67,6 +72,14 @@ public:
 	{
 		// This code is here merely to allow the game to build, run, and terminate after you hit enter a few times.
 		// Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
+
+		int score = getScore();
+		string scoreText = to_string(score);
+		cout << scoreText << endl;
+
+		string textbox = "Score: " + scoreText;
+
+		setGameStatText(textbox);
 
 		for (Actor* a : characterList) {
 			a->doSomething();
