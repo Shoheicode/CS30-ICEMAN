@@ -32,8 +32,13 @@ public:
 
 	virtual int init()
 	{
+		setGameStatText("HELLO");
 
-		characterList.push_back(new IceMan(30, 60));
+		for (int i = -8; i < 48; i+=4) {
+			characterList.push_back(new Ice(i, 60, this));
+		}
+
+		characterList.push_back(new IceMan(30, 60, this));
 
 
 		return GWSTATUS_CONTINUE_GAME;

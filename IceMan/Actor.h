@@ -16,9 +16,9 @@ double size;
 int xCoord;
 int yCoord;
 public:
-    Actor(int imageID, int startX, int startY, StudentWorld* sw, Direction startDirection, float size, int depth):GraphObject(imageID, startX, startY, startDirection, size, depth)
+    Actor(const int imageID, int startX, int startY, StudentWorld* sw, Direction startDirection, float size = 1.0, int depth = 0.0):GraphObject(imageID, startX, startY, startDirection, size, depth)
          {};
-    void setVisible(bool shouldIDisplay);
+    //void setVisible(bool shouldIDisplay);
 //unsigned int getScore() const;
 unsigned int getLevel() const;
 void increaseScore(unsigned int howMuch);
@@ -80,7 +80,7 @@ private:
     
 public:
     Prop(int imageID, int startX, int startY, float size); //student world
-    bool setVisible(){return true;}
+    //bool setVisible(){return true;}
     bool canPickUp() {return true;}
     bool pickUp(){return true;}
     bool disappear(int numTicks){return true;}
@@ -96,7 +96,7 @@ class IceMan : virtual public Actor{
 private:
 	int lives;
 public:
-    IceMan(int startX, int startY) : Actor(IID_PLAYER, startX, startY, left), GraphObject(IID_PLAYER, startX, startY, left) {
+    IceMan(int startX, int startY, StudentWorld* sw) : Actor(IID_PLAYER, startX, startY, sw, left), GraphObject(IID_PLAYER, startX, startY, left) {
         setVisible(true);
     };
 	virtual bool isAlive(int lives){
@@ -107,15 +107,7 @@ public:
         	return false;
     	}
 	}
-int getLives(int a) { return a; }
-    virtual bool isAlive(int lives){//put code in actor.cpp when finished
-        if (lives > 0){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
+    int getLives(int a) { return a; }
     virtual int isDead(){//put code in actor.cpp when finished
         if (lives == 0){
             return GWSTATUS_PLAYER_DIED;//ends level, terminates game
@@ -151,7 +143,7 @@ virtual ~IceMan() {}
 
 class Ice : public Actor{
 public:
-    Ice(int startX, int startY, StudentWorld* sw): Actor (IID_ICE, startX, startY, sw, right, 0.25, 3)
+    Ice(int startX, int startY, StudentWorld* sw) : Actor(IID_ICE, startX, startY, sw, right, 0.25, 3), GraphObject(IID_ICE, startX, startY, left)
         {
             setVisible(true);
         }
