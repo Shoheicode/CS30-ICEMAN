@@ -2,6 +2,7 @@
 #define ACTOR_H_
 
 #include "GraphObject.h"
+#include<cstdlib>
 using namespace std;
 
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
@@ -10,67 +11,78 @@ class StudentWorld; //already initialized added bc need to use dataType
 class Actor: virtual public GraphObject {
 private:
     int m_life;
-   StudentWorld* myWorld;
 string imageID;
 double size;
 int xCoord;
 int yCoord;
+protected:
+    int hitPoints;
+    StudentWorld* studW;
 public:
-    Actor(const int imageID, int startX, int startY, StudentWorld* sw, Direction startDirection, float size = 1.0, int depth = 0.0):GraphObject(imageID, startX, startY, startDirection, size, depth)
+    Actor(int imageID, int startX, int startY, Direction startDirection):GraphObject(imageID, startX, startY, startDirection)
          {};
-    //void setVisible(bool shouldIDisplay);
+    virtual void setVisible(bool shouldIDisplay);
 //unsigned int getScore() const;
+StudentWorld* getWorld() { return studW; }
 unsigned int getLevel() const;
 void increaseScore(unsigned int howMuch);
 void setGameStatText(string text);
 bool getKey(int& value);
-//void playSound(int soundID);
+virtual void playSound(int soundID);
     void moveTo(int x, int y);
     int getX() const{ return 0;}
     int getY() const{return 0;}
 
-        virtual void doSomething(){ //set to 0? so that every derived object can do a different //thing when asked to do something
-            //
-            //    for each actor on the level: // range or for loop
-            //    if (the actor is still alive)//bool func, func object?
-            //    tell the actor to doSomething();
-            //    }
-        }
-    
+    virtual void doSomething() = 0;
         virtual ~Actor() {}
   //  …
 };
 class Protester: virtual public Actor {
 protected:
-    int hitPoints;
     bool leave_the_oil_field;
     int numSquaresToMoveInCurrentDirection;
     string direction = "left";
 public:
-//setVisible(bool shouldIDisplay);
+    Protester(int startX, int startY) : Actor (IID_PROTESTER, startX, startY, left), GraphObject(IID_PROTESTER, startX, startY, left, 1.0, 0) {
+        numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
+        hitPoints = 5;
+        leave_the_oil_field = false;
+        setVisible(true);
+    };
     void moveTo(int x, int y) {};
+    virtual void isAnnoyed(){};
+    virtual void isProPickUp(){}; //pickUp gold
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
+    virtual void doSomething() override;
     bool overlap(Actor object); // Checks if overlap with specific object
     bool checkDistance(int objectX, int objectY);
     virtual ~Protester() {};
 };
 class HardcoreProtester: virtual public Protester {
 public:
-// virtual void doSomething() 
-// { 
-// If I am facing the Iceman and he is next to me, then  
+    HardcoreProtester(int startX, int startY) : Protester (startX, startY), Actor (IID_HARD_CORE_PROTESTER, startX, startY, left), GraphObject(IID_HARD_CORE_PROTESTER, startX, startY, left, 1.0, 0) {
+        //decide how many numSquaresToMoveInCurrentDirection between 8 and 60
+        numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
+        leave_the_oil_field = false;
+        hitPoints = 20;
+        setVisible(true);
+    };
+    virtual void doSomething() override;
+// virtual void doSomething()
+// {
+// If I am facing the Iceman and he is next to me, then
 // Shout at the Iceman (to annoy him)
-// 11 
-// Else if the Iceman is visible via direct line of sight, then  
-// Switch direction to face the Iceman 
-// Move one square in this direction 
-// Else if I’m about to run into an obstacle, then  
-// Pick a new direction 
-// Move one square in this direction 
-// Else 
-// Move one square in my current direction 
-// } 
-// ... 
+// 11
+// Else if the Iceman is visible via direct line of sight, then
+// Switch direction to face the Iceman
+// Move one square in this direction
+// Else if I’m about to run into an obstacle, then
+// Pick a new direction
+// Move one square in this direction
+// Else
+// Move one square in my current direction
+// }
+// ...
     virtual ~HardcoreProtester() {};
 };
 
@@ -79,9 +91,13 @@ private:
     int tickRange;
     
 public:
-    Prop(int imageID, int startX, int startY, float size); //student world
-    //bool setVisible(){return true;}
+    Prop(int imageID, int startX, int startY, float size, int depth, Direction startDirection)
+            : Actor(imageID, startX, startY, startDirection), GraphObject(imageID, startX, startY, startDirection, size, depth) {
+                
+            }
+    bool setVisible(){return true;}
     bool canPickUp() {return true;}
+    virtual void doSomething() override;
     bool pickUp(){return true;}
     bool disappear(int numTicks){return true;}
     bool updateStock(Prop* a) {return true;} //update Iceman's prop stock put in iceman?
@@ -94,86 +110,77 @@ virtual ~Prop() {}
 
 class IceMan : virtual public Actor{
 private:
-	int lives;
+    int lives;
+    int damage;
+    int waterSq;
+    int sC;
+    string state;
+    int gold;
 public:
-    IceMan(int startX, int startY, StudentWorld* sw) : Actor(IID_PLAYER, startX, startY, sw, left), GraphObject(IID_PLAYER, startX, startY, left) {
+    IceMan(int startX, int startY) : Actor(IID_PLAYER, startX, startY, left), GraphObject(IID_PLAYER, startX, startY, left, 1.0, 0) {
+        hitPoints = 10;
+        waterSq = 5;
+        sC =1;
+        gold = 0;
         setVisible(true);
     };
-	virtual bool isAlive(int lives){
-    	if (lives > 0){
-        	return true;
-    	}
-    	else{
-        	return false;
-    	}
-	}
-    int getLives(int a) { return a; }
-    virtual int isDead(){//put code in actor.cpp when finished
-        if (lives == 0){
-            return GWSTATUS_PLAYER_DIED;//ends level, terminates game
-        }
-        return 0;
-    }
-//    	void Iceman::doSomething()
-//    	{
-//    	...
-//    	int ch;
-//    	if (getWorld()->getKey(ch) == true)
-//    	{
-//    	// user hit a key this tick!
-//    	switch (ch)
-//    	{
-//    	case KEY_PRESS_LEFT:
-//    	... move player to the left ...;
-//    	break;
-//    	case KEY_PRESS_RIGHT:
-//    	... move player to the right ...;
-//    	break;
-//    	case KEY_PRESS_SPACE:
-//    	... add a Squirt in front of the player...;
-//    	break;
-//    	// etc…
-//    	}
-//    	}
-//    	...
-//    	}
+    bool isAlive();
+    virtual int isDead();
+    void getAnnoyed(int dAmage);
+    int getGold() { return gold;}
+    int getSonarCount() { return sC;}
+    int getSquirt() { return waterSq;}
+    string getState() { return state; }
+    void setState(string a) {a = state;}
+    virtual void doSomething() override;
 virtual ~IceMan() {}
-	
+    
 };
 
 class Ice : public Actor{
 public:
-    Ice(int startX, int startY, StudentWorld* sw) : Actor(IID_ICE, startX, startY, sw, right, 0.25, 3), GraphObject(IID_ICE, startX, startY, left)
-        {
-            setVisible(true);
-        }
-    virtual void doSomething(){}
+    Ice(int startX, int startY) : Actor (IID_ICE, startX, startY, left), GraphObject(IID_ICE, startX, startY, left) {
+        setVisible(true);
+    };
+    virtual void doSomething() override; //must be here or else it will be an abstract class
     virtual ~Ice() {}
 };
 
-class Water : virtual public Prop {
+class Squirt : virtual public Prop {
 public:
-    //constructor set up stuff in initialization list
-//    Water (int x, int y) : Prop () { //stuff in ()s
-//        setVisible();
-//        //pick up able?
-//    }
-    virtual void doSomething(){}
-    virtual ~Water() {}
+    Squirt(int startX, int startY, double size, int depth)
+           : Prop(IID_WATER_SPURT, startX, startY, size, depth, left), Actor(IID_WATER_SPURT, startX, startY, left), GraphObject(IID_WATER_SPURT, startX, startY,left, 1.0 , 1) {
+               //set direction to be facing the Iceman
+               distance = 4;
+               GraphObject::setVisible(true);
+       }
+    virtual void doSomething() override;
+    virtual ~Squirt() {}
+private:
+   // Direction d = IceMan.Direction;
+    int distance;
 };
 
 class Oil : virtual public Prop {
 public:
-    //constructor set up stuff in initialization list
-    virtual void doSomething(){}
+    Oil(int startX, int startY, double size, int depth)
+           : Prop(IID_BARREL, startX, startY, size, depth, down), Actor(IID_BARREL, startX, startY, down), GraphObject(IID_BARREL, startX, startY,down, 1.0 , 2) {
+               GraphObject::setVisible(true);
+       }
+    
+    virtual void doSomething() override;
     virtual ~Oil() {}
 };
 
-class Boulders : virtual public Prop {
+class Boulder : virtual public Prop {
 public:
     //constructor set up stuff in initialization list
-    virtual void doSomething(){}
-    virtual ~Boulders() {}
+    Boulder(int startX, int startY, double size, int depth)
+           : Prop(IID_BOULDER, startX, startY, size, depth, down), Actor(IID_BOULDER, startX, startY, down), GraphObject(IID_BOULDER, startX, startY,down, 1.0 , 1) {
+               GraphObject::setVisible(true);
+       }
+    virtual void doSomething() override;
+    virtual ~Boulder() {}
     
 private:
     //state 0 1 2 falling
@@ -182,22 +189,46 @@ private:
 class Gold : virtual public Prop {
 public:
     //constructor set up stuff in initialization list
-    virtual void doSomething(){}
+    Gold(int startX, int startY, double size, int depth)
+           : Prop(IID_GOLD, startX, startY, size, depth, down), Actor(IID_GOLD, startX, startY, down), GraphObject(IID_GOLD, startX, startY,down, 1.0 , 2) {
+               //if start of game will be hidden in ice {
+               GraphObject::setVisible(false);
+               //pick-up able by Iceman
+               //will remain in permanent state (won't disappear until Iceman picks up}
+               
+               //else if dropped by IceMan, will appear on screen{
+               //GraphObject::setVisible(true);
+               //pick-up able by Protestors
+               //will remain in temp state (will disappear if Protestor picks up or disappear if they don't pick up}
+       }
+    virtual void doSomething() override;
     virtual ~Gold() {}
 };
 
 class SonarKit : virtual public Prop {
 public:
-    //constructor set up stuff in initialization list
-    virtual void doSomething(){}
+    SonarKit(int startX, int startY, double size, int depth)
+           : Prop(IID_SONAR, startX, startY, size, depth, right), Actor(IID_SONAR, startX, startY, right), GraphObject(IID_SONAR, startX, startY,right, 1.0 , 2) {
+               GraphObject::setVisible(true);
+               //pick-up able Iceman
+               //will be in temp state (limited num of ticks b4 disappearing
+               // numTicks will exist T = max(100, 300 – 10*current_level_number)
+       }
+    virtual void doSomething() override;
     virtual ~SonarKit() {}
 };
 
-class WaterRefill : virtual public Prop {
+class WaterPool : virtual public Prop {
 public:
-    //constructor set up stuff in initialization list
-    virtual void doSomething(){}
-    virtual ~WaterRefill() {}
+    WaterPool(int startX, int startY, double size, int depth)
+           : Prop(IID_WATER_POOL, startX, startY, size, depth, right), Actor(IID_WATER_POOL, startX, startY, right), GraphObject(IID_WATER_POOL, startX, startY,right, 1.0 , 2) {
+               GraphObject::setVisible(true);
+               //pick-up able Iceman
+               //will be in temp state (limited num of ticks b4 disappearing
+               // numTicks will exist T = max(100, 300 – 10*current_level_number)
+       }
+    virtual void doSomething() override;
+    virtual ~WaterPool() {}
 };
 
-#endif ACTOR_H_
+#endif ////ACTOR_H_
