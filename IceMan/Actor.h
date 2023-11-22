@@ -13,10 +13,10 @@ private:
     int m_life;
 string imageID;
 double size;
-int xCoord;
-int yCoord;
 protected:
     int hitPoints;
+    int xCoord;
+    int yCoord;
     StudentWorld* studW;
 public:
     Actor(int imageID, int startX, int startY, Direction startDirection): GraphObject(imageID, startX, startY, startDirection)
@@ -24,7 +24,7 @@ public:
     //virtual void setVisible(bool shouldIDisplay);
 //unsigned int getScore() const;
 StudentWorld* getWorld() { return studW; }
-//unsigned int getLevel() const;
+    bool outOfField(int x, int y, Direction d);
 //void increaseScore(unsigned int howMuch);
 //void setGameStatText(string text);
 bool getKey(int& value);
@@ -110,12 +110,12 @@ virtual ~Prop() {}
 
 class IceMan : virtual public Actor{
 private:
-    int lives;
     int damage;
     int waterSq;
     int sC;
     string state;
     int gold;
+    double health;
 public:
     IceMan(int startX, int startY, StudentWorld* world) : Actor(IID_PLAYER, startX, startY, left), GraphObject(IID_PLAYER, startX, startY, left, 1.0, 0) {
         hitPoints = 10;
@@ -124,7 +124,6 @@ public:
         sC =1;
         gold = 0;
         damage = 100;
-        lives = 3;
         setVisible(true);
     };
     bool isAlive();
@@ -132,6 +131,7 @@ public:
     void getAnnoyed(int dAmage);
     int getGold() { return gold;}
     int getSonarCount() { return sC;}
+    double getHealth() {return health;}
     int getSquirt() { return waterSq;}
     string getState() { return state; }
     void setState(string a) {a = state;}
