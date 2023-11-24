@@ -18,7 +18,9 @@ void IceMan::doSomething(){
         //destroys Ice from the 4x4 area occupied by the Iceman (from x, y to x+3,y+3 inclusive)
         //playSound(SOUND_DIG);
         //}
+        overlap(studW);
         int a;
+        
         if (getWorld()->getKey(a) == true) { //player pressed key
             switch (a){
                 case KEY_PRESS_ESCAPE:
@@ -31,9 +33,10 @@ void IceMan::doSomething(){
                         setDirection(left); //turn direction DON'T MOVE
                     }
                     else{
-                        //move if nothing blocks it
-                        moveTo(getX() - 1, getY());
-                        studW->increaseScore(100);
+                        if (getX() != 0) {
+                            //move if nothing blocks it
+                            moveTo(getX() - 1, getY());
+                        }
                     }
                     break;
                 case KEY_PRESS_RIGHT:
@@ -41,8 +44,10 @@ void IceMan::doSomething(){
                         setDirection(right); //turn direction DON'T MOVE
                     }
                     else{
-                        //move if nothing blocks it
-                        moveTo(getX() + 1, getY());
+                        if (getX() != 61) {
+                            //move if nothing blocks it
+                            moveTo(getX() + 1, getY());
+                        }
                         
                     }
                     break;
@@ -51,8 +56,10 @@ void IceMan::doSomething(){
                         setDirection(up); //turn direction DON'T MOVE
                     }
                     else{
-                        //move if nothing blocks it
-                        moveTo(getX(), getY() + 1);
+                        if (getY() != 60) {
+                            //move if nothing blocks it
+                            moveTo(getX(), getY() + 1);
+                        }
                     }
                     break;
                 case KEY_PRESS_DOWN:
@@ -61,7 +68,9 @@ void IceMan::doSomething(){
                     }
                     else{
                         //move if nothing blocks it {
-                        moveTo(getX(), getY() - 1);
+                        if (getY() != 0) {
+                            moveTo(getX(), getY() - 1);
+                        }
                         //}
                     }
                     break;
@@ -88,6 +97,25 @@ void IceMan::doSomething(){
         return;
     }
 
+}
+
+void IceMan::overlap(StudentWorld* world) {
+    if (getY() <= 59) {
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                if (getY()+y <= 59) {
+                    if (world->getMap().at(getY() + y).at(getX() + x) != nullptr) {
+                        Ice* temp = world->getMap().at(getY() + y).at(getX() + x);
+                        world->getMap().at(getY() + y).at(getX() + x) = nullptr;
+                        delete temp;
+                    }
+                    else {
+                        cout << "I AM NOT OVERLAPPING" << endl;
+                    }
+                }
+            }
+        }
+    }
 }
 
 void IceMan::getAnnoyed(int dAmage){

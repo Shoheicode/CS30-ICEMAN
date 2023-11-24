@@ -21,17 +21,11 @@ protected:
 public:
     Actor(int imageID, int startX, int startY, Direction startDirection): GraphObject(imageID, startX, startY, startDirection)
          {};
-    //virtual void setVisible(bool shouldIDisplay);
-//unsigned int getScore() const;
-StudentWorld* getWorld() { return studW; }
-//unsigned int getLevel() const;
-//void increaseScore(unsigned int howMuch);
-//void setGameStatText(string text);
-bool getKey(int& value);
-//virtual void playSound(int soundID);
-    //virtual void moveTo(int x, int y);
-    //int getX() const{ return 0;}
-    //int getY() const{return 0;}
+    StudentWorld* getWorld() { return studW; }
+    virtual void overlap(StudentWorld* world) {
+
+    }
+
 
     virtual void doSomething() = 0;
         virtual ~Actor() {}
@@ -135,19 +129,20 @@ public:
     int getSquirt() { return waterSq;}
     string getState() { return state; }
     void setState(string a) {a = state;}
+    virtual void overlap(StudentWorld* world) override;
     virtual void doSomething() override;
 virtual ~IceMan() {}
     
 };
 
-class Ice : public Actor{
+class Ice : public GraphObject{
 public:
-    Ice(int startX, int startY) : Actor (IID_ICE, startX, startY, left), GraphObject(IID_ICE, startX, startY, left, 0.25, 3) {
+    Ice(int startX, int startY) : GraphObject(IID_ICE, startX, startY, left, 0.25, 3) {
         setVisible(true);
     };
-    virtual void doSomething() override {
+    //virtual void doSomething() override {
 
-    }; //must be here or else it will be an abstract class
+    //}; //must be here or else it will be an abstract class
     virtual ~Ice() {}
 };
 
