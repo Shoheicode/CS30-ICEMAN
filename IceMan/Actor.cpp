@@ -3,14 +3,44 @@
 
 // Students:  Add code to this file (if you wish), Actor.h, StudentWorld.h, and StudentWorld.cpp
 //Actor
+bool Actor::outOfField(int x, int y, Actor::Direction d){
+    switch(d){
+        case Actor::up:
+            if(y + 2 >= 62){
+                return true;
+            }
+            break;
+        case Actor::down:
+            if(y + 5 <= 1){
+                return true;
+            }
+            break;
+        case Actor::left:
+            if(x + 5 <= 1){
+                return true;
+            }
+            break;
+        case Actor::right:
+            if(x -2 >= 63){
+                return true;
+            }
+            break;
+        case Actor::none:
+            return false;
+            break;
+    }
+    return false;
+}
+
 
 //Iceman
 bool IceMan::isAlive(){
-    if (lives == 0){
-        return false;//ends level, terminates game
-    }
+//    if (m_lives == 0){
+//        return false;//ends level, terminates game
+//    }
     return true;
 }
+
 void IceMan::doSomething(){
     if (isAlive()){
         //if IceMan overlaps with Ice objects{
@@ -32,16 +62,20 @@ void IceMan::doSomething(){
                     if (getDirection() != left){
                         setDirection(left); //turn direction DON'T MOVE
                     }
+                    else if (outOfField(getX(), getY(), getDirection())){ //out of scope
+                        break;
+                    }
                     else{
-                        if (getX() != 0) {
-                            //move if nothing blocks it
-                            moveTo(getX() - 1, getY());
-                        }
+                        moveTo(getX() - 1, getY());
+                        studW->increaseScore(100);
                     }
                     break;
                 case KEY_PRESS_RIGHT:
                     if (getDirection() != right){
                         setDirection(right); //turn direction DON'T MOVE
+                    }
+                    else if (outOfField(getX(), getY(), getDirection())){ //out of scope
+                        break;
                     }
                     else{
                         if (getX() != 61) {
@@ -55,6 +89,9 @@ void IceMan::doSomething(){
                     if (getDirection() != up){
                         setDirection(up); //turn direction DON'T MOVE
                     }
+                    else if (outOfField(getX(), getY(), getDirection())){ //out of scope
+                        break;
+                    }
                     else{
                         if (getY() != 60) {
                             //move if nothing blocks it
@@ -65,6 +102,9 @@ void IceMan::doSomething(){
                 case KEY_PRESS_DOWN:
                     if (getDirection() != down){
                         setDirection(down); //turn direction DON'T MOVE
+                    }
+                    else if (outOfField(getX(), getY(), getDirection())){ //out of scope
+                        break;
                     }
                     else{
                         //move if nothing blocks it {

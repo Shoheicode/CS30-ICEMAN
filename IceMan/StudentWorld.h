@@ -15,26 +15,27 @@ using namespace std;
 class StudentWorld : public GameWorld
 {
 public:
-	StudentWorld(std::string assetDir)
-		: GameWorld(assetDir)
-	{
-	}
+    StudentWorld(std::string assetDir)
+        : GameWorld(assetDir)
+    {
+    }
 
-	/*
-	init() method must:
+    /*
+    init() method must:
 
-	A. Initialize the data structures used to keep track of your game’s virtual world
-	
-	B. Construct a new oil field that meets the requirements stated in the section below
-		(filled with Ice, Barrels of oil, Boulders, Gold Nuggets, etc.)
-	
-	C.Allocate and insert a valid Iceman object into the game world at the proper
-		location
-	*/
+    A. Initialize the data structures used to keep track of your gameâ€™s virtual world
+    
+    B. Construct a new oil field that meets the requirements stated in the section below
+        (filled with Ice, Barrels of oil, Boulders, Gold Nuggets, etc.)
+    
+    C.Allocate and insert a valid Iceman object into the game world at the proper
+        location
+    */
 
-	virtual int init()
-	{
-		setGameStatText("HELLO");
+    virtual int init()
+    {
+        setGameStatText("HELLO");
+        
 
 		for (int i = 0; i <= 59; i++) {
 			vector<Ice*> temp;
@@ -59,31 +60,31 @@ public:
 		//	cout << endl;
 		//}
 
-		characterList.push_back(new IceMan(30, 60, this));
-		characterList.push_back(new Protester(60, 60));
+        characterList.push_back(new IceMan(30, 60, this));
+        characterList.push_back(new Protester(60, 60));
 
 
-		return GWSTATUS_CONTINUE_GAME;
-	}
+        return GWSTATUS_CONTINUE_GAME;
+    }
 
-	/*
-	move method() must:
+    /*
+    move method() must:
 
-	A: Update the Status Text on the top of the screen 
+    A: Update the Status Text on the top of the screen
 
-	B: Must ask all the active actors to do something (like move)
-		-If an actor does something that makes Iceman give up, move should return GWSTATUS_PLAYER_DIED
-		-If Iceman collects all the oil, move should play the sound  SOUND_FINISHED_LEVEL 
-		and then return a value of GWSTATUS_FINISHED_LEVEL
+    B: Must ask all the active actors to do something (like move)
+        -If an actor does something that makes Iceman give up, move should return GWSTATUS_PLAYER_DIED
+        -If Iceman collects all the oil, move should play the sound  SOUND_FINISHED_LEVEL
+        and then return a value of GWSTATUS_FINISHED_LEVEL
 
-	C:It must delete any actors that need be removed from the game and the STL container that tracks them
-		-A Protester leaving the upper right hand corner
-		-A Boulder hitting the ground
-		-A Gold Nugget picked up by Iceman/Protester
-		-Water Pool that has dried up
-		-ETC
-	
-	*/
+    C:It must delete any actors that need be removed from the game and the STL container that tracks them
+        -A Protester leaving the upper right hand corner
+        -A Boulder hitting the ground
+        -A Gold Nugget picked up by Iceman/Protester
+        -Water Pool that has dried up
+        -ETC
+    
+    */
 
 	virtual int move()
 	{
@@ -93,33 +94,30 @@ public:
 		
 		updateTextBox();
 
-		for (Actor* a : characterList) {
-			a->doSomething();
-		}
+        if (false) {
+            decLives();
+        }
 
-		if (false) {
-			decLives();
-		}
+        if (getLives() == 0) {
+            return GWSTATUS_PLAYER_DIED;
+        }
 
-		if (getLives() == 0) {
-			return GWSTATUS_PLAYER_DIED;
-		}
+        return GWSTATUS_CONTINUE_GAME;
+    }
+    /*
+    
+    This method is called when Iceman:
+        -Loses a life
+        -Completes the current level
 
-		cout << "ENDLINE";
-		cout << endl;
+    */
+    virtual void cleanUp()
+    {
+    }
+    
+    bool blockedByBoulder();
 
-		return GWSTATUS_CONTINUE_GAME;
-	}
-	/*
-	
-	This method is called when Iceman:
-		-Loses a life
-		-Completes the current level
-
-	*/
-	virtual void cleanUp()
-	{
-	}
+    
 
 	vector<vector<Ice*>>& getMap() {
 		return iceMap;
