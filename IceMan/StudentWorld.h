@@ -8,6 +8,7 @@
 #include <list>
 #include <stdlib.h> 
 #include <vector>
+#include <cmath>
 using namespace std;
 
 // Students:  Add code to this file, StudentWorld.cpp, Actor.h, and Actor.cpp
@@ -19,6 +20,21 @@ public:
         : GameWorld(assetDir)
     {
     }
+
+	~StudentWorld() {
+		for (int i = 0; i <= 59; i++) {
+			for (int j = 0; j <= 64; j++) {
+				delete iceMap.at(i).at(j); //deletes every ice in vector;
+			}
+		}
+		//Delete the player
+		delete player;
+		//Delete all the actors in character list
+		for (Actor* a : characterList) {
+			delete a;
+		}
+
+	}
 
     /*
     init() method must:
@@ -33,9 +49,16 @@ public:
     */
 
     virtual int init()
-    {
-        setGameStatText("HELLO");
-        
+    {   
+		//Number of Boulders
+		int bNum = min(static_cast<int>(getLevel())/ 2 + 2, 9);
+
+		//Number of Gold Nuggets
+		int gNum = max(5 - static_cast<int>(getLevel()) / 2, 2);
+
+		//Number of Barrels of Oil
+		int oNum = min(static_cast<int>(getLevel()) + 2, 21);
+
 
 		for (int i = 0; i <= 59; i++) {
 			vector<Ice*> temp;
@@ -60,7 +83,8 @@ public:
 		//	cout << endl;
 		//}
 
-        characterList.push_back(new IceMan(30, 60, this));
+        //characterList.push_back(new IceMan(30, 60, this));
+		player = new IceMan(30, 60, this);
         characterList.push_back(new Protester(60, 60));
 
 
@@ -94,6 +118,22 @@ public:
 		
 		updateTextBox();
 
+		for (Actor* a : characterList) {
+			if (a->isAlive()) {
+				a->doSomething();
+
+				if (!player->isAlive()) {
+					return GWSTATUS_PLAYER_DIED;
+				}
+				if(completeLevel()){
+					return GWSTATUS_FINISHED_LEVEL;
+				}
+			}
+		}
+
+
+
+
         if (false) {
             decLives();
         }
@@ -113,9 +153,24 @@ public:
     */
     virtual void cleanUp()
     {
+		for (int i = 0; i <= 59; i++) {
+			for (int j = 0; j <= 64; j++) {
+				delete iceMap.at(i).at(j); //deletes every ice in vector;
+			}
+		}
+		//Delete the player
+		delete player;
+		//Delete all the actors in character list
+		for (Actor* a : characterList) {
+			delete a;
+		}
     }
     
     bool blockedByBoulder();
+
+	bool completeLevel() {
+		return false;//for now
+	}
 
     
 
@@ -125,8 +180,9 @@ public:
 
 private:
 	Actor* a;
-	vector<vector<Ice*>> iceMap;
+	vector<vector<Ice*>> iceMap; //Used to keep track of 
 	list<Actor*> characterList;
+	IceMan* player;
 
 	void updateTextBox() {
 		int level = getLevel();

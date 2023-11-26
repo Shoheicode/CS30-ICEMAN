@@ -6,22 +6,22 @@
 bool Actor::outOfField(int x, int y, Actor::Direction d){
     switch(d){
         case Actor::up:
-            if(y + 2 >= 62){
+            if(y >= 60){
                 return true;
             }
             break;
         case Actor::down:
-            if(y + 5 <= 1){
+            if(y <= 0){
                 return true;
             }
             break;
         case Actor::left:
-            if(x + 5 <= 1){
+            if(x <= 0){
                 return true;
             }
             break;
         case Actor::right:
-            if(x -2 >= 63){
+            if(x >= 61){
                 return true;
             }
             break;
@@ -34,12 +34,12 @@ bool Actor::outOfField(int x, int y, Actor::Direction d){
 
 
 //Iceman
-bool IceMan::isAlive(){
-//    if (m_lives == 0){
-//        return false;//ends level, terminates game
-//    }
-    return true;
-}
+//bool IceMan::isAlive(){
+////    if (m_lives == 0){
+////        return false;//ends level, terminates game
+////    }
+//    return true;
+//}
 
 void IceMan::doSomething(){
     if (isAlive()){
@@ -140,6 +140,7 @@ void IceMan::doSomething(){
 }
 
 void IceMan::overlap(StudentWorld* world) {
+    bool digging = false;
     if (getY() <= 59) {
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
@@ -148,13 +149,14 @@ void IceMan::overlap(StudentWorld* world) {
                         Ice* temp = world->getMap().at(getY() + y).at(getX() + x);
                         world->getMap().at(getY() + y).at(getX() + x) = nullptr;
                         delete temp;
-                    }
-                    else {
-                        cout << "I AM NOT OVERLAPPING" << endl;
+                        digging = true;
                     }
                 }
             }
         }
+    }
+    if (digging) {
+        world->playSound(SOUND_DIG);
     }
 }
 

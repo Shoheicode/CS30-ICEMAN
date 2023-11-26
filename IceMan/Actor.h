@@ -17,25 +17,19 @@ protected:
     int hitPoints;
     int xCoord;
     int yCoord;
+    bool amIAlive;
     StudentWorld* studW;
 public:
-    Actor(int imageID, int startX, int startY, Direction startDirection): GraphObject(imageID, startX, startY, startDirection)
-         {};
+    Actor(int imageID, int startX, int startY, Direction startDirection): GraphObject(imageID, startX, startY, startDirection){
+        amIAlive = true;
+    };
     virtual void overlap(StudentWorld* world) {
 
     }
-
-    //virtual void setVisible(bool shouldIDisplay);
-//unsigned int getScore() const;
-StudentWorld* getWorld() { return studW; }
+    StudentWorld* getWorld() { return studW; }
     bool outOfField(int x, int y, Direction d);
-//void increaseScore(unsigned int howMuch);
-//void setGameStatText(string text);
-bool getKey(int& value);
-//virtual void playSound(int soundID);
-    //virtual void moveTo(int x, int y);
-    //int getX() const{ return 0;}
-    //int getY() const{return 0;}
+    bool isAlive() { return amIAlive; };
+    void setDead() { amIAlive = false; };
 
     virtual void doSomething() = 0;
         virtual ~Actor() {}
@@ -130,8 +124,6 @@ public:
         damage = 100;
         setVisible(true);
     };
-    bool isAlive();
-    bool isDead();
     void getAnnoyed(int dAmage);
     int getGold() { return gold;}
     int getSonarCount() { return sC;}
