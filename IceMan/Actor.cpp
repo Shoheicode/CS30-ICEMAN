@@ -177,3 +177,54 @@ void Protester::doSomething(){
     // return
     //}
 }
+
+void Boulder::doSomething() {
+    if (isAlive()) {
+        if (getState() == stable) {
+            int x = getX();
+            int y = getY();
+            int numBelow = 0;
+            for (int i = 0; i < 4; i++) {
+                if (getWorld()->getMap().at(y - 1).at(x + i) == nullptr) {
+                    numBelow++;
+                }
+            }
+            if (numBelow == 4) {
+                currentState = waiting;
+                cout << numBelow << endl;
+            }
+        }
+        else if (getState() == waiting) {
+            if (wait != 0) {
+                wait--;
+                cout << wait << endl;
+            }
+            else {
+                cout << "DONE WAITING! It is falling time" << endl;
+                currentState = falling;
+            }
+        }
+        else if (getState() == falling) {
+            moveTo(getX(), getY() - 1);
+            if (getY() == 0) {
+                setAlive(false);
+            }
+            else {
+                for (Actor* a : getWorld()->getCharacterList()) {
+                    if (a->getID() == IID_BOULDER && a->getY()+4 ==getY()) {
+                        if (abs(getX() - a->getX() < 4)) {
+                            setAlive(false);
+                        }
+                    }
+                }
+                for (int i = 0; i < 4; i++) {
+                    if (getWorld()->getMap().at(getY() - 1).at(getX()+i) != nullptr) {
+                        setAlive(false);
+                    }
+                }
+            }
+        }
+
+
+    }
+}

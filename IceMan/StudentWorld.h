@@ -89,7 +89,7 @@ public:
         //characterList.push_back(new IceMan(30, 60, this));
 		player = new IceMan(30, 60, this);
 		characterList.push_back(player);
-        characterList.push_back(new Protester(60, 60));
+        characterList.push_back(new Protester(60, 60, this));
 
 
         return GWSTATUS_CONTINUE_GAME;
@@ -135,6 +135,8 @@ public:
 			}
 		}
 
+		removeDeadObjects();
+
         if (false) {
             decLives();
         }
@@ -173,7 +175,9 @@ public:
 		return false;//for now
 	}
 
-    
+	list<Actor*>& getCharacterList() {
+		return characterList;
+	}
 
 	vector<vector<Ice*>>& getMap() {
 		return iceMap;
@@ -184,6 +188,22 @@ private:
 	vector<vector<Ice*>> iceMap; //Used to keep track of ice on map
 	list<Actor*> characterList;
 	IceMan* player;
+
+	void removeDeadObjects() {
+		vector<list<Actor*>::iterator> it1;
+		for (auto itr = characterList.begin(); itr != characterList.end(); itr++) {
+			if ((*itr)->isAlive() == false) {
+				Actor* a = *itr;
+				*itr = nullptr;
+				delete a;
+				it1.push_back(itr);
+			}
+		}
+
+		for (int i = 0; i < it1.size(); i++) {
+			characterList.erase(it1.at(i));
+		}
+	}
 
 	void createIceMap(){
 		bool spawnIce = true;
@@ -229,7 +249,7 @@ private:
 
 		int currentNum = 0;
 
-		characterList.push_back(new Boulder(x, y));
+		characterList.push_back(new Boulder(x, y, this));
 
 		currentNum++;
 
@@ -253,7 +273,7 @@ private:
 				}
 			}
 			if (createBoulder) {
-				characterList.push_back(new Boulder(x, y));
+				characterList.push_back(new Boulder(x, y, this));
 
 				for (int i = 0; i < 4; i++) {
 					for (int j = 0; j < 4; j++) {
@@ -287,7 +307,7 @@ private:
 
 		int currentNum = 0;
 
-		characterList.push_back(new Gold(x, y));
+		characterList.push_back(new Gold(x, y, this));
 
 		currentNum++;
 
@@ -312,7 +332,7 @@ private:
 			}
 			if (createNugget) {
 
-				characterList.push_back(new Gold(x, y));
+				characterList.push_back(new Gold(x, y, this));
 				currentNum++;
 			}
 		}
@@ -325,12 +345,11 @@ private:
 			return false;
 		}
 
-		/*cout << "ID: " << a->getID() << endl;
-		cout << "Distance: " << distance << endl;*/
-
 		return true;
 
 	}
+
+	
 
 	void updateTextBox() {
 		int level = getLevel();
