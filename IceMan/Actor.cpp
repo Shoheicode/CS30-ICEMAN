@@ -52,6 +52,7 @@ void IceMan::doSomething(){
         int a;
         
         if (getWorld()->getKey(a) == true) { //player pressed key
+            bool blocked = false;
             switch (a){
                 case KEY_PRESS_ESCAPE:
                     //isDead();
@@ -66,8 +67,15 @@ void IceMan::doSomething(){
                         break;
                     }
                     else{
-                        moveTo(getX() - 1, getY());
-                        studW->increaseScore(100);
+
+                        for (Actor* a : getWorld()->getCharacterList()) {
+                            if (a->getID() == IID_BOULDER && a->getX()+3 == getX()-1 && abs(getY() - a->getY()) < 4) {
+                                blocked = true;
+                            }
+                        }
+                        if (!blocked) {
+                            moveTo(getX() - 1, getY());
+                        }
                     }
                     break;
                 case KEY_PRESS_RIGHT:
@@ -78,7 +86,12 @@ void IceMan::doSomething(){
                         break;
                     }
                     else{
-                        if (getX() != 61) {
+                        for (Actor* a : getWorld()->getCharacterList()) {
+                            if (a->getID() == IID_BOULDER && a->getX() == getX() + 4 && abs(getY() - a->getY()) < 4) {
+                                blocked = true;
+                            }
+                        }
+                        if (!blocked) {
                             //move if nothing blocks it
                             moveTo(getX() + 1, getY());
                         }
@@ -93,8 +106,12 @@ void IceMan::doSomething(){
                         break;
                     }
                     else{
-                        if (getY() != 60) {
-                            //move if nothing blocks it
+                        for (Actor* a : getWorld()->getCharacterList()) {
+                            if (a->getID() == IID_BOULDER && a->getY() == getY()+4 && abs(getX() - a->getX()) < 4) {
+                                blocked = true;
+                            }
+                        }
+                        if (!blocked) {
                             moveTo(getX(), getY() + 1);
                         }
                     }
@@ -107,8 +124,12 @@ void IceMan::doSomething(){
                         break;
                     }
                     else{
-                        //move if nothing blocks it {
-                        if (getY() != 0) {
+                        for (Actor* a : getWorld()->getCharacterList()) {
+                            if (a->getID() == IID_BOULDER && a->getY()+3 == getY()-1 && abs(getX() - a->getX()) < 4) {
+                                blocked = true;
+                            }
+                        }
+                        if (!blocked) {
                             moveTo(getX(), getY() - 1);
                         }
                         //}
@@ -140,6 +161,8 @@ void IceMan::doSomething(){
 }
 
 void IceMan::overlap(StudentWorld* world) {
+
+    //ICE
     bool digging = false;
     if (getY() <= 59) {
         for (int x = 0; x < 4; x++) {
@@ -158,6 +181,8 @@ void IceMan::overlap(StudentWorld* world) {
     if (digging) {
         world->playSound(SOUND_DIG);
     }
+    //Boulder
+
 }
 
 void IceMan::getAnnoyed(int dAmage){
@@ -200,31 +225,49 @@ void Boulder::doSomething() {
                 cout << wait << endl;
             }
             else {
-                cout << "DONE WAITING! It is falling time" << endl;
+                //cout << "DONE WAITING! It is falling time" << endl;
                 currentState = falling;
+                getWorld()->playSound(SOUND_FALLING_ROCK);
             }
         }
         else if (getState() == falling) {
-            moveTo(getX(), getY() - 1);
             if (getY() == 0) {
                 setAlive(false);
+                //cout << "I HIT THE GROUND" << endl;
             }
             else {
-                for (Actor* a : getWorld()->getCharacterList()) {
-                    if (a->getID() == IID_BOULDER && a->getY()+4 ==getY()) {
-                        if (abs(getX() - a->getX() < 4)) {
-                            setAlive(false);
-                        }
-                    }
-                }
+                overlap(getWorld());
                 for (int i = 0; i < 4; i++) {
                     if (getWorld()->getMap().at(getY() - 1).at(getX()+i) != nullptr) {
                         setAlive(false);
+                        //cout << "I HIT ICE" << endl;
                     }
                 }
             }
+            moveTo(getX(), getY() - 1);
         }
 
 
+    }
+}
+
+void Boulder::overlap(StudentWorld* world) {
+    for (Actor* a : world->getCharacterList()) {
+
+        //Checking if overlaping with characters
+        if (a->getID() == IID_BOULDER && a->getY() + 4 == getY()) {
+            if (abs(getX() - a->getX()) < 4) {
+                setAlive(false);
+                //cout << "I HIT THE PLAYER"
+            }
+        }
+        if (a->getID() == IID_PLAYER && (abs(getY() - a->getY()) < 4)) {
+            if (abs(getX() - a->getX()) < 4) {
+                world->decLives();
+                setAlive(false);
+                a->setAlive(false);
+            }
+
+        }
     }
 }

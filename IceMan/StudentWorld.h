@@ -27,12 +27,15 @@ public:
 				delete iceMap.at(i).at(j); //deletes every ice in vector;
 			}
 		}
-		//Delete the player
-		delete player;
+		iceMap.clear();
+		cout << "ICEMAP" << iceMap.size() << endl;
 		//Delete all the actors in character list
 		for (Actor* a : characterList) {
-			delete a;
+			Actor* temp = a;
+			a = nullptr;
+			delete temp;
 		}
+		characterList.clear();
 
 	}
 
@@ -161,12 +164,17 @@ public:
 				delete iceMap.at(i).at(j); //deletes every ice in vector;
 			}
 		}
-		//Delete the player
-		delete player;
+		iceMap.clear();
+		cout << "ICEMAP" << iceMap.size() << endl;
 		//Delete all the actors in character list
 		for (Actor* a : characterList) {
-			delete a;
+			Actor* temp = a;
+			a = nullptr;
+			delete temp;
 		}
+		characterList.clear();
+		cout << characterList.size() << endl;
+		//delete characterList;
     }
     
     bool blockedByBoulder();
@@ -210,13 +218,12 @@ private:
 		for (int i = 0; i <= 59; i++) {
 			vector<Ice*> temp;
 			for (int j = 0; j <= 64; j++) {
-				if (!(j <= 33 && j >= 30 && j >= 4)) {
+				if (!(j <= 33 && j >= 30 && i >= 4)) {
 					temp.push_back(new Ice(j, i));
 						// cout << 1;
 
 				}
 				else {
-					//cout << 0;
 					temp.push_back(nullptr);
 				}
 			}
@@ -340,10 +347,14 @@ private:
 
 	bool checkDistance(Actor* a, int obj1X, int obj1Y, int obj2X, int obj2Y) {
 		double distance = pow(pow(obj1X - obj2X, 2) + pow(obj1Y - obj2Y, 2), 0.5);
+
+		cout << a->getID() << endl;
 		
 		if (distance < 6) {
 			return false;
 		}
+
+		cout << "DISTANCE: " << distance << endl;
 
 		return true;
 

@@ -180,6 +180,7 @@ public:
                amIAlive = true;
        }
     virtual void doSomething() override;
+    virtual void overlap(StudentWorld* world) override;
 
     virtual ~Boulder() {}
     
