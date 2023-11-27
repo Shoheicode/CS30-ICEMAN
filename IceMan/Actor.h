@@ -11,8 +11,8 @@ class StudentWorld; //already initialized added bc need to use dataType
 class Actor: virtual public GraphObject {
 private:
     int m_life;
-string imageID;
-double size;
+    string imageID;
+    double size;
 protected:
     int hitPoints;
     int xCoord;
@@ -93,9 +93,8 @@ public:
             : Actor(imageID, startX, startY, startDirection), GraphObject(imageID, startX, startY, startDirection, size, depth) {
                 
             }
-    bool setVisible(){return true;}
     bool canPickUp() {return true;}
-    virtual void doSomething() override;
+    virtual void doSomething() = 0;
     bool pickUp(){return true;}
     bool disappear(int numTicks){return true;}
     bool updateStock(Prop* a) {return true;} //update Iceman's prop stock put in iceman?
@@ -111,9 +110,7 @@ private:
     int damage;
     int waterSq;
     int sC;
-    string state;
     int gold;
-    double health;
 public:
     IceMan(int startX, int startY, StudentWorld* world) : Actor(IID_PLAYER, startX, startY, left), GraphObject(IID_PLAYER, startX, startY, left, 1.0, 0) {
         hitPoints = 10;
@@ -127,10 +124,8 @@ public:
     void getAnnoyed(int dAmage);
     int getGold() { return gold;}
     int getSonarCount() { return sC;}
-    double getHealth() {return health;}
+    double getHealth() {return hitPoints;}
     int getSquirt() { return waterSq;}
-    string getState() { return state; }
-    void setState(string a) {a = state;}
     virtual void overlap(StudentWorld* world) override;
     virtual void doSomething() override;
 virtual ~IceMan() {}
@@ -177,11 +172,13 @@ public:
 class Boulder : virtual public Prop {
 public:
     //constructor set up stuff in initialization list
-    Boulder(int startX, int startY, double size, int depth)
-           : Prop(IID_BOULDER, startX, startY, size, depth, down), Actor(IID_BOULDER, startX, startY, down), GraphObject(IID_BOULDER, startX, startY,down, 1.0 , 1) {
-               GraphObject::setVisible(true);
+    Boulder(int startX, int startY)
+           : Prop(IID_BOULDER, startX, startY, 1.0, 1, down), Actor(IID_BOULDER, startX, startY, down), GraphObject(IID_BOULDER, startX, startY,down, 1.0 , 1) {
+               setVisible(true);
        }
-    virtual void doSomething() override;
+    virtual void doSomething() override {
+
+    }
     virtual ~Boulder() {}
     
 private:
@@ -191,10 +188,10 @@ private:
 class Gold : virtual public Prop {
 public:
     //constructor set up stuff in initialization list
-    Gold(int startX, int startY, double size, int depth)
-           : Prop(IID_GOLD, startX, startY, size, depth, down), Actor(IID_GOLD, startX, startY, down), GraphObject(IID_GOLD, startX, startY,down, 1.0 , 2) {
+    Gold(int startX, int startY)
+           : Prop(IID_GOLD, startX, startY, 1.0, 1, down), Actor(IID_GOLD, startX, startY, down), GraphObject(IID_GOLD, startX, startY,down, 1.0 , 2) {
                //if start of game will be hidden in ice {
-               GraphObject::setVisible(false);
+                setVisible(true);
                //pick-up able by Iceman
                //will remain in permanent state (won't disappear until Iceman picks up}
                
@@ -203,7 +200,9 @@ public:
                //pick-up able by Protestors
                //will remain in temp state (will disappear if Protestor picks up or disappear if they don't pick up}
        }
-    virtual void doSomething() override;
+    virtual void doSomething() override {
+
+    }
     virtual ~Gold() {}
 };
 
