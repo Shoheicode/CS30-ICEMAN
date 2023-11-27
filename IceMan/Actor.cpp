@@ -264,10 +264,17 @@ void Boulder::overlap(StudentWorld* world) {
         if (a->getID() == IID_PLAYER && (abs(getY() - a->getY()) < 4)) {
             if (abs(getX() - a->getX()) < 4) {
                 world->decLives();
-                setAlive(false);
+                //setAlive(false);
                 a->setAlive(false);
             }
-
+        }
+        if (a->getID() == IID_PROTESTER && (abs(getY() - a->getY()) < 4)) {
+            if (abs(getX() - a->getX()) < 4) {
+                //Create annoyance
+                //world->decLives();
+                ////setAlive(false);
+                //a->setAlive(false);
+            }
         }
     }
 }

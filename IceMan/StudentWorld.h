@@ -28,7 +28,6 @@ public:
 			}
 		}
 		iceMap.clear();
-		cout << "ICEMAP" << iceMap.size() << endl;
 		//Delete all the actors in character list
 		for (Actor* a : characterList) {
 			Actor* temp = a;
@@ -73,13 +72,6 @@ public:
 		spawnNuggets(gNum);
 
 		int i = 0;
-
-		for (Actor* a : characterList) {
-			cout << "ID" << i << ": " << a->getID() << endl;
-			cout << "X: " << a->getX() << endl;
-			cout << "Y: " << a->getY() << endl;
-			i++;
-		}
 
 		//for (int i = 0; i <= 59; i++) {
 		//	for (int j = 0; j <= 64; j++) {
@@ -140,6 +132,10 @@ public:
 
 		removeDeadObjects();
 
+		if (!player->isAlive()) {
+			return GWSTATUS_PLAYER_DIED;
+		}
+
         if (false) {
             decLives();
         }
@@ -166,6 +162,7 @@ public:
 		}
 		iceMap.clear();
 		cout << "ICEMAP" << iceMap.size() << endl;
+
 		//Delete all the actors in character list
 		for (Actor* a : characterList) {
 			Actor* temp = a;
@@ -176,8 +173,6 @@ public:
 		cout << characterList.size() << endl;
 		//delete characterList;
     }
-    
-    bool blockedByBoulder();
 
 	bool completeLevel() {
 		return false;//for now
