@@ -5,27 +5,27 @@
 //Actor
 bool Actor::outOfField(int x, int y, Actor::Direction d){
     switch(d){
-        case Actor::up:
+        case Actor::up://if faced up, and is moved higher than 60 units it is out of Field
             if(y >= 60){
                 return true;
             }
             break;
-        case Actor::down:
+        case Actor::down://if faced down, and is moved lower than 0 units it is out of Field
             if(y <= 0){
                 return true;
             }
             break;
-        case Actor::left:
+        case Actor::left://if faced left, and is moved farther than 0 units it is out of Field
             if(x <= 0){
                 return true;
             }
             break;
-        case Actor::right:
+        case Actor::right://if faced right, and is moved farther than 60 units it is out of Field
             if(x >= 61){
                 return true;
             }
             break;
-        case Actor::none:
+        case Actor::none://if not faced any direction it is in field
             return false;
             break;
     }
@@ -43,14 +43,8 @@ bool Actor::outOfField(int x, int y, Actor::Direction d){
 
 void IceMan::doSomething(){
     if (isAlive()){
-        //if IceMan overlaps with Ice objects{
-        //calls StudentWorld object getWorld->destroyIce..?
-        //destroys Ice from the 4x4 area occupied by the Iceman (from x, y to x+3,y+3 inclusive)
-        //playSound(SOUND_DIG);
-        //}
-        overlap(studW);
+        overlap(studW);//dig when overlap with ice
         int a;
-        
         if (getWorld()->getKey(a) == true) { //player pressed key
             bool blocked = false;
             switch (a){
@@ -59,6 +53,7 @@ void IceMan::doSomething(){
                     break;
                 case KEY_PRESS_SPACE:
                     //shoot water
+                    getWorld()->playSound(SOUND_PLAYER_SQUIRT);//play shoot water sound
                 case KEY_PRESS_LEFT:
                     if (getDirection() != left){
                         setDirection(left); //turn direction DON'T MOVE
@@ -70,10 +65,10 @@ void IceMan::doSomething(){
 
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getX()+3 == getX()-1 && abs(getY() - a->getY()) < 4) {
-                                blocked = true;
+                                blocked = true;//if blocked by boulder dont move
                             }
                         }
-                        if (!blocked) {
+                        if (!blocked) {//move if nothing blocks it
                             moveTo(getX() - 1, getY());
                         }
                     }
@@ -87,7 +82,7 @@ void IceMan::doSomething(){
                     }
                     else{
                         for (Actor* a : getWorld()->getCharacterList()) {
-                            if (a->getID() == IID_BOULDER && a->getX() == getX() + 4 && abs(getY() - a->getY()) < 4) {
+                            if (a->getID() == IID_BOULDER && a->getX() == getX() + 4 && abs(getY() - a->getY()) < 4) {//if blocked by boulder dont move
                                 blocked = true;
                             }
                         }
@@ -108,10 +103,10 @@ void IceMan::doSomething(){
                     else{
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getY() == getY()+4 && abs(getX() - a->getX()) < 4) {
-                                blocked = true;
+                                blocked = true;//if blocked by boulder dont move
                             }
                         }
-                        if (!blocked) {
+                        if (!blocked) {//move if nothing blocks it
                             moveTo(getX(), getY() + 1);
                         }
                     }
@@ -126,10 +121,10 @@ void IceMan::doSomething(){
                     else{
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getY()+3 == getY()-1 && abs(getX() - a->getX()) < 4) {
-                                blocked = true;
+                                blocked = true;//if blocked by boulder dont move
                             }
                         }
-                        if (!blocked) {
+                        if (!blocked) {//move if nothing blocks it
                             moveTo(getX(), getY() - 1);
                         }
                         //}
@@ -161,7 +156,6 @@ void IceMan::doSomething(){
 }
 
 void IceMan::overlap(StudentWorld* world) {
-
     //ICE
     bool digging = false;
     if (getY() <= 59) {
@@ -187,7 +181,7 @@ void IceMan::overlap(StudentWorld* world) {
 
 void IceMan::getAnnoyed(int dAmage){
     //if is shouted at
-    dAmage--;
+    dAmage--;//decrement IceMans damage by 2
     dAmage--;
         //if damage ==0
         //setState("dead");

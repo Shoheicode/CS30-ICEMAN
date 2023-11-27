@@ -21,11 +21,10 @@ protected:
     StudentWorld* studW;
 public:
     Actor(int imageID, int startX, int startY, Direction startDirection, StudentWorld* world): GraphObject(imageID, startX, startY, startDirection){
-        amIAlive = true;
-        studW = world;
+        amIAlive = true;//when spawned object, it becomes alive
+        studW = world;//set up studW to be correct world
     };
     virtual void overlap(StudentWorld* world) {
-
     }
     StudentWorld* getWorld() { return studW; }
     bool outOfField(int x, int y, Direction d);
@@ -44,9 +43,9 @@ protected:
 public:
     Protester(int startX, int startY, StudentWorld* world) : Actor (IID_PROTESTER, startX, startY, left,world), GraphObject(IID_PROTESTER, startX, startY, left, 1.0, 0) {//, GraphObject(IID_PROTESTER, startX, startY, left, 1.0, 0)
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
-        hitPoints = 5;
-        leave_the_oil_field = false;
-        setVisible(true);
+        hitPoints = 5;//set data members numbers specified by packet
+        leave_the_oil_field = false;//doesn't leave field bc is Alive
+        setVisible(true);//appear on screen
     };
     void moveTo(int x, int y) {};
     virtual void isAnnoyed(){};
@@ -62,9 +61,9 @@ public:
     HardcoreProtester(int startX, int startY, StudentWorld* world) : Protester (startX, startY, world), Actor (IID_HARD_CORE_PROTESTER, startX, startY, left, world), GraphObject(IID_HARD_CORE_PROTESTER, startX, startY, left, 1.0, 0) {
         //decide how many numSquaresToMoveInCurrentDirection between 8 and 60
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
-        leave_the_oil_field = false;
-        hitPoints = 20;
-        setVisible(true);
+        leave_the_oil_field = false;//doesn't leave field bc is Alive
+        hitPoints = 20;//set data members numbers specified by packet
+        setVisible(true);//appear on screen
     };
     virtual void doSomething() override;
 // virtual void doSomething()
@@ -119,8 +118,8 @@ public:
         waterSq = 5;
         sC =1;
         gold = 0;
-        damage = 100;
-        setVisible(true);
+        damage = 100; //set data members numbers specified by packet
+        setVisible(true);//appear on screen
     };
     void getAnnoyed(int dAmage);
     int getGold() { return gold;}
@@ -136,7 +135,7 @@ virtual ~IceMan() {}
 class Ice : public GraphObject{
 public:
     Ice(int startX, int startY) : GraphObject(IID_ICE, startX, startY, left, 0.25, 3) {
-        setVisible(true);
+        setVisible(true);//appear on screen
     };
     //virtual void doSomething() override {
 
@@ -150,7 +149,7 @@ public:
            : Prop(IID_WATER_SPURT, startX, startY, size, depth, left, world), Actor(IID_WATER_SPURT, startX, startY, left, world), GraphObject(IID_WATER_SPURT, startX, startY,left, 1.0 , 1) {
                //set direction to be facing the Iceman
                distance = 4;
-               GraphObject::setVisible(true);
+               GraphObject::setVisible(true);//appear on screen
        }
     virtual void doSomething() override;
     virtual ~Squirt() {}
@@ -163,7 +162,7 @@ class Oil : virtual public Prop {
 public:
     Oil(int startX, int startY, double size, int depth, StudentWorld* world)
            : Prop(IID_BARREL, startX, startY, size, depth, down, world), Actor(IID_BARREL, startX, startY, down, world), GraphObject(IID_BARREL, startX, startY,down, 1.0 , 2) {
-               GraphObject::setVisible(true);
+               GraphObject::setVisible(true);//appear on screen
        }
     
     virtual void doSomething() override;
@@ -175,9 +174,9 @@ public:
     //constructor set up stuff in initialization list
     Boulder(int startX, int startY, StudentWorld* world)
            : Prop(IID_BOULDER, startX, startY, 1.0, 1, down, world), Actor(IID_BOULDER, startX, startY, down,world), GraphObject(IID_BOULDER, startX, startY,down, 1.0 , 1) {
-               setVisible(true);
-               currentState = stable;
-               amIAlive = true;
+               setVisible(true);//appear on screen
+               currentState = stable; //set to beginning state
+               amIAlive = true; //boulder is alive
        }
     virtual void doSomething() override;
     virtual void overlap(StudentWorld* world) override;
@@ -186,7 +185,7 @@ public:
     
 private:
     //state 0 1 2 falling
-    enum state { 
+    enum state {
         stable,
         waiting,
         falling
@@ -205,7 +204,7 @@ public:
     Gold(int startX, int startY, StudentWorld* world)
            : Prop(IID_GOLD, startX, startY, 1.0, 1, right, world), Actor(IID_GOLD, startX, startY, down, world), GraphObject(IID_GOLD, startX, startY,right, 1.0 , 2) {
                //if start of game will be hidden in ice {
-                setVisible(true);
+                setVisible(true);//appear on screen
                //pick-up able by Iceman
                //will remain in permanent state (won't disappear until Iceman picks up}
                
@@ -224,7 +223,7 @@ class SonarKit : virtual public Prop {
 public:
     SonarKit(int startX, int startY, double size, int depth, StudentWorld* world)
            : Prop(IID_SONAR, startX, startY, size, depth, right, world), Actor(IID_SONAR, startX, startY, right, world), GraphObject(IID_SONAR, startX, startY,right, 1.0 , 2) {
-               GraphObject::setVisible(true);
+               GraphObject::setVisible(true);//appear on screen
                //pick-up able Iceman
                //will be in temp state (limited num of ticks b4 disappearing
                // numTicks will exist T = max(100, 300 – 10*current_level_number)
@@ -237,7 +236,7 @@ class WaterPool : virtual public Prop {
 public:
     WaterPool(int startX, int startY, double size, int depth, StudentWorld* world)
            : Prop(IID_WATER_POOL, startX, startY, size, depth, right, world), Actor(IID_WATER_POOL, startX, startY, right, world), GraphObject(IID_WATER_POOL, startX, startY,right, 1.0 , 2) {
-               GraphObject::setVisible(true);
+               GraphObject::setVisible(true);//appear on screen
                //pick-up able Iceman
                //will be in temp state (limited num of ticks b4 disappearing
                // numTicks will exist T = max(100, 300 – 10*current_level_number)
