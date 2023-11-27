@@ -157,12 +157,18 @@ void IceMan::doSomething(){
 
 void IceMan::overlap(StudentWorld* world) {
     //ICE
+    //sets digging to false
     bool digging = false;
+    //Check is the y is less than 60 (aka below the ice)
     if (getY() <= 59) {
+        //Create a box around the character to remove the ice around the character
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
+                //Removes the ice if the ice is within the box of the character
                 if (getY()+y <= 59) {
+                    //if the x and y position of the ice equals the x and y position within the box around the character
                     if (world->getMap().at(getY() + y).at(getX() + x) != nullptr) {
+                        //Delete the ice
                         Ice* temp = world->getMap().at(getY() + y).at(getX() + x);
                         world->getMap().at(getY() + y).at(getX() + x) = nullptr;
                         delete temp;
@@ -172,13 +178,13 @@ void IceMan::overlap(StudentWorld* world) {
             }
         }
     }
+    //Play sound if digging is true
     if (digging) {
         world->playSound(SOUND_DIG);
     }
-    //Boulder
-
 }
 
+//NOT DONE YET
 void IceMan::getAnnoyed(int dAmage){
     //if is shouted at
     dAmage--;//decrement IceMans damage by 2
@@ -197,6 +203,7 @@ void Protester::doSomething(){
     //}
 }
 
+//NOT DONE WITH BOULDER YET (STILL IN PROGRESS)
 void Boulder::doSomething() {
     if (isAlive()) {
         if (getState() == stable) {
