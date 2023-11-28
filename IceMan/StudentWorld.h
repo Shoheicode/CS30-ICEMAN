@@ -168,6 +168,7 @@ public:
 			a = nullptr;
 			delete temp;
 		}
+		characterList.clear();
 		//delete characterList;
     }
 
