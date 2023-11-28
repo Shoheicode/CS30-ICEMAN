@@ -59,6 +59,7 @@ void IceMan::doSomething(){
                         setDirection(left); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
+                        moveTo(getX(), getY());
                         break;
                     }
                     else{
@@ -66,6 +67,7 @@ void IceMan::doSomething(){
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getX()+3 == getX()-1 && abs(getY() - a->getY()) < 4) {
                                 blocked = true;//if blocked by boulder dont move
+                                moveTo(getX(), getY());
                             }
                         }
                         if (!blocked) {//move if nothing blocks it
@@ -78,12 +80,14 @@ void IceMan::doSomething(){
                         setDirection(right); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
+                        moveTo(getX(), getY());
                         break;
                     }
                     else{
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getX() == getX() + 4 && abs(getY() - a->getY()) < 4) {//if blocked by boulder dont move
                                 blocked = true;
+                                moveTo(getX(), getY());
                             }
                         }
                         if (!blocked) {
@@ -98,12 +102,14 @@ void IceMan::doSomething(){
                         setDirection(up); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
+                        moveTo(getX(), getY());
                         break;
                     }
                     else{
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getY() == getY()+4 && abs(getX() - a->getX()) < 4) {
                                 blocked = true;//if blocked by boulder dont move
+                                moveTo(getX(), getY());
                             }
                         }
                         if (!blocked) {//move if nothing blocks it
@@ -116,12 +122,14 @@ void IceMan::doSomething(){
                         setDirection(down); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
+                        moveTo(getX(), getY());
                         break;
                     }
                     else{
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getY()+3 == getY()-1 && abs(getX() - a->getX()) < 4) {
                                 blocked = true;//if blocked by boulder dont move
+                                moveTo(getX(), getY());
                             }
                         }
                         if (!blocked) {//move if nothing blocks it

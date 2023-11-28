@@ -35,7 +35,6 @@ public:
 			delete temp;
 		}
 		characterList.clear();
-
 	}
 
     /*
