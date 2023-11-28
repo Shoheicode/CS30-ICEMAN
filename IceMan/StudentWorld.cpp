@@ -49,7 +49,7 @@ void StudentWorld::createIceMap(){
     }
 }
 
-void StudentWorld::pawnBoulders(int bNum) {
+void StudentWorld::spawnBoulders(int bNum) {
 
     //Sets the current number of boulders to 0
     int currentNum = 0;
