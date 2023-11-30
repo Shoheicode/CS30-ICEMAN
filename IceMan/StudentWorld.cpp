@@ -49,6 +49,48 @@ void StudentWorld::createIceMap(){
     }
 }
 
+void StudentWorld::spawnOil(int oNum){
+    //Sets the current number of boulders to 0
+    int currentNum = 0;
+
+    //Creates boulders until the number of boulders equals the number needed for the level.
+    while (currentNum != oNum) {
+
+        //Sets create boulder to true
+        bool createOil = true;
+
+        //Creates the random numbers
+        int x = rand() % 61;
+        int y = rand() % 37 + 20;
+
+        //Checks to make sure boulder isn't in the gap
+        if (x <= 33 && x >= 27) {
+            createOil = false;
+        }
+        //otherwise
+        else {
+            //For each character in character list
+            for (Actor* a : characterList) {
+                //Check if the distance is less than 6 and if not, don't create boulder
+                if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
+                    createOil = false;
+                    break;
+                }
+
+            }
+        }
+        //If the distance between each object is less than 6, create boulder
+        if (createOil) {
+            //Add to character list
+            characterList.push_back(new Oil(x, y, this));
+           
+            //Increase the number of current boulders
+            currentNum++;
+        }
+    }
+
+}
+
 void StudentWorld::spawnBoulders(int bNum) {
 
     //Sets the current number of boulders to 0
@@ -160,14 +202,14 @@ bool StudentWorld::checkDistance(Actor* a, int obj1X, int obj1Y, int obj2X, int 
 
 //Updates the text box
 void StudentWorld::updateTextBox() {
+    
     int level = getLevel(); // Gets the current level
     int lives = getLives(); //Gets the current lives
     int health = static_cast<int>((player->getHealth()/10.0) * 100);//percent of health
-    int squirts = 0; //getSquirtsLeftInSquirtGun();
-    int gold = 0;//getPlayerGoldCount();
-    int barrelsLeft = 0;// getNumberOfBarrelsRemainingToBePickedUp();
-    
-    int sonar = 0;// getPlayerSonarChargeCount();
+    int squirts = player->getSquirt();
+    int gold = player->getGold();//getPlayerGoldCount();
+    int barrelsLeft = player->getOil();
+    int sonar = player->getSonarCount();
     int score = getScore();
 
     string formatedString = formatText(level, lives,health,squirts,gold,barrelsLeft, sonar, score);
