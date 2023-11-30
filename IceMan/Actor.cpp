@@ -1,5 +1,6 @@
 #include "Actor.h"
 #include "StudentWorld.h"
+#include <cmath>
 
 // Students:  Add code to this file (if you wish), Actor.h, StudentWorld.h, and StudentWorld.cpp
 //Actor
@@ -59,7 +60,6 @@ void IceMan::doSomething(){
                         setDirection(left); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        moveTo(getX(), getY());
                         break;
                     }
                     else{
@@ -67,7 +67,6 @@ void IceMan::doSomething(){
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getX()+3 == getX()-1 && abs(getY() - a->getY()) < 4) {
                                 blocked = true;//if blocked by boulder dont move
-                                moveTo(getX(), getY());
                             }
                         }
                         if (!blocked) {//move if nothing blocks it
@@ -80,14 +79,12 @@ void IceMan::doSomething(){
                         setDirection(right); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        moveTo(getX(), getY());
                         break;
                     }
                     else{
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getX() == getX() + 4 && abs(getY() - a->getY()) < 4) {//if blocked by boulder dont move
                                 blocked = true;
-                                moveTo(getX(), getY());
                             }
                         }
                         if (!blocked) {
@@ -102,14 +99,12 @@ void IceMan::doSomething(){
                         setDirection(up); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        moveTo(getX(), getY());
                         break;
                     }
                     else{
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getY() == getY()+4 && abs(getX() - a->getX()) < 4) {
                                 blocked = true;//if blocked by boulder dont move
-                                moveTo(getX(), getY());
                             }
                         }
                         if (!blocked) {//move if nothing blocks it
@@ -122,14 +117,12 @@ void IceMan::doSomething(){
                         setDirection(down); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        moveTo(getX(), getY());
                         break;
                     }
                     else{
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getY()+3 == getY()-1 && abs(getX() - a->getX()) < 4) {
                                 blocked = true;//if blocked by boulder dont move
-                                moveTo(getX(), getY());
                             }
                         }
                         if (!blocked) {//move if nothing blocks it
@@ -193,6 +186,15 @@ void IceMan::overlap(StudentWorld* world) {
 }
 
 //NOT DONE YET
+
+void IceMan::addOrSubGold(string x){
+    if (x == "+"){
+        gold++;
+    }
+    else if (x == "-"){
+        gold--;
+    }
+}
 void IceMan::getAnnoyed(int dAmage){
     //if is shouted at
     dAmage--;//decrement IceMans damage by 2
@@ -210,6 +212,67 @@ void Protester::doSomething(){
     // return
     //}
 }
+
+//Prop
+
+string Prop::is4Away(StudentWorld* world){
+    if (isAlive()){
+//        int x = 4;
+//        int y = 4;
+        for (Actor* a : world->getCharacterList()) {
+            if (world->getMap().at(getY()).at(getX()) == nullptr) {
+                if (a->getID() ==IID_PLAYER && a->getX() <= getX() + 4 && a->getY() <= getY() + 4){
+                    return "IceMan";
+                }
+                else if (a->getID() ==IID_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                    return "Protester";
+                }
+                else if (a->getID() ==IID_HARD_CORE_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                    return "Hard Protester";
+                }
+            }
+        }
+    }
+    return "nothing near";
+}
+
+string Prop::is3Away(StudentWorld* world){
+    if (isAlive()){
+        int x = 3;
+        int y = 3;
+        //rad <=3
+        for (Actor* a : world->getCharacterList()) {
+            int xI = 3;
+            int yI = 3;
+            double radius;
+            //x = icemans get(X)
+            //y = icemans get(Y)
+            
+//            radius = sqrt(pow(x - getX(), 2) + pow(y - getY(), 2));
+            
+////            int square = pow(m_iceman -> getX() - x, 2) + pow(m_iceman -> getY() - y, 2);
+//            if (world->getMap().at(radius) == nullptr){
+//             //world->pl
+//            }
+            if (world->getMap().at(getY() + y).at(getX() + x) == nullptr) {
+                if (a->getID() ==IID_PLAYER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){// down and right of gold
+                    return "IceMan";
+                }
+                else if (a->getID() ==IID_PLAYER && a->getX() >= getX() -3 && a->getY()  >= getY() -3 ){//up and left of gold
+                    return "IceMan";
+                }
+                else if (a->getID() ==IID_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                    return "Reg Protester";
+                }
+                else if (a->getID() ==IID_HARD_CORE_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                    return "Hard Protester";
+                }
+            }
+        }
+    }
+    return "nothing near";
+}
+
 
 //NOT DONE WITH BOULDER YET (STILL IN PROGRESS)
 void Boulder::doSomething() {
@@ -255,14 +318,11 @@ void Boulder::doSomething() {
             }
             moveTo(getX(), getY() - 1);
         }
-
-
     }
 }
 
 void Boulder::overlap(StudentWorld* world) {
     for (Actor* a : world->getCharacterList()) {
-
         //Checking if overlaping with characters
         if (a->getID() == IID_BOULDER && a->getY() + 4 == getY()) {
             if (abs(getX() - a->getX()) < 4) {
@@ -287,3 +347,61 @@ void Boulder::overlap(StudentWorld* world) {
         }
     }
 }
+
+//gold
+
+void Gold::doSomething(){
+    if(isAlive()){
+        if (!isVisible() && is4Away(studW) == "IceMan"){
+            setVisible(true);//appear on screen
+            return;}
+        else if (getState() == icePickUp && is3Away(studW)== "IceMan"){
+            setAlive(false);
+            getWorld()->playSound(SOUND_GOT_GOODIE);
+            studW->increaseScore(10);//increment score by 10
+            //increment iceMan's gold  by 1
+        }
+        else if (getState() == proPickUp && is3Away(studW) == "Protester" || is3Away(studW) == "Hard Protester"){
+            //&& if pick-up BY PROTESTER able
+            setAlive(false);
+            getWorld()->playSound(SOUND_PROTESTER_FOUND_GOLD);
+            //bribe protester
+            studW->increaseScore(25);}
+    }
+    return;
+}
+//DOES INCREMENT SCORE AND DISAPPEARS IF FULL PNG BUT SOMETIMES DOESNT WORK W PARTIAL
+
+//MUST INCREMENT GOLD AND LET IT SO THAT IF IT ONLY TOUCHES A LITTLE IT SHOULD INCREMENT
+bool Gold::isPickUpAble(Actor IceMan,StudentWorld* world){
+    //IceMan::addOrSubGold("+");
+//    if (actor == "Iceman" || actor == "IceMan"){
+//        
+//    }
+//    else if (actor == "Protester"){
+//        
+//    }
+    return false;
+}
+
+
+//oil
+
+void Oil::doSomething(){
+    if (isAlive()){
+        if (!isVisible() && is4Away(studW) == "IceMan"){
+            setVisible(true);
+            return;
+        }
+        else if (is3Away(studW) == "IceMan"){//is pick up able by iceMan
+            setAlive(false);
+            getWorld()->playSound(SOUND_FOUND_OIL);
+            studW->increaseScore(1000);
+            //increment iceMan's oil inventory
+        }
+    }
+    return;
+}
+
+
+
