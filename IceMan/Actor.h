@@ -18,9 +18,10 @@ protected:
     int xCoord;
     int yCoord;
     bool amIAlive;
+   
     StudentWorld* studW;
 public:
-    Actor(int imageID, int startX, int startY, Direction startDirection, StudentWorld* world, double size = 1.0, int depth = 0): 
+    Actor(int imageID, int startX, int startY, Direction startDirection, StudentWorld* world, double size = 1.0, int depth = 0):
         GraphObject(imageID, startX, startY, startDirection, size, depth){
         amIAlive = true;//when spawned object, it becomes alive
         studW = world;//set up studW to be correct world
@@ -31,7 +32,6 @@ public:
     bool outOfField(int x, int y, Direction d);
     bool isAlive() { return amIAlive; };
     void setAlive(bool alive) { amIAlive = alive; };
-
     virtual void doSomething() = 0;
     virtual ~Actor() {}
   //  …
@@ -97,10 +97,11 @@ public:
                 
             }
     bool canPickUp() {return true;}
+    string is4Away(StudentWorld* world);
+    string is3Away(StudentWorld* world);
     virtual void doSomething() = 0;
     bool pickUp(){return true;}
     bool disappear(int numTicks){return true;}
-    bool updateStock(Prop* a) {return true;} //update Iceman's prop stock put in iceman?
     int getTicks(){return 0;}
     int decrementTick(){return 0;}
     int setTicks(){return 0;} //prop appears for x number of ticks
@@ -113,10 +114,12 @@ private:
     int damage;
     int waterSq;
     int sC;
+    int oil;
     int gold;
 public:
     IceMan(int startX, int startY, StudentWorld* world) : Actor(IID_PLAYER, startX, startY, left, world, 1.0, 0) {
         hitPoints = 10;
+        oil = 0;
         studW = world;
         waterSq = 5;
         sC =1;
@@ -126,6 +129,8 @@ public:
     };
     void getAnnoyed(int dAmage);
     int getGold() { return gold;}
+    int getOil() {return oil;}
+    void addOrSubGold(string x);
     int getSonarCount() { return sC;}
     double getHealth() {return hitPoints;}
     int getSquirt() { return waterSq;}
@@ -163,11 +168,11 @@ private:
 
 class Oil : virtual public Prop {
 public:
-    Oil(int startX, int startY, double size, int depth, StudentWorld* world)
-           : Prop(IID_BARREL, startX, startY, size, depth, down, world), Actor(IID_BARREL, startX, startY, down, world, 1.0, 2) {
+    Oil(int startX, int startY, StudentWorld* world)
+           : Prop(IID_BARREL, startX, startY, 1.0, 2, right, world), Actor(IID_BARREL, startX, startY, right, world, 1.0, 2) {
                setVisible(true);//appear on screen
+               
        }
-    
     virtual void doSomething() override;
     virtual ~Oil() {}
 };
@@ -207,19 +212,32 @@ public:
     Gold(int startX, int startY, StudentWorld* world)
            : Prop(IID_GOLD, startX, startY, 1.0, 1, right, world), Actor(IID_GOLD, startX, startY, right, world, 1.0, 2) {
                //if start of game will be hidden in ice {
-                setVisible(true);//appear on screen
+                setVisible(true);//hidden in ice CHANGE ONCE FINISHED
+               currentState = icePickUp;
                //pick-up able by Iceman
-               //will remain in permanent state (won't disappear until Iceman picks up}
+               //wont disappear
                
-               //else if dropped by IceMan, will appear on screen{
-               //GraphObject::setVisible(true);
-               //pick-up able by Protestors
+               if (currentState == isDropped){//not finished
+                   for (int i = 0; i < wait; i++){
+                       setVisible(true);//appears on screen
+                       currentState = proPickUp;
+                   }
+               }
                //will remain in temp state (will disappear if Protestor picks up or disappear if they don't pick up}
        }
-    virtual void doSomething() override {
-
-    }
+    bool isPickUpAble(Actor IceMan,StudentWorld* world);
+    virtual void doSomething() override;
     virtual ~Gold() {}
+private:
+    enum state {
+        isDropped,
+        icePickUp,
+        proPickUp
+    };
+
+    state getState() { return currentState; }
+    int wait = 50;
+    state currentState;
 };
 
 class SonarKit : virtual public Prop {
