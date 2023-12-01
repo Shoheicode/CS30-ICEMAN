@@ -41,11 +41,11 @@ public:
     /*
     init() method must:
 
-    A. Initialize the data structures used to keep track of your gameâ€™s virtual world
-    
+    A. Initialize the data structures used to keep track of your game’s virtual world
+
     B. Construct a new oil field that meets the requirements stated in the section below
         (filled with Ice, Barrels of oil, Boulders, Gold Nuggets, etc.)
-    
+
     C.Allocate and insert a valid Iceman object into the game world at the proper
         location
     */
@@ -53,7 +53,7 @@ public:
     virtual int init()
     {
         //Number of Boulders
-        int bNum = min(static_cast<int>(getLevel())/ 2 + 2, 9);
+        int bNum = min(static_cast<int>(getLevel()) / 2 + 2, 9);
 
         //Number of Gold Nuggets
         int gNum = max(5 - static_cast<int>(getLevel()) / 2, 2);
@@ -72,10 +72,10 @@ public:
 
         //Spawns Boulders
         spawnBoulders(bNum);
-        
+
         //Spawns Nuggets
         spawnNuggets(gNum);
-        
+
         //Spawns Oil
         spawnOil(oNum);
 
@@ -102,7 +102,7 @@ public:
         -A Gold Nugget picked up by Iceman/Protester
         -Water Pool that has dried up
         -ETC
-    
+
     */
 
     virtual int move()
@@ -110,7 +110,7 @@ public:
         // This code is here merely to allow the game to build, run, and terminate after you hit enter a few times.
         // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
         // cout << iceMap.size() << endl;
-        
+
         //Updates the Textbox
         updateTextBox();
 
@@ -122,11 +122,11 @@ public:
                 if (!player->isAlive()) { //Checks if player dies and returns dies
                     return GWSTATUS_PLAYER_DIED;
                 }
-                
-                if(completeLevel()){ // Checks if player completes level
+
+                if (completeLevel()) { // Checks if player completes level
                     return GWSTATUS_FINISHED_LEVEL;
                 }
-                
+
             }
         }
 
@@ -150,7 +150,7 @@ public:
         return GWSTATUS_CONTINUE_GAME;
     }
     /*
-    
+
     This method is called when Iceman:
         -Loses a life
         -Completes the current level
@@ -197,7 +197,7 @@ private:
     list<Actor*> characterList;
     IceMan* player;
 
-      void removeDeadObjects();
+    void removeDeadObjects();
 
     //Creates the icemap
     void createIceMap();
@@ -206,20 +206,20 @@ private:
 
     //Spawns the gold nuggets
     void spawnNuggets(int num);
-    
+
     //Spawn Oil
     void spawnOil(int oNum);
     //Checks the distance between 2 objects
     bool checkDistance(Actor* a, int obj1X, int obj1Y, int obj2X, int obj2Y);
 
-    
+
 
     //Updates the text box
     void updateTextBox();
 
     //Formats the text to look nice
     string formatText(int level, int lives, int health, int squirts, int gold, int barrels, int sonar, int score);
-    
+
 };
 
 #endif // STUDENTWORLD_H_

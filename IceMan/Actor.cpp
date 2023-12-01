@@ -4,31 +4,31 @@
 
 // Students:  Add code to this file (if you wish), Actor.h, StudentWorld.h, and StudentWorld.cpp
 //Actor
-bool Actor::outOfField(int x, int y, Actor::Direction d){
-    switch(d){
-        case Actor::up://if faced up, and is moved higher than 60 units it is out of Field
-            if(y >= 60){
-                return true;
-            }
-            break;
-        case Actor::down://if faced down, and is moved lower than 0 units it is out of Field
-            if(y <= 0){
-                return true;
-            }
-            break;
-        case Actor::left://if faced left, and is moved farther than 0 units it is out of Field
-            if(x <= 0){
-                return true;
-            }
-            break;
-        case Actor::right://if faced right, and is moved farther than 60 units it is out of Field
-            if(x >= 61){
-                return true;
-            }
-            break;
-        case Actor::none://if not faced any direction it is in field
-            return false;
-            break;
+bool Actor::outOfField(int x, int y, Actor::Direction d) {
+    switch (d) {
+    case Actor::up://if faced up, and is moved higher than 60 units it is out of Field
+        if (y >= 60) {
+            return true;
+        }
+        break;
+    case Actor::down://if faced down, and is moved lower than 0 units it is out of Field
+        if (y <= 0) {
+            return true;
+        }
+        break;
+    case Actor::left://if faced left, and is moved farther than 0 units it is out of Field
+        if (x <= 0) {
+            return true;
+        }
+        break;
+    case Actor::right://if faced right, and is moved farther than 60 units it is out of Field
+        if (x >= 61) {
+            return true;
+        }
+        break;
+    case Actor::none://if not faced any direction it is in field
+        return false;
+        break;
     }
     return false;
 }
@@ -42,115 +42,115 @@ bool Actor::outOfField(int x, int y, Actor::Direction d){
 //    return true;
 //}
 
-void IceMan::doSomething(){
-    if (isAlive()){
+void IceMan::doSomething() {
+    if (isAlive()) {
         overlap(studW);//dig when overlap with ice
         int a;
         if (getWorld()->getKey(a) == true) { //player pressed key
             bool blocked = false;
-            switch (a){
-                case KEY_PRESS_ESCAPE:
-                    //isDead();
+            switch (a) {
+            case KEY_PRESS_ESCAPE:
+                //isDead();
+                break;
+            case KEY_PRESS_SPACE:
+                //shoot water
+                getWorld()->playSound(SOUND_PLAYER_SQUIRT);//play shoot water sound
+            case KEY_PRESS_LEFT:
+                if (getDirection() != left) {
+                    setDirection(left); //turn direction DON'T MOVE
+                }
+                else if (outOfField(getX(), getY(), getDirection())) { //out of scope
                     break;
-                case KEY_PRESS_SPACE:
-                    //shoot water
-                    getWorld()->playSound(SOUND_PLAYER_SQUIRT);//play shoot water sound
-                case KEY_PRESS_LEFT:
-                    if (getDirection() != left){
-                        setDirection(left); //turn direction DON'T MOVE
-                    }
-                    else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        break;
-                    }
-                    else{
+                }
+                else {
 
-                        for (Actor* a : getWorld()->getCharacterList()) {
-                            if (a->getID() == IID_BOULDER && a->getX()+3 == getX()-1 && abs(getY() - a->getY()) < 4) {
-                                blocked = true;//if blocked by boulder dont move
-                            }
-                        }
-                        if (!blocked) {//move if nothing blocks it
-                            moveTo(getX() - 1, getY());
+                    for (Actor* a : getWorld()->getCharacterList()) {
+                        if (a->getID() == IID_BOULDER && a->getX() + 3 == getX() - 1 && abs(getY() - a->getY()) < 4) {
+                            blocked = true;//if blocked by boulder dont move
                         }
                     }
+                    if (!blocked) {//move if nothing blocks it
+                        moveTo(getX() - 1, getY());
+                    }
+                }
+                break;
+            case KEY_PRESS_RIGHT:
+                if (getDirection() != right) {
+                    setDirection(right); //turn direction DON'T MOVE
+                }
+                else if (outOfField(getX(), getY(), getDirection())) { //out of scope
                     break;
-                case KEY_PRESS_RIGHT:
-                    if (getDirection() != right){
-                        setDirection(right); //turn direction DON'T MOVE
-                    }
-                    else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        break;
-                    }
-                    else{
-                        for (Actor* a : getWorld()->getCharacterList()) {
-                            if (a->getID() == IID_BOULDER && a->getX() == getX() + 4 && abs(getY() - a->getY()) < 4) {//if blocked by boulder dont move
-                                blocked = true;
-                            }
+                }
+                else {
+                    for (Actor* a : getWorld()->getCharacterList()) {
+                        if (a->getID() == IID_BOULDER && a->getX() == getX() + 4 && abs(getY() - a->getY()) < 4) {//if blocked by boulder dont move
+                            blocked = true;
                         }
-                        if (!blocked) {
-                            //move if nothing blocks it
-                            moveTo(getX() + 1, getY());
-                        }
-                        
                     }
+                    if (!blocked) {
+                        //move if nothing blocks it
+                        moveTo(getX() + 1, getY());
+                    }
+
+                }
+                break;
+            case KEY_PRESS_UP:
+                if (getDirection() != up) {
+                    setDirection(up); //turn direction DON'T MOVE
+                }
+                else if (outOfField(getX(), getY(), getDirection())) { //out of scope
                     break;
-                case KEY_PRESS_UP:
-                    if (getDirection() != up){
-                        setDirection(up); //turn direction DON'T MOVE
-                    }
-                    else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        break;
-                    }
-                    else{
-                        for (Actor* a : getWorld()->getCharacterList()) {
-                            if (a->getID() == IID_BOULDER && a->getY() == getY()+4 && abs(getX() - a->getX()) < 4) {
-                                blocked = true;//if blocked by boulder dont move
-                            }
-                        }
-                        if (!blocked) {//move if nothing blocks it
-                            moveTo(getX(), getY() + 1);
+                }
+                else {
+                    for (Actor* a : getWorld()->getCharacterList()) {
+                        if (a->getID() == IID_BOULDER && a->getY() == getY() + 4 && abs(getX() - a->getX()) < 4) {
+                            blocked = true;//if blocked by boulder dont move
                         }
                     }
+                    if (!blocked) {//move if nothing blocks it
+                        moveTo(getX(), getY() + 1);
+                    }
+                }
+                break;
+            case KEY_PRESS_DOWN:
+                if (getDirection() != down) {
+                    setDirection(down); //turn direction DON'T MOVE
+                }
+                else if (outOfField(getX(), getY(), getDirection())) { //out of scope
                     break;
-                case KEY_PRESS_DOWN:
-                    if (getDirection() != down){
-                        setDirection(down); //turn direction DON'T MOVE
-                    }
-                    else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        break;
-                    }
-                    else{
-                        for (Actor* a : getWorld()->getCharacterList()) {
-                            if (a->getID() == IID_BOULDER && a->getY()+3 == getY()-1 && abs(getX() - a->getX()) < 4) {
-                                blocked = true;//if blocked by boulder dont move
-                            }
+                }
+                else {
+                    for (Actor* a : getWorld()->getCharacterList()) {
+                        if (a->getID() == IID_BOULDER && a->getY() + 3 == getY() - 1 && abs(getX() - a->getX()) < 4) {
+                            blocked = true;//if blocked by boulder dont move
                         }
-                        if (!blocked) {//move if nothing blocks it
-                            moveTo(getX(), getY() - 1);
-                        }
-                        //}
                     }
-                    break;
-//                case KEY_PRESS_Z:
-//                    if (sC < 0){
-//                        //use charge,
-//                        playSound(SOUND_SONAR);
-//                        sC--;
-//                        //nearby (radius of 12) props set to visible
-//                    }
-                    //break;
-                    case KEY_PRESS_TAB:
-                    if (gold < 0){
-                        //drop gold for 100 ticks,
-                        gold--;
-                       // and set to temp state, pick up-able by pro and hpro
-                        }
-                        break;
-                    // }
+                    if (!blocked) {//move if nothing blocks it
+                        moveTo(getX(), getY() - 1);
+                    }
+                    //}
+                }
+                break;
+                //                case KEY_PRESS_Z:
+                //                    if (sC < 0){
+                //                        //use charge,
+                //                        playSound(SOUND_SONAR);
+                //                        sC--;
+                //                        //nearby (radius of 12) props set to visible
+                //                    }
+                                    //break;
+            case KEY_PRESS_TAB:
+                if (gold < 0) {
+                    //drop gold for 100 ticks,
+                    gold--;
+                    // and set to temp state, pick up-able by pro and hpro
+                }
+                break;
+                // }
             }
         }
     }
-    else{
+    else {
         return;
     }
 
@@ -166,7 +166,7 @@ void IceMan::overlap(StudentWorld* world) {
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 //Removes the ice if the ice is within the box of the character
-                if (getY()+y <= 59) {
+                if (getY() + y <= 59) {
                     //if the x and y position of the ice equals the x and y position within the box around the character
                     if (world->getMap().at(getY() + y).at(getX() + x) != nullptr) {
                         //Delete the ice
@@ -187,25 +187,25 @@ void IceMan::overlap(StudentWorld* world) {
 
 //NOT DONE YET
 
-void IceMan::addOrSubGold(string x){
-    if (x == "+"){
+void IceMan::addOrSubGold(string x) {
+    if (x == "+") {
         gold++;
     }
-    else if (x == "-"){
+    else if (x == "-") {
         gold--;
     }
 }
-void IceMan::getAnnoyed(int dAmage){
+void IceMan::getAnnoyed(int dAmage) {
     //if is shouted at
     dAmage--;//decrement IceMans damage by 2
     dAmage--;
-        //if damage ==0
-        //setState("dead");
-        //playSound(SOUND_PLAYER_GIVE_UP);
+    //if damage ==0
+    //setState("dead");
+    //playSound(SOUND_PLAYER_GIVE_UP);
 }
 
 //protester
-void Protester::doSomething(){
+void Protester::doSomething() {
     //if (isAlive()){
     //      if in rest state { do nothing}
     //else{
@@ -215,19 +215,19 @@ void Protester::doSomething(){
 
 //Prop
 
-string Prop::is4Away(StudentWorld* world){
-    if (isAlive()){
-//        int x = 4;
-//        int y = 4;
+string Prop::is4Away(StudentWorld* world) {
+    if (isAlive()) {
+        //        int x = 4;
+        //        int y = 4;
         for (Actor* a : world->getCharacterList()) {
             if (world->getMap().at(getY()).at(getX()) == nullptr) {
-                if (a->getID() ==IID_PLAYER && a->getX() <= getX() + 4 && a->getY() <= getY() + 4){
+                if (a->getID() == IID_PLAYER && a->getX() <= getX() + 4 && a->getY() <= getY() + 4) {
                     return "IceMan";
                 }
-                else if (a->getID() ==IID_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                else if (a->getID() == IID_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3) {
                     return "Protester";
                 }
-                else if (a->getID() ==IID_HARD_CORE_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                else if (a->getID() == IID_HARD_CORE_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3) {
                     return "Hard Protester";
                 }
             }
@@ -236,8 +236,8 @@ string Prop::is4Away(StudentWorld* world){
     return "nothing near";
 }
 
-string Prop::is3Away(StudentWorld* world){
-    if (isAlive()){
+string Prop::is3Away(StudentWorld* world) {
+    if (isAlive()) {
         int x = 3;
         int y = 3;
         //rad <=3
@@ -247,24 +247,24 @@ string Prop::is3Away(StudentWorld* world){
             double radius;
             //x = icemans get(X)
             //y = icemans get(Y)
-            
+
 //            radius = sqrt(pow(x - getX(), 2) + pow(y - getY(), 2));
-            
+
 ////            int square = pow(m_iceman -> getX() - x, 2) + pow(m_iceman -> getY() - y, 2);
 //            if (world->getMap().at(radius) == nullptr){
 //             //world->pl
 //            }
             if (world->getMap().at(getY() + y).at(getX() + x) == nullptr) {
-                if (a->getID() ==IID_PLAYER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){// down and right of gold
+                if (a->getID() == IID_PLAYER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3) {// down and right of gold
                     return "IceMan";
                 }
-                else if (a->getID() ==IID_PLAYER && a->getX() >= getX() -3 && a->getY()  >= getY() -3 ){//up and left of gold
+                else if (a->getID() == IID_PLAYER && a->getX() >= getX() - 3 && a->getY() >= getY() - 3) {//up and left of gold
                     return "IceMan";
                 }
-                else if (a->getID() ==IID_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                else if (a->getID() == IID_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3) {
                     return "Reg Protester";
                 }
-                else if (a->getID() ==IID_HARD_CORE_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                else if (a->getID() == IID_HARD_CORE_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3) {
                     return "Hard Protester";
                 }
             }
@@ -310,7 +310,7 @@ void Boulder::doSomething() {
             else {
                 overlap(getWorld());
                 for (int i = 0; i < 4; i++) {
-                    if (getWorld()->getMap().at(getY() - 1).at(getX()+i) != nullptr) {
+                    if (getWorld()->getMap().at(getY() - 1).at(getX() + i) != nullptr) {
                         setAlive(false);
                         //cout << "I HIT ICE" << endl;
                     }
@@ -350,30 +350,32 @@ void Boulder::overlap(StudentWorld* world) {
 
 //gold
 
-void Gold::doSomething(){
-    if(isAlive()){
-        if (!isVisible() && is4Away(studW) == "IceMan"){
+void Gold::doSomething() {
+    if (isAlive()) {
+        if (!isVisible() && is4Away(studW) == "IceMan") {
             setVisible(true);//appear on screen
-            return;}
-        else if (getState() == icePickUp && is3Away(studW)== "IceMan"){
+            return;
+        }
+        else if (getState() == icePickUp && is3Away(studW) == "IceMan") {
             setAlive(false);
             getWorld()->playSound(SOUND_GOT_GOODIE);
             studW->increaseScore(10);//increment score by 10
             //increment iceMan's gold  by 1
         }
-        else if (getState() == proPickUp && is3Away(studW) == "Protester" || is3Away(studW) == "Hard Protester"){
+        else if (getState() == proPickUp && is3Away(studW) == "Protester" || is3Away(studW) == "Hard Protester") {
             //&& if pick-up BY PROTESTER able
             setAlive(false);
             getWorld()->playSound(SOUND_PROTESTER_FOUND_GOLD);
             //bribe protester
-            studW->increaseScore(25);}
+            studW->increaseScore(25);
+        }
     }
     return;
 }
 //DOES INCREMENT SCORE AND DISAPPEARS IF FULL PNG BUT SOMETIMES DOESNT WORK W PARTIAL
 
 //MUST INCREMENT GOLD AND LET IT SO THAT IF IT ONLY TOUCHES A LITTLE IT SHOULD INCREMENT
-bool Gold::isPickUpAble(Actor IceMan,StudentWorld* world){
+bool Gold::isPickUpAble(Actor IceMan, StudentWorld* world) {
     //IceMan::addOrSubGold("+");
 //    if (actor == "Iceman" || actor == "IceMan"){
 //        
@@ -387,13 +389,13 @@ bool Gold::isPickUpAble(Actor IceMan,StudentWorld* world){
 
 //oil
 
-void Oil::doSomething(){
-    if (isAlive()){
-        if (!isVisible() && is4Away(studW) == "IceMan"){
+void Oil::doSomething() {
+    if (isAlive()) {
+        if (!isVisible() && is4Away(studW) == "IceMan") {
             setVisible(true);
             return;
         }
-        else if (is3Away(studW) == "IceMan"){//is pick up able by iceMan
+        else if (is3Away(studW) == "IceMan") {//is pick up able by iceMan
             setAlive(false);
             getWorld()->playSound(SOUND_FOUND_OIL);
             studW->increaseScore(1000);
