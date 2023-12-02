@@ -25,11 +25,11 @@ void StudentWorld::removeDeadObjects() {
     for (unsigned int i = 0; i < it1.size(); i++) {
         characterList.erase(it1.at(i));
     }
-
+    
 }
 
 //Creates the icemap
-void StudentWorld::createIceMap() {
+void StudentWorld::createIceMap(){
     //Spawns ices for all 60 y spots
     for (int i = 0; i <= 59; i++) {
         vector<Ice*> temp;
@@ -38,7 +38,7 @@ void StudentWorld::createIceMap() {
             //Checks to ensure that the game has the gap
             if (!(j <= 33 && j >= 30 && i >= 4)) {
                 temp.push_back(new Ice(j, i)); //Create the ice
-                // cout << 1;
+                    // cout << 1;
 
             }
             else {
@@ -49,7 +49,7 @@ void StudentWorld::createIceMap() {
     }
 }
 
-void StudentWorld::spawnOil(int oNum) {
+void StudentWorld::spawnOil(int oNum){
     //Sets the current number of boulders to 0
     int currentNum = 0;
 
@@ -83,7 +83,7 @@ void StudentWorld::spawnOil(int oNum) {
         if (createOil) {
             //Add to character list
             characterList.push_back(new Oil(x, y, this));
-
+           
             //Increase the number of current boulders
             currentNum++;
         }
@@ -146,7 +146,7 @@ void StudentWorld::spawnBoulders(int bNum) {
 //Spawns the gold nuggets
 void StudentWorld::spawnNuggets(int num) {
     //Creates the nuggets
-    bool createNugget = false;
+    bool createNugget= false;
 
     //Sets the current number of nuggets created to 0
     int currentNum = 0;
@@ -187,7 +187,7 @@ void StudentWorld::spawnNuggets(int num) {
 bool StudentWorld::checkDistance(Actor* a, int obj1X, int obj1Y, int obj2X, int obj2Y) {
     //Checks the distnace between 2 objects using distance formula
     double distance = pow(pow(obj1X - obj2X, 2) + pow(obj1Y - obj2Y, 2), 0.5);
-
+    
     //Returns false if the distance is less than 6
     if (distance < 6) {
         return false;
@@ -202,17 +202,17 @@ bool StudentWorld::checkDistance(Actor* a, int obj1X, int obj1Y, int obj2X, int 
 
 //Updates the text box
 void StudentWorld::updateTextBox() {
-
+    
     int level = getLevel(); // Gets the current level
     int lives = getLives(); //Gets the current lives
-    int health = static_cast<int>((player->getHealth() / 10.0) * 100);//percent of health
+    int health = static_cast<int>((player->getHealth()/10.0) * 100);//percent of health
     int squirts = player->getSquirt();
     int gold = player->getGold();//getPlayerGoldCount();
     int barrelsLeft = player->getOil();
     int sonar = player->getSonarCount();
     int score = getScore();
 
-    string formatedString = formatText(level, lives, health, squirts, gold, barrelsLeft, sonar, score);
+    string formatedString = formatText(level, lives,health,squirts,gold,barrelsLeft, sonar, score);
 
     //Sets the game text to the formated text.
     setGameStatText(formatedString);
@@ -231,29 +231,49 @@ string StudentWorld::formatText(int level, int lives, int health, int squirts, i
     string scoreString = to_string(score);
 
     //Creates the format for the string
-    string returnString = "Lvl: " + levelString + " Lives: " + livesString + " Hlth: " + healthString + "% Wtr: " + squirtsString + " Gld: " + goldString + " Oil Left: " +
+    string returnString = "Lvl: " + levelString + " Lives: " + livesString + " Hlth: " + healthString + "% Wtr: " + squirtsString + " Gld: " + goldString + " Oil: " +
         barrelsString + " Sonar: " + sonarString + " Scr: " + scoreString;
 
     //Returns the string
     return returnString;
 }
+
+bool StudentWorld::completeLevel() {
+    int oilGone = min(static_cast<int>(getLevel()) + 2, 21);
+    if(player->getOil() == oilGone){
+        playSound(SOUND_FINISHED_LEVEL);
+        return true;
+    }
+    return false;
+}
+
+void StudentWorld::dropGold(int x, int y){
+    if(player->getGold() > 0){
+        //set gold to pick up able by protesters
+        //player->gold--;  //setGold-1
+        Gold* dropG;
+        
+        dropG = new Gold(player->getX(), player->getY(), this);//rest handled in constructor
+        //dropG->setState(Gold::proPickUp);
+    }
+}
 // Students:  Add code to this file (if you wish), StudentWorld.h, Actor.h and Actor.cpp
 
 // while (The player has lives left)
 // {
-// Prompt_the_user_to_start_playing(); // ìpress a key to startî Initialize_the_game_world(); // youíre going to write this func
+// Prompt_the_user_to_start_playing(); // ‚Äúpress a key to start‚Äù Initialize_the_game_world(); // you‚Äôre going to write this func
 // while (The player is still alive)
 // {
 // // each pass through this loop is a tick (1/20th of a sec)
-// // youíre going to write code to do the following
+// // you‚Äôre going to write code to do the following
 // Ask_all_actors_to_do_something();
 // If_any_actors_died_then_delete_them_from_the_world();
 // // we write this code to handle the animation for
 // you Animate_all_of_the_alive_actors_to_the_screen();
 // Sleep_for_50ms_to_give_the_user_time_to_react();
 // }
-// // the player died ñ youíre going to write this code
-// Cleanup_all_game_world_objects(); // youíre going to write this  if (The player has more lives)
+// // the player died ‚Äì you‚Äôre going to write this code
+// Cleanup_all_game_world_objects(); // you‚Äôre going to write this  if (The player has more lives)
 // Prompt_the_player_to_continue();
 // }
-// Tell_the_user_the_game_is_over(); // ìgame over!î; we provide this 
+// Tell_the_user_the_game_is_over(); // ‚Äúgame over!‚Äù; we provide this 
