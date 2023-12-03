@@ -86,9 +86,9 @@ public:
         spawnOil(oNum);
 
         //Adds a protestor
-        characterList.push_back(new Protester(60, 60, this));
+        //characterList.push_back(new Protester(40, 60, this));
 
-
+        
         return GWSTATUS_CONTINUE_GAME;
     }
 
@@ -198,6 +198,25 @@ public:
     vector<vector<Ice*>>& getMap() {
         return iceMap;
     }
+    bool pickUpgetStudGold();
+    
+    bool pickUpgetStudOil();
+    
+    bool pickUpgetStudSonar();
+    
+    bool pickUpgetStudWater();
+    
+    IceMan* getIceMan();
+    
+    Boulder* getBoulder();
+    
+    Gold* getWorldGold();
+    
+    Ice* getIce();
+    
+    Protester* getProtester();
+    
+    HardcoreProtester* getHardcoreProtester();
 
 private:
     Actor* a;
