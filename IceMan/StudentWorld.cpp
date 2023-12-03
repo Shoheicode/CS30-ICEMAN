@@ -242,38 +242,122 @@ bool StudentWorld::completeLevel() {
     int oilGone = min(static_cast<int>(getLevel()) + 2, 21);
     if(player->getOil() == oilGone){
         playSound(SOUND_FINISHED_LEVEL);
+        increaseScore(-getScore());
         return true;
     }
     return false;
 }
 
+void StudentWorld::useSonar(int x, int y){
+    if(player->getSonarCount() > 0){
+        playSound(SOUND_SONAR);
+        for (Actor* p : characterList){
+            if(sqrt(pow(p->getX() - x, 2) + pow(p->getY() - y, 2) <= 12)){               //im not sure if this works please check
+                p->setVisible(true);
+            }
+        }       player->setSonar(-1);
+    }
+    }
+    
 void StudentWorld::dropGold(int x, int y){
     if(player->getGold() > 0){
         //set gold to pick up able by protesters
         //player->gold--;  //setGold-1
         Gold* dropG;
-        
         dropG = new Gold(player->getX(), player->getY(), this);//rest handled in constructor
-        //dropG->setState(Gold::proPickUp);
     }
 }
-// Students:  Add code to this file (if you wish), StudentWorld.h, Actor.h and Actor.cpp
+void StudentWorld::useSpray(int x, int y){
+    Protester* proP = getProtester();
+    if(player->getSquirt() > 0){
+        //proP->setHitpoints(-2);
+        playSound(SOUND_PLAYER_SQUIRT);
+        player->setWater(-1);
+    }
+    delete proP;
+}
 
-// while (The player has lives left)
-// {
-// Prompt_the_user_to_start_playing(); // “press a key to start” Initialize_the_game_world(); // you’re going to write this func
-// while (The player is still alive)
-// {
-// // each pass through this loop is a tick (1/20th of a sec)
-// // you’re going to write code to do the following
-// Ask_all_actors_to_do_something();
-// If_any_actors_died_then_delete_them_from_the_world();
-// // we write this code to handle the animation for
-// you Animate_all_of_the_alive_actors_to_the_screen();
-// Sleep_for_50ms_to_give_the_user_time_to_react();
-// }
-// // the player died – you’re going to write this code
-// Cleanup_all_game_world_objects(); // you’re going to write this  if (The player has more lives)
-// Prompt_the_player_to_continue();
-// }
-// Tell_the_user_the_game_is_over(); // “game over!”; we provide this 
+//
+IceMan* StudentWorld::getIceMan(){   
+    for (Actor* a : characterList) {
+        if (a->getID() == IID_PLAYER){
+            return dynamic_cast<IceMan*>(a);
+            break;
+        }
+    }
+    return NULL;}
+
+Boulder* StudentWorld::getBoulder(){   
+    for (Actor* a : characterList) {
+        if (a->getID() == IID_BOULDER){
+            return dynamic_cast<Boulder*>(a);
+            break;
+        }
+    }
+    return NULL;}
+
+Gold* StudentWorld::getWorldGold(){
+    for (Actor* a : characterList) {
+        if (a->getID() == IID_GOLD){
+            return dynamic_cast<Gold*>(a);
+            break;
+        }
+    }
+    return NULL;
+}
+
+Protester* StudentWorld::getProtester(){
+    for (Actor* a : characterList) {
+        if (a->getID() == IID_PROTESTER){
+            return dynamic_cast<Protester*>(a);
+            break;
+        }
+    }
+    return nullptr;
+}
+
+Ice* StudentWorld::getIce(){
+    for (Actor* a : characterList) {
+        if (a->getID() == IID_ICE){
+            return dynamic_cast<Ice*>(a);
+            break;
+        }
+    }
+    return nullptr;
+}
+//maybe causes error cuz hardpro has no doSomething...?
+//HardcoreProtester* StudentWorld::getHardcoreProtester(){   for (auto a : characterList) {       if (a->getID() == IID_HARD_CORE_PROTESTER){           return dynamic_cast<HardcoreProtester*>(a);           break;       }   }   return nullptr;}
+//
+bool StudentWorld::pickUpgetStudGold(){   
+    for (Actor* a : characterList) {
+        if (a->getID() == IID_GOLD && a->is3Away(this)=="IceMan")
+        {
+            return true;       }
+        if (a->getID() == IID_GOLD && a->is3Away(this)=="Protester")
+        {           return false;
+        }  
+    }
+    return false;}
+
+bool StudentWorld::pickUpgetStudOil(){   
+    for (Actor* a : characterList) {
+        if (a->getID() == IID_BARREL && a->is3Away(this)=="IceMan"){      
+            return true;       }
+    }   return false;}
+
+bool StudentWorld::pickUpgetStudSonar(){   
+    for (Actor* a : characterList) {
+        if (a->getID() == IID_SONAR && a->is3Away(this)=="IceMan"){
+            break;       }
+    }
+    return false;}
+
+bool StudentWorld::pickUpgetStudWater(){   
+    for (Actor* a : characterList) {
+        if (a->getID() == IID_WATER_POOL && a->is3Away(this)=="IceMan"){
+            break;
+        }  
+    }
+    return false;}// Students:  Add code to this file (if you wish), StudentWorld.h, Actor.h and Actor.cpp
+
+//// while (The player has lives left)// {// Prompt_the_user_to_start_playing(); // “press a key to start” Initialize_the_game_world(); // you’re going to write this func// while (The player is still alive)// {// // each pass through this loop is a tick (1/20th of a sec)// // you’re going to write code to do the following// Ask_all_actors_to_do_something();// If_any_actors_died_then_delete_them_from_the_world();// // we write this code to handle the animation for// you Animate_all_of_the_alive_actors_to_the_screen();// Sleep_for_50ms_to_give_the_user_time_to_react();// }// // the player died – you’re going to write this code// Cleanup_all_game_world_objects(); // you’re going to write this  if (The player has more lives)// Prompt_the_player_to_continue();// }// Tell_the_user_the_game_is_over(); // “game over!”; we provide this
