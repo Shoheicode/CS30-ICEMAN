@@ -32,6 +32,10 @@ public:
     bool outOfField(int x, int y, Direction d);
     string is4Away(StudentWorld* world);
     string is3Away(StudentWorld* world);
+    bool isFacingIceMan(Direction d, StudentWorld* world);
+    void setFacingIceMan(Direction d,StudentWorld* world);
+    int getHitpoints(){return hitPoints;}
+    virtual void setHitpoints(int a){hitPoints += a;}
     bool isAlive() { return amIAlive; };
     void setAlive(bool alive) { amIAlive = alive; };
     virtual void doSomething() = 0;
@@ -51,10 +55,12 @@ public:
         leave_the_oil_field = false;//doesn't leave field bc is Alive
         setVisible(true);//appear on screen
     };
-    void moveTo(int x, int y) {};
+    //void moveTo(int x, int y) {};
     virtual void isAnnoyed(){};
     virtual void isProPickUp(){}; //pickUp gold
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
+    virtual bool blockedByIceOrBoulder(int x, int y, StudentWorld* world);
+    virtual bool iceManisInSight(int x, int y, StudentWorld* world);
     virtual void doSomething() override;
     bool overlap(Actor object); // Checks if overlap with specific object
     bool checkDistance(int objectX, int objectY);
@@ -71,21 +77,6 @@ public:
         setVisible(true);//appear on screen
     };
     virtual void doSomething() override;
-// virtual void doSomething()
-// {
-// If I am facing the Iceman and he is next to me, then
-// Shout at the Iceman (to annoy him)
-// 11
-// Else if the Iceman is visible via direct line of sight, then
-// Switch direction to face the Iceman
-// Move one square in this direction
-// Else if I’m about to run into an obstacle, then
-// Pick a new direction
-// Move one square in this direction
-// Else
-// Move one square in my current direction
-// }
-// ...
     virtual ~HardcoreProtester() {};
 };
 
@@ -124,8 +115,8 @@ public:
         gold = 0;
         damage = 100; //set data members numbers specified by packet
         setVisible(true);//appear on screen
+        //reset score if lost life!
     };
-    vector<int> props;
     void isInRange(StudentWorld* world);
     void dropGold(StudentWorld* world);
     void getAnnoyed(int dAmage);
@@ -134,6 +125,8 @@ public:
     int getSonarCount() { return sonarC;}
     double getHealth() {return hitPoints;}
     int getSquirt() { return waterSq;}
+    void setWater(int a){waterSq += a;}
+    void setSonar(int a){sonarC += a;}
     virtual void overlap(StudentWorld* world) override;
     virtual void doSomething() override;
     virtual ~IceMan() {}
