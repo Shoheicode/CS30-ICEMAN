@@ -43,13 +43,24 @@ public:
   //  …
 };
 
-class Protester: virtual public Actor {
+class AnnoyedActor : public Actor {
+    public:
+        AnnoyedActor(int imageID, int startX, int startY, Direction startDirection, StudentWorld* world, double size = 1.0, int depth = 0) :
+            Actor(imageID, startX, startY, startDirection, world, size, depth) {
+
+        }
+
+    protected:
+        bool isAnnoyed();
+};
+
+class Protester: public AnnoyedActor {
 protected:
     bool leave_the_oil_field;
     int numSquaresToMoveInCurrentDirection;
     string direction = "left";
 public:
-    Protester(int startX, int startY, StudentWorld* world) : Actor (IID_PROTESTER, startX, startY, left,world, 1.0, 0) {//, GraphObject(IID_PROTESTER, startX, startY, left, 1.0, 0)
+    Protester(int startX, int startY, StudentWorld* world) : AnnoyedActor (IID_PROTESTER, startX, startY, left,world, 1.0, 0) {//, GraphObject(IID_PROTESTER, startX, startY, left, 1.0, 0)
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
         hitPoints = 5;//set data members numbers specified by packet
         leave_the_oil_field = false;//doesn't leave field bc is Alive
@@ -66,10 +77,10 @@ public:
     bool checkDistance(int objectX, int objectY);
     virtual ~Protester() {};
 };
-class HardcoreProtester: virtual public Protester {
+class HardcoreProtester: public Protester {
 public:
     //Hardcore Protestor -> Protestor -> Actor -> GraphObject
-    HardcoreProtester(int startX, int startY, StudentWorld* world) : Protester (startX, startY, world), Actor (IID_HARD_CORE_PROTESTER, startX, startY, left, world) {
+    HardcoreProtester(int startX, int startY, StudentWorld* world) : Protester (startX, startY, world) {
         //decide how many numSquaresToMoveInCurrentDirection between 8 and 60
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
         leave_the_oil_field = false;//doesn't leave field bc is Alive
@@ -80,7 +91,7 @@ public:
     virtual ~HardcoreProtester() {};
 };
 
-class Prop : virtual public Actor{
+class Prop : public Actor{
 private:
     int tickRange;
     
@@ -142,10 +153,10 @@ public:
     virtual ~Ice() {}
 };
 
-class Squirt : virtual public Prop {
+class Squirt : public Prop {
 public:
     Squirt(int startX, int startY, double size, int depth, StudentWorld* world)
-           : Prop(IID_WATER_SPURT, startX, startY, size, depth, left, world), Actor(IID_WATER_SPURT, startX, startY, left, world, 1.0, 1) {
+           : Prop(IID_WATER_SPURT, startX, startY, size, depth, left, world) {
 //               for (Actor* a : StudentWorld::getWorld()->getCharacterList()) {
 //                   if (a->getID() == IID_PLAYER){
 //                       setDirectiontoIceMan(a->getDirection(), studW);
@@ -161,21 +172,21 @@ private:
     int distance;
 };
 
-class Oil : virtual public Prop {
+class Oil : public Prop {
 public:
     Oil(int startX, int startY, StudentWorld* world)
-           : Prop(IID_BARREL, startX, startY, 1.0, 2, right, world), Actor(IID_BARREL, startX, startY, right, world, 1.0, 2) {
+           : Prop(IID_BARREL, startX, startY, 1.0, 2, right, world) {
                setVisible(true);//appear on screen
        }
     virtual void doSomething() override;
     virtual ~Oil() {}
 };
 
-class Boulder : virtual public Prop {
+class Boulder : public Prop {
 public:
     //constructor set up stuff in initialization list
     Boulder(int startX, int startY, StudentWorld* world)
-           : Prop(IID_BOULDER, startX, startY, 1.0, 1, down, world), Actor(IID_BOULDER, startX, startY, down,world, 1.0, 1) {
+           : Prop(IID_BOULDER, startX, startY, 1.0, 1, down, world) {
                setVisible(true);//appear on screen
                currentState = stable; //set to beginning state
                amIAlive = true; //boulder is alive
@@ -199,11 +210,11 @@ private:
     state currentState;
 };
 
-class Gold : virtual public Prop {
+class Gold : public Prop {
 public:
     //constructor set up stuff in initialization list
     Gold(int startX, int startY, StudentWorld* world)
-           : Prop(IID_GOLD, startX, startY, 1.0, 1, right, world), Actor(IID_GOLD, startX, startY, right, world, 1.0, 2) {
+           : Prop(IID_GOLD, startX, startY, 1.0, 1, right, world) {
                //if start of game will be hidden in ice {
                 setVisible(true);//hidden in ice CHANGE ONCE FINISHED
                currentState = icePickUp;
@@ -235,10 +246,10 @@ private:
     state currentState;
 };
 
-class SonarKit : virtual public Prop {
+class SonarKit : public Prop {
 public:
     SonarKit(int startX, int startY, double size, int depth, StudentWorld* world)
-           : Prop(IID_SONAR, startX, startY, size, depth, right, world), Actor(IID_SONAR, startX, startY, right, world, 1.0, 2) {
+           : Prop(IID_SONAR, startX, startY, size, depth, right, world) {
                GraphObject::setVisible(true);//appear on screen
                //pick-up able Iceman
                //will be in temp state (limited num of ticks b4 disappearing
@@ -248,10 +259,10 @@ public:
     virtual ~SonarKit() {}
 };
 
-class WaterPool : virtual public Prop {
+class WaterPool : public Prop {
 public:
     WaterPool(int startX, int startY, double size, int depth, StudentWorld* world)
-           : Prop(IID_WATER_POOL, startX, startY, size, depth, right, world), Actor(IID_WATER_POOL, startX, startY, right, world, 1.0, 2) {
+           : Prop(IID_WATER_POOL, startX, startY, size, depth, right, world) {
                GraphObject::setVisible(true);//appear on screen
                //pick-up able Iceman
                //will be in temp state (limited num of ticks b4 disappearing

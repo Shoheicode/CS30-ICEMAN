@@ -67,6 +67,10 @@ public:
         //Number of Water Pools
         int wNum = max(100, 300 - (10 * static_cast<int>(getLevel())));
 
+        numberOfProtestors = min(15, static_cast<int>(2 + static_cast<int>(getLevel()) * 1.5));
+
+        ticksBetweenSpPro = max(25, 200 - static_cast<int>(getLevel()));
+
         srand(time(NULL));
 
         //Creates the player
@@ -86,7 +90,8 @@ public:
         spawnOil(oNum);
 
         //Adds a protestor
-        //characterList.push_back(new Protester(40, 60, this));
+       characterList.push_back(new Protester(60, 60, this));
+        //currNumPro++;
 
         
         return GWSTATUS_CONTINUE_GAME;
@@ -119,6 +124,17 @@ public:
         
         //Updates the Textbox
         updateTextBox();
+
+        /*if (ticksBetweenSpPro-- == 0 && currNumPro != numberOfProtestors) {
+            int probabilityOfHardCore = min(90, static_cast<int>(getLevel()) * 10 + 30);
+            int chance = rand() % 100 +1;
+            if (chance <= probabilityOfHardCore) {
+                characterList.push_back(new HardcoreProtester(60, 60, this));
+            }
+            else {
+                characterList.push_back(new Protester(60, 60, this));
+            }
+        }*/
 
         //Goes through each character and asks if it does something
         for (Actor* a : characterList) {
@@ -223,6 +239,10 @@ private:
     vector<vector<Ice*>> iceMap; //Used to keep track of ice on map
     list<Actor*> characterList;
     IceMan* player;
+    int currNumPro = 0;
+    int numberOfProtestors = 0;
+    int ticksBetweenSpPro = 0;
+    int trackerOfTicks = 0;
 
       void removeDeadObjects();
 
