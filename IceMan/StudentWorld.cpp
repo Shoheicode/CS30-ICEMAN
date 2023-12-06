@@ -177,7 +177,7 @@ void StudentWorld::spawnNuggets(int num) {
         //If create nugget is true, create a nugget and increase current number of nuggets
         if (createNugget) {
 
-            characterList.push_back(new Gold(x, y, this));
+            characterList.push_back(new Gold(x, y,false, this));
             currentNum++;
         }
     }
@@ -263,8 +263,7 @@ void StudentWorld::dropGold(int x, int y){
     if(player->getGold() > 0){
         //set gold to pick up able by protesters
         //player->gold--;  //setGold-1
-        Gold* dropG;
-        dropG = new Gold(player->getX(), player->getY(), this);//rest handled in constructor
+        characterList.push_back(new Gold(player->getX(), player->getY(),true, this));//rest handled in constructor
     }
 }
 void StudentWorld::useSpray(int x, int y){
@@ -281,11 +280,13 @@ void StudentWorld::useSpray(int x, int y){
 IceMan* StudentWorld::getIceMan(){   
     for (Actor* a : characterList) {
         if (a->getID() == IID_PLAYER){
+            //cout << "AM RUNNING BOIIIII" << endl;
             return dynamic_cast<IceMan*>(a);
             break;
         }
     }
-    return NULL;}
+    return NULL;
+    }
 
 Boulder* StudentWorld::getBoulder(){   
     for (Actor* a : characterList) {

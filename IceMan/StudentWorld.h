@@ -90,7 +90,7 @@ public:
         spawnOil(oNum);
 
         //Adds a protestor
-       characterList.push_back(new Protester(60, 60, this));
+        characterList.push_back(new Protester(60, 60, this));
         //currNumPro++;
 
         

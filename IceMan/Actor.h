@@ -64,7 +64,7 @@ protected:
     int numSquaresToMoveInCurrentDirection;
     string direction = "left";
 public:
-    Protester(int startX, int startY, StudentWorld* world) : Actor (IID_PROTESTER, startX, startY, left,world, 1.0, 0) {
+    Protester(int startX, int startY, StudentWorld* world) : AnnoyedActor (IID_PROTESTER, startX, startY, left,world, 1.0, 0) {
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
         hitPoints = 5;//set data members numbers specified by packet
         
@@ -168,7 +168,7 @@ public:
 class Squirt : public Prop {
 public:
     Squirt(int startX, int startY, double size, int depth, StudentWorld* world)
-           : Prop(IID_WATER_SPURT, startX, startY, size, depth, left, world), Actor(IID_WATER_SPURT, startX, startY, left, world, 1.0, 1) {
+           : Prop(IID_WATER_SPURT, startX, startY, size, depth, left, world) {
                setFacingIceMan(getDirection(), studW);
                distance = 4;
                setVisible(true);//appear on screen
@@ -221,29 +221,20 @@ class Gold : public Prop {
 public:
     //constructor set up stuff in initialization list
     Gold(int startX, int startY, bool isDropped, StudentWorld* world)
-           : Prop(IID_GOLD, startX, startY, 1.0, 2, right, world), Actor(IID_GOLD, startX, startY, right, world, 1.0, 2) {
-               if (isDropped == false){
-                   setVisible(true);//hidden in ice CHANGE ONCE FINISHED
-                   currentState = icePickUp;
-                   //pick-up able by Iceman
-                   //wont disappear
-               }
-               
-               if (isDropped == true){//not finished
-                   currentState = waiting;
-                   cout << wait << endl;
-                       while (wait != 0){
-                           setVisible(true);//appears on screen
-                           currentState = proPickUp;
-                           wait --;
-                           cout << wait << endl;
-                           
-                       }
-                   if (wait == 0){
-                       setAlive(false);
-                   }
-                   }
-               }
+        : Prop(IID_GOLD, startX, startY, 1.0, 2, right, world) {
+        if (isDropped == false) {
+            setVisible(true);//hidden in ice CHANGE ONCE FINISHED
+            currentState = icePickUp;
+            //pick-up able by Iceman
+            //wont disappear
+        }
+
+        if (isDropped == true) {//not finished
+            cout << "AIIHLFHDLHSJK" << endl;
+            setState(proPickUp);
+            setVisible(true);
+        }
+    }
                //will remain in temp state (will disappear if Protestor picks up or disappear if they don't pick up}
     bool isPickUpAble(Actor IceMan,StudentWorld* world);
     
@@ -267,7 +258,7 @@ class SonarKit : public Prop {
 public:
     //1.0 and 2 and right
     SonarKit(int startX, int startY, bool canAppear, StudentWorld* world)
-           : Prop(IID_SONAR, startX, startY, 1.0, 2, right, world), Actor(IID_SONAR, startX, startY, right, world, 1.0, 2) {
+           : Prop(IID_SONAR, startX, startY, 1.0, 2, right, world) {
                if (canAppear== false){
                    //tick span loop
                    //canAppear = true;

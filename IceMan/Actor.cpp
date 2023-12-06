@@ -45,9 +45,9 @@ bool Actor::isFacingIceMan(Direction d, StudentWorld* world){
     return false;
 }
 void Actor::setFacingIceMan(Direction d,StudentWorld* world){
-    IceMan* man = world->getIceMan();
+    //IceMan* man = world->getIceMan();
     if (!isFacingIceMan(getDirection(), studW)){
-        setDirection(man->getDirection());
+        setDirection(world->getIceMan()->getDirection());
     }
 }
 string Actor::is4Away(StudentWorld* world){
@@ -205,10 +205,11 @@ void IceMan::doSomething(){
                         break;
                     }
                     else{
-                            if (rock->getX()+3 == getX()-1 && abs(getY() - rock->getY()) < 4) {
+                        if (rock != NULL) {
+                            if (rock->getX() + 3 == getX() - 1 && abs(getY() - rock->getY()) < 4) {
                                 blocked = true;//if blocked by boulder dont move
                             }
-                        
+                        }
                         if (!blocked) {//move if nothing blocks it
                             moveTo(getX() - 1, getY());
                         }
@@ -222,9 +223,11 @@ void IceMan::doSomething(){
                         break;
                     }
                     else{
+                        if (rock != NULL) {
                             if (rock->getX() == getX() + 4 && abs(getY() - rock->getY()) < 4) {//if blocked by boulder dont move
                                 blocked = true;
                             }
+                        }
                         if (!blocked) {
                             //move if nothing blocks it
                             moveTo(getX() + 1, getY());
@@ -240,9 +243,11 @@ void IceMan::doSomething(){
                         break;
                     }
                     else{
-                            if (rock->getY() == getY()+4 && abs(getX() - rock->getX()) < 4) {
+                        if (rock != NULL) {
+                            if (rock->getY() == getY() + 4 && abs(getX() - rock->getX()) < 4) {
                                 blocked = true;//if blocked by boulder dont move
                             }
+                        }
                         if (!blocked) {//move if nothing blocks it
                             moveTo(getX(), getY() + 1);
                         }
@@ -256,9 +261,11 @@ void IceMan::doSomething(){
                         break;
                     }
                     else{
-                            if (rock->getY()+3 == getY()-1 && abs(getX() - rock->getX()) < 4) {
+                        if (rock != NULL) {
+                            if (rock->getY() + 3 == getY() - 1 && abs(getX() - rock->getX()) < 4) {
                                 blocked = true;//if blocked by boulder dont move
                             }
+                        }
                         if (!blocked) {//move if nothing blocks it
                             moveTo(getX(), getY() - 1);
                         }
@@ -315,7 +322,7 @@ void IceMan::isInRange(StudentWorld* world){
     for (Actor* a : world->getCharacterList()) {
         if (a->getID() == IID_GOLD && a->is3Away(studW)=="IceMan")
         {
-            gold++;//picks up gold
+            //gold++;//picks up gold
             return;
         }
         else if (a->getID() == IID_BARREL && a->is3Away(studW)=="IceMan")
@@ -421,19 +428,21 @@ void Protester::doSomething(){
 bool Protester::blockedByIceOrBoulder(int x, int y, StudentWorld* world){
     Boulder* rock = world->getBoulder();
     Ice* coldRock = world->getIce();
-    int xI = coldRock->getX();
-    int yI = coldRock->getY();
-    int xB = rock->getX();
-    int yB = rock->getY();
-     if (x + 1 == xB ||x + 1 == xI || x - 1 == xB ||x - 1 == xI){
-        // delete rock;
-         //delete coldRock;
-         return true;
-    }
-    else if (y + 1 == xB ||y + 1 == xI ||y - 1 == xB ||y - 1 == xI){
-        //delete rock;
-       // delete coldRock;
-        return true;
+    if (coldRock != nullptr) {
+        int xI = coldRock->getX();
+        int yI = coldRock->getY();
+        int xB = rock->getX();
+        int yB = rock->getY();
+        if (x + 1 == xB || x + 1 == xI || x - 1 == xB || x - 1 == xI) {
+            // delete rock;
+             //delete coldRock;
+            return true;
+        }
+        else if (y + 1 == xB || y + 1 == xI || y - 1 == xB || y - 1 == xI) {
+            //delete rock;
+           // delete coldRock;
+            return true;
+        }
     }
     //delete rock;
    // delete coldRock;
@@ -441,16 +450,18 @@ bool Protester::blockedByIceOrBoulder(int x, int y, StudentWorld* world){
 }
 
 bool Protester::iceManisInSight(int x, int y, StudentWorld* world){
-    IceMan* man = world->getIceMan();
-    int xI = man->getX();
-    int yI = man->getY();
-    if (x == xI){ //if they are on same row
-        //delete man;
-        return true;
-    }
-    else if (y == yI){ //if they are on same column
-        delete man;
-        return true;
+    //IceMan* man = world->getIceMan();
+    if (world->getIceMan() != NULL) {
+        int xI = world->getIceMan()->getX();
+        int yI = world->getIceMan()->getY();
+        if (x == xI) { //if they are on same row
+            //delete man;
+            return true;
+        }
+        else if (y == yI) { //if they are on same column
+            //delete man;
+            return true;
+        }
     }
     //delete man;
     return false;
@@ -557,7 +568,6 @@ void HardcoreProtester::doSomething(){//NOT COMPLETE
     //    
     //}
     //return;
-}
 
 //Prop
 
@@ -567,20 +577,35 @@ void HardcoreProtester::doSomething(){//NOT COMPLETE
 void Gold::doSomething(){
     if(isAlive()){
         IceMan* man = getWorld()->getIceMan();
-            if (!isVisible() && is4Away(studW) == "IceMan"){
+            if (!isVisible() && getState() == icePickUp && is4Away(studW) == "IceMan") {
                 setVisible(true);//appear on screen
-                return;}
+                return;
+            }
             else if (getState() == icePickUp && is3Away(studW)== "IceMan"){
                 setAlive(false);
                 getWorld()->playSound(SOUND_GOT_GOODIE);
                 man->setGold(1);
+
                 studW->increaseScore(10);//increment score by 10
                 //increment iceMan's gold  by 1
             }
-            
+
+            if(getState() == proPickUp){
+                //cout << "HIII" << endl;
+          
+                setVisible(true);//appears on screen
+                wait--;
+                cout << wait << endl;
+
+            }
+
+            if (wait == 0) {
+                setAlive(false);
+            }
+    }
             
            
-        }
+ }
         //        else if (getState() == proPickUp && is3Away(studW) == "Protester" || is3Away(studW) == "Hard Protester"){
         //            //&& if pick-up BY PROTESTER able
         //            setAlive(false);
@@ -588,8 +613,6 @@ void Gold::doSomething(){
         //            //bribe protester
         //            studW->increaseScore(25);}
         //    }
-        return;
-    }
 
 //DOES INCREMENT SCORE AND DISAPPEARS IF FULL PNG BUT SOMETIMES DOESNT WORK W PARTIAL
 
