@@ -49,18 +49,59 @@ void StudentWorld::createIceMap(){
     }
 }
 
-void StudentWorld::spawnOil(int oNum){
-    //Sets the current number of boulders to 0
+void StudentWorld::spawnSonar(int sNum){//TICKSPAN IMPLEMENTATION and specified point?
+    //must appear in x num of ticks into the game and disappear
+    
     int currentNum = 0;
 
-    //Creates boulders until the number of boulders equals the number needed for the level.
+    //Creates oil until the number of oil equals the number needed for the level.
+    while (currentNum != sNum) {
+
+        //Sets create boulder to true
+        bool createSonar = true;
+
+        //Creates the random numbers
+        int x = rand() % 58;
+        int y = rand() % 37 + 20;
+
+        //Checks to make sure boulder isn't in the gap
+        if (x <= 33 && x >= 27) {
+            createSonar = false;
+        }
+        //otherwise
+        else {
+            //For each character in character list
+            for (Actor* a : characterList) {
+                //Check if the distance is less than 6 and if not, don't create boulder
+                if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
+                    createSonar = false;
+                    break;
+                }
+
+            }
+        }
+        //If the distance between each object is less than 6, create boulder
+        if (createSonar) {
+            //Add to character list
+            characterList.push_back(new SonarKit(x, y, false, this));
+           
+            //Increase the number of current boulders
+            currentNum++;
+        }
+    }
+}
+void StudentWorld::spawnOil(int oNum){
+    //Sets the current number of oil to 0
+    int currentNum = 0;
+
+    //Creates oil until the number of oil equals the number needed for the level.
     while (currentNum != oNum) {
 
         //Sets create boulder to true
         bool createOil = true;
 
         //Creates the random numbers
-        int x = rand() % 61;
+        int x = rand() % 58;
         int y = rand() % 37 + 20;
 
         //Checks to make sure boulder isn't in the gap
@@ -103,8 +144,8 @@ void StudentWorld::spawnBoulders(int bNum) {
         bool createBoulder = true;
 
         //Creates the random numbers
-        int x = rand() % 61;
-        int y = rand() % 37 + 20;
+        int x = rand() % 58;
+        int y = rand() % 35 + 15;
 
         //Checks to make sure boulder isn't in the gap
         if (x <= 33 && x >= 27) {
@@ -135,7 +176,6 @@ void StudentWorld::spawnBoulders(int bNum) {
                     delete temp;
                 }
             }
-
             //Increase the number of current boulders
             currentNum++;
         }
@@ -176,12 +216,13 @@ void StudentWorld::spawnNuggets(int num) {
         }
         //If create nugget is true, create a nugget and increase current number of nuggets
         if (createNugget) {
-
-            characterList.push_back(new Gold(x, y,false, this));
+            characterList.push_back(new Gold(x, y, false, this));
             currentNum++;
         }
     }
 }
+
+
 
 //Checks the distance between 2 objects
 bool StudentWorld::checkDistance(Actor* a, int obj1X, int obj1Y, int obj2X, int obj2Y) {
@@ -263,7 +304,7 @@ void StudentWorld::dropGold(int x, int y){
     if(player->getGold() > 0){
         //set gold to pick up able by protesters
         //player->gold--;  //setGold-1
-        characterList.push_back(new Gold(player->getX(), player->getY(),true, this));//rest handled in constructor
+        getCharacterList().push_back(new Gold(player->getX(), player->getY(), true, this));//rest handled in constructor
     }
 }
 void StudentWorld::useSpray(int x, int y){
@@ -277,7 +318,7 @@ void StudentWorld::useSpray(int x, int y){
 }
 
 //
-IceMan* StudentWorld::getIceMan(){   
+IceMan* StudentWorld::getIceMan(){
     for (Actor* a : characterList) {
         if (a->getID() == IID_PLAYER){
             //cout << "AM RUNNING BOIIIII" << endl;
@@ -286,7 +327,7 @@ IceMan* StudentWorld::getIceMan(){
         }
     }
     return NULL;
-    }
+}
 
 Boulder* StudentWorld::getBoulder(){   
     for (Actor* a : characterList) {
@@ -329,36 +370,8 @@ Ice* StudentWorld::getIce(){
 //maybe causes error cuz hardpro has no doSomething...?
 //HardcoreProtester* StudentWorld::getHardcoreProtester(){   for (auto a : characterList) {       if (a->getID() == IID_HARD_CORE_PROTESTER){           return dynamic_cast<HardcoreProtester*>(a);           break;       }   }   return nullptr;}
 //
-bool StudentWorld::pickUpgetStudGold(){   
-    for (Actor* a : characterList) {
-        if (a->getID() == IID_GOLD && a->is3Away(this)=="IceMan")
-        {
-            return true;       }
-        if (a->getID() == IID_GOLD && a->is3Away(this)=="Protester")
-        {           return false;
-        }  
-    }
-    return false;}
 
-bool StudentWorld::pickUpgetStudOil(){   
-    for (Actor* a : characterList) {
-        if (a->getID() == IID_BARREL && a->is3Away(this)=="IceMan"){      
-            return true;       }
-    }   return false;}
 
-bool StudentWorld::pickUpgetStudSonar(){   
-    for (Actor* a : characterList) {
-        if (a->getID() == IID_SONAR && a->is3Away(this)=="IceMan"){
-            break;       }
-    }
-    return false;}
-
-bool StudentWorld::pickUpgetStudWater(){   
-    for (Actor* a : characterList) {
-        if (a->getID() == IID_WATER_POOL && a->is3Away(this)=="IceMan"){
-            break;
-        }  
-    }
-    return false;}// Students:  Add code to this file (if you wish), StudentWorld.h, Actor.h and Actor.cpp
+// Students:  Add code to this file (if you wish), StudentWorld.h, Actor.h and Actor.cpp
 
 //// while (The player has lives left)// {// Prompt_the_user_to_start_playing(); // “press a key to start” Initialize_the_game_world(); // you’re going to write this func// while (The player is still alive)// {// // each pass through this loop is a tick (1/20th of a sec)// // you’re going to write code to do the following// Ask_all_actors_to_do_something();// If_any_actors_died_then_delete_them_from_the_world();// // we write this code to handle the animation for// you Animate_all_of_the_alive_actors_to_the_screen();// Sleep_for_50ms_to_give_the_user_time_to_react();// }// // the player died – you’re going to write this code// Cleanup_all_game_world_objects(); // you’re going to write this  if (The player has more lives)// Prompt_the_player_to_continue();// }// Tell_the_user_the_game_is_over(); // “game over!”; we provide this

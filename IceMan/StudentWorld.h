@@ -67,10 +67,6 @@ public:
         //Number of Water Pools
         int wNum = max(100, 300 - (10 * static_cast<int>(getLevel())));
 
-        numberOfProtestors = min(15, static_cast<int>(2 + static_cast<int>(getLevel()) * 1.5));
-
-        ticksBetweenSpPro = max(25, 200 - static_cast<int>(getLevel()));
-
         srand(time(NULL));
 
         //Creates the player
@@ -85,6 +81,12 @@ public:
         
         //Spawns Nuggets
         spawnNuggets(gNum);
+        
+        //Spawns SonarKit
+        //spawnSonar(sNum);
+        //spawnWater(wNum);
+        
+        
         
         //Spawns Oil
         spawnOil(oNum);
@@ -124,18 +126,7 @@ public:
         
         //Updates the Textbox
         updateTextBox();
-
-        /*if (ticksBetweenSpPro-- == 0 && currNumPro != numberOfProtestors) {
-            int probabilityOfHardCore = min(90, static_cast<int>(getLevel()) * 10 + 30);
-            int chance = rand() % 100 +1;
-            if (chance <= probabilityOfHardCore) {
-                characterList.push_back(new HardcoreProtester(60, 60, this));
-            }
-            else {
-                characterList.push_back(new Protester(60, 60, this));
-            }
-        }*/
-
+        
         //Goes through each character and asks if it does something
         for (Actor* a : characterList) {
             if (a->isAlive()) {
@@ -145,8 +136,7 @@ public:
                     return GWSTATUS_PLAYER_DIED;
                 }
                 
-                if(completeLevel()
-                   ){ // Checks if player completes level
+                if(completeLevel()){ // Checks if player completes level
                     return GWSTATUS_FINISHED_LEVEL;
                 }
                 
@@ -189,7 +179,7 @@ public:
         }
         //Clears the vector out
         iceMap.clear();
-
+        increaseScore(-getScore());
         //Delete all the actors in character list
         for (Actor* a : characterList) {
             Actor* temp = a;
@@ -197,6 +187,7 @@ public:
             delete temp;
         }
         characterList.clear();
+        
         //delete characterList;
     }
 
@@ -204,6 +195,7 @@ public:
     void dropGold(int x, int y);
     void useSonar(int x, int y);
     void useSpray(int x, int y);
+    
 
     //Returns the characterlist
     list<Actor*>& getCharacterList() {
@@ -214,13 +206,6 @@ public:
     vector<vector<Ice*>>& getMap() {
         return iceMap;
     }
-    bool pickUpgetStudGold();
-    
-    bool pickUpgetStudOil();
-    
-    bool pickUpgetStudSonar();
-    
-    bool pickUpgetStudWater();
     
     IceMan* getIceMan();
     
@@ -239,20 +224,23 @@ private:
     vector<vector<Ice*>> iceMap; //Used to keep track of ice on map
     list<Actor*> characterList;
     IceMan* player;
-    int currNumPro = 0;
-    int numberOfProtestors = 0;
-    int ticksBetweenSpPro = 0;
-    int trackerOfTicks = 0;
 
       void removeDeadObjects();
 
     //Creates the icemap
     void createIceMap();
 
+    //Spawns boulders
     void spawnBoulders(int bNum);
 
     //Spawns the gold nuggets
     void spawnNuggets(int num);
+    
+    //Spawn Water sq
+    void spawnWater(int wNum);
+    
+    //Spawn sonar
+    void spawnSonar(int sNum);
     
     //Spawn Oil
     void spawnOil(int oNum);
