@@ -2,6 +2,7 @@
 #define ACTOR_H_
 
 #include "GraphObject.h"
+#include "GameWorld.h"
 #include<cstdlib>
 using namespace std;
 
@@ -18,7 +19,7 @@ protected:
     int xCoord;
     int yCoord;
     bool amIAlive;
-   
+ 
     StudentWorld* studW;
 public:
     Actor(int imageID, int startX, int startY, Direction startDirection, StudentWorld* world, double size = 1.0, int depth = 0):
@@ -57,18 +58,25 @@ class AnnoyedActor : public Actor {
 class Protester: public AnnoyedActor {
 protected:
     bool leave_the_oil_field;
+    bool hasShoutedLast15;
+    int moves;
+    int ticksToWait;
     int numSquaresToMoveInCurrentDirection;
     string direction = "left";
 public:
-    Protester(int startX, int startY, StudentWorld* world) : AnnoyedActor (IID_PROTESTER, startX, startY, left,world, 1.0, 0) {//, GraphObject(IID_PROTESTER, startX, startY, left, 1.0, 0)
-        numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
+    Protester(int startX, int startY, StudentWorld* world) : Actor (IID_PROTESTER, startX, startY, left,world, 1.0, 0) {
+        numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
         hitPoints = 5;//set data members numbers specified by packet
+        
+        //moves = ((getWorld()->getLevel())/4);
+        ticksToWait = max(0,moves);
         leave_the_oil_field = false;//doesn't leave field bc is Alive
+        hasShoutedLast15 = false;
         setVisible(true);//appear on screen
     };
     //void moveTo(int x, int y) {};
     virtual void isAnnoyed(){};
-    virtual void isProPickUp(){}; //pickUp gold
+    virtual void isBribed(); //pickUp gold
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
     virtual bool blockedByIceOrBoulder(int x, int y, StudentWorld* world);
     virtual bool iceManisInSight(int x, int y, StudentWorld* world);
@@ -89,6 +97,8 @@ public:
     };
     virtual void doSomething() override;
     virtual ~HardcoreProtester() {};
+private:
+    int ticksToWaitBetweenMoves;
 };
 
 class Prop : public Actor{
@@ -137,6 +147,8 @@ public:
     double getHealth() {return hitPoints;}
     int getSquirt() { return waterSq;}
     void setWater(int a){waterSq += a;}
+    void setOil(int a){oil += a;}
+    void setGold(int a){gold += a;}
     void setSonar(int a){sonarC += a;}
     virtual void overlap(StudentWorld* world) override;
     virtual void doSomething() override;
@@ -156,17 +168,12 @@ public:
 class Squirt : public Prop {
 public:
     Squirt(int startX, int startY, double size, int depth, StudentWorld* world)
-           : Prop(IID_WATER_SPURT, startX, startY, size, depth, left, world) {
-//               for (Actor* a : StudentWorld::getWorld()->getCharacterList()) {
-//                   if (a->getID() == IID_PLAYER){
-//                       setDirectiontoIceMan(a->getDirection(), studW);
-//                   }
-//               }
+           : Prop(IID_WATER_SPURT, startX, startY, size, depth, left, world), Actor(IID_WATER_SPURT, startX, startY, left, world, 1.0, 1) {
+               setFacingIceMan(getDirection(), studW);
                distance = 4;
-               GraphObject::setVisible(true);//appear on screen
+               setVisible(true);//appear on screen
        }
     virtual void doSomething() override;
-    void setDirectiontoIceMan(Direction d, StudentWorld* world);
     virtual ~Squirt() {}
 private:
     int distance;
@@ -213,29 +220,39 @@ private:
 class Gold : public Prop {
 public:
     //constructor set up stuff in initialization list
-    Gold(int startX, int startY, StudentWorld* world)
-           : Prop(IID_GOLD, startX, startY, 1.0, 1, right, world) {
-               //if start of game will be hidden in ice {
-                setVisible(true);//hidden in ice CHANGE ONCE FINISHED
-               currentState = icePickUp;
-               //pick-up able by Iceman
-               //wont disappear
+    Gold(int startX, int startY, bool isDropped, StudentWorld* world)
+           : Prop(IID_GOLD, startX, startY, 1.0, 2, right, world), Actor(IID_GOLD, startX, startY, right, world, 1.0, 2) {
+               if (isDropped == false){
+                   setVisible(true);//hidden in ice CHANGE ONCE FINISHED
+                   currentState = icePickUp;
+                   //pick-up able by Iceman
+                   //wont disappear
+               }
                
-               if (currentState == isDropped){//not finished
-                   for (int i = 0; i < wait; i++){
-                       setVisible(true);//appears on screen
-                       currentState = proPickUp;
+               if (isDropped == true){//not finished
+                   currentState = waiting;
+                   cout << wait << endl;
+                       while (wait != 0){
+                           setVisible(true);//appears on screen
+                           currentState = proPickUp;
+                           wait --;
+                           cout << wait << endl;
+                           
+                       }
+                   if (wait == 0){
+                       setAlive(false);
+                   }
                    }
                }
                //will remain in temp state (will disappear if Protestor picks up or disappear if they don't pick up}
-       }
     bool isPickUpAble(Actor IceMan,StudentWorld* world);
+    
     //void iceManDropped(){currentState = isDropped; }; //check in doSomething
     virtual void doSomething() override;
     virtual ~Gold() {}
 private:
     enum state {
-        isDropped,
+        waiting,
         icePickUp,
         proPickUp
     };
@@ -248,15 +265,27 @@ private:
 
 class SonarKit : public Prop {
 public:
-    SonarKit(int startX, int startY, double size, int depth, StudentWorld* world)
-           : Prop(IID_SONAR, startX, startY, size, depth, right, world) {
-               GraphObject::setVisible(true);//appear on screen
+    //1.0 and 2 and right
+    SonarKit(int startX, int startY, bool canAppear, StudentWorld* world)
+           : Prop(IID_SONAR, startX, startY, 1.0, 2, right, world), Actor(IID_SONAR, startX, startY, right, world, 1.0, 2) {
+               if (canAppear== false){
+                   //tick span loop
+                   //canAppear = true;
+               }
+               if (canAppear == true){
+                   //tick span loop
+                    setVisible(true);//appear on screen
+                   //end loop
+                   //setVisible(false);//disappear
+               }
                //pick-up able Iceman
                //will be in temp state (limited num of ticks b4 disappearing
                // numTicks will exist T = max(100, 300 – 10*current_level_number)
        }
     virtual void doSomething() override;
     virtual ~SonarKit() {}
+private:
+    int ticksToWait;
 };
 
 class WaterPool : public Prop {

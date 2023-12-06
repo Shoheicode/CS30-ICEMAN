@@ -45,30 +45,28 @@ bool Actor::isFacingIceMan(Direction d, StudentWorld* world){
     return false;
 }
 void Actor::setFacingIceMan(Direction d,StudentWorld* world){
+    IceMan* man = world->getIceMan();
     if (!isFacingIceMan(getDirection(), studW)){
-        
+        setDirection(man->getDirection());
     }
 }
 string Actor::is4Away(StudentWorld* world){
 //    IceMan* man = world->getIceMan();
 //    Protester* proP = world->getProtester(); USE THESE
     if (isAlive()){
-        IceMan* man = world->getIceMan();
-        int x = man->getX();
-        int y = man->getY();
-        double radius = sqrt(pow(x - getX(), 2) + pow(y - getY(), 2));
-        
-        
+        //IceMan* man = world->getIceMan();
         for (Actor* a : world->getCharacterList()) {
-            //cout << a->getID() << endl;
-            if (world->getMap().at(getY()).at(getX()) == nullptr) {
-                if (a->getID() ==IID_PLAYER && a->getX() <= getX() + 4 && a->getY() <= getY() + 4){
+            int x = a->getX();
+            int y = a->getY();
+            double radius = sqrt(pow(x - getX(), 2) + pow(y - getY(), 2));
+            if (radius<=4) {
+                if (a->getID() ==IID_PLAYER){
                     return "IceMan";
                 }
-                else if (a->getID() ==IID_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                else if (a->getID() ==IID_PROTESTER){
                     return "Protester";
                 }
-                else if (a->getID() ==IID_HARD_CORE_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                else if (a->getID() ==IID_HARD_CORE_PROTESTER){
                     return "Hard Protester";
                 }
             }
@@ -79,30 +77,18 @@ string Actor::is4Away(StudentWorld* world){
 
 string Actor::is3Away(StudentWorld* world){
     if (isAlive()){
-        int x = 3;
-        int y = 3;
-        //rad <=3
         for (Actor* a : world->getCharacterList()) {
-            int xI = 3;
-            int yI = 3;
-            double radius;
-            //x = icemans get(X)
-            //y = icemans get(Y)
-            
-           
-            
-            if (world->getMap().at(getY() + y).at(getX() + x) == nullptr) {
-                radius = sqrt(pow(a->getX() - getX(), 2) + pow(a->getY() - getY(), 2));
-                if (a->getID() ==IID_PLAYER && radius <=3){// down and right of gold
+            int x = a->getX();
+            int y = a->getY();
+            double radius = sqrt(pow(x - getX(), 2) + pow(y - getY(), 2));
+            if (radius<=3) {
+                if (a->getID() ==IID_PLAYER){// down and right of gold
                     return "IceMan";
                 }
-                //else if (a->getID() ==IID_PLAYER && radius <=3 ){//up and left of gold
-                //    return "IceMan";
-                //}
-                else if (a->getID() ==IID_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                else if (a->getID() ==IID_PROTESTER){
                     return "Reg Protester";
                 }
-                else if (a->getID() ==IID_HARD_CORE_PROTESTER && a->getX() <= getX() + 3 && a->getY() <= getY() + 3){
+                else if (a->getID() ==IID_HARD_CORE_PROTESTER){
                     return "Hard Protester";
                 }
             }
@@ -326,26 +312,30 @@ void IceMan::overlap(StudentWorld* world) {
 }
 
 void IceMan::isInRange(StudentWorld* world){
-            if(world->pickUpgetStudGold()){
-                gold++;//picks up gold
-                return;
-            }
-            else if(world->pickUpgetStudOil()){
-                oil++;//picks up oil
-                return;
-            }
-            else if(world->pickUpgetStudSonar()){
-                sonarC++;//picks up sonar
-                return;
-            }
-            else if(world->pickUpgetStudWater()){
-                if (waterSq == 5){
-                    return;
-                }
-                waterSq++;//picks up water if not full
-                return;
-            }
+    for (Actor* a : world->getCharacterList()) {
+        if (a->getID() == IID_GOLD && a->is3Away(studW)=="IceMan")
+        {
+            gold++;//picks up gold
+            return;
+        }
+        else if (a->getID() == IID_BARREL && a->is3Away(studW)=="IceMan")
+        {
+            oil++;//picks up oil
+            return;
+        }
+        else if (a->getID() == IID_SONAR && a->is3Away(studW)=="IceMan")
+        {
+            sonarC++;//picks up sonar
+            return;
+        }
+        else if (a->getID() == IID_WATER_POOL && a->is3Away(studW)=="IceMan")
+        {
+            waterSq++;//picks up water
+            return;
+        }
     }
+           
+}
 
 //NOT DONE YET
 void IceMan::getAnnoyed(int dAmage){
@@ -360,14 +350,138 @@ void IceMan::getAnnoyed(int dAmage){
 
 //protester
 void Protester::doSomething(){
-    if (isAlive()) {
-        cout << "PROTESTOR IS ALIVE BABBBBYYY" << endl;
-        if (leave_the_oil_field == true) {
-            if (getX() == 60 && getY() == 60) {
-                setAlive(false);
+    if (isAlive()){
+        if (ticksToWait > 0){
+            ticksToWait--;
+            return;
+        }
+        else if (ticksToWait==0){
+            if(leave_the_oil_field == true){
+                if (getX()==60 && getY()==60){
+                    setAlive(false);
+                    //reset ticks to wait
+                    return;
+                }
+                else if(getX()!=60 && !blockedByIceOrBoulder(getX(), getY(), studW)){
+                    //turn direction based on Q
+                    moveTo(getX() + 1, getY());
+                    //reset ticks to wait
+                    return;
+                }
+                else if(getY()!=60 && !blockedByIceOrBoulder(getX(), getY(), studW)){
+                    //turn direction based on Q
+                    
+                    moveTo(getX(), getY() + 1 );
+                    //reset ticks to wait
+                    return;
+                }
+            }
+            else if(is4Away(studW) == "IceMan" && isFacingIceMan(getDirection(), studW)){
+                if (hasShoutedLast15 == true){
+                    getWorld()->playSound(SOUND_PROTESTER_YELL);
+                    //iceMan -2 hitpoints
+                    //reset ticks to wait
+                    hasShoutedLast15 = false;
+                }
+            }
+            else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "IceMan"&& !blockedByIceOrBoulder(getX(), getY(), studW) && !isFacingIceMan(getDirection(), studW)){
+                setFacingIceMan(getDirection(), studW);
+                //            //moveTo(getX(), getY() + 1) OR moveTo(getX() + 1, getY())
+                //            //moveTo(getX(), getY() - 1) OR moveTo(getX() - 1, getY())
+                numSquaresToMoveInCurrentDirection = 0;
+                //reset ticks to wait
                 return;
             }
-            else if (getX() != 60 && !blockedByIceOrBoulder(getX(), getY(), studW)) {
+            else if(!iceManisInSight(getX(), getY(), studW)){
+                numSquaresToMoveInCurrentDirection--;
+                if(numSquaresToMoveInCurrentDirection <= 0){
+                    //pick random direction that is not blocked by boulders or Ice
+                    numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
+                    //reset ticks to wait
+                    //take 1 step in that direction
+                }
+            }
+            //else if isAtFork && canMove1Perpindicular && !madePerpTurn in 200 ticks
+            //pick which 2 directions
+            //pick whichevr 2 directions if both are good pick one randomly
+            //set direction to new direction
+            else if (blockedByIceOrBoulder(getX(), getY(), studW)){
+                numSquaresToMoveInCurrentDirection = 0;
+                return;
+                //reset ticks to wait
+                //pick new dirction in nonresting tick
+            }
+            
+        }
+        
+   }
+    return;
+}
+
+bool Protester::blockedByIceOrBoulder(int x, int y, StudentWorld* world){
+    Boulder* rock = world->getBoulder();
+    Ice* coldRock = world->getIce();
+    int xI = coldRock->getX();
+    int yI = coldRock->getY();
+    int xB = rock->getX();
+    int yB = rock->getY();
+     if (x + 1 == xB ||x + 1 == xI || x - 1 == xB ||x - 1 == xI){
+        // delete rock;
+         //delete coldRock;
+         return true;
+    }
+    else if (y + 1 == xB ||y + 1 == xI ||y - 1 == xB ||y - 1 == xI){
+        //delete rock;
+       // delete coldRock;
+        return true;
+    }
+    //delete rock;
+   // delete coldRock;
+    return false;
+}
+
+bool Protester::iceManisInSight(int x, int y, StudentWorld* world){
+    IceMan* man = world->getIceMan();
+    int xI = man->getX();
+    int yI = man->getY();
+    if (x == xI){ //if they are on same row
+        //delete man;
+        return true;
+    }
+    else if (y == yI){ //if they are on same column
+        delete man;
+        return true;
+    }
+    //delete man;
+    return false;
+}
+
+void Protester::isBribed(){
+    //for each gold in character list
+        Gold* gP = getWorld()->getWorldGold();
+        if (gP->getX() == getX() && gP->getY() == getY()){//set gold to the right nugget?
+            gP->setAlive(false);
+            leave_the_oil_field = true;
+        }
+}
+
+//Hardcore Protester
+
+void HardcoreProtester::doSomething(){//NOT COMPLETE
+    if (isAlive()){
+        //ticksToWaitBetweenMoves = max(0, (3 – getLevel())/4);
+        if (ticksToWaitBetweenMoves == 3){
+            //wait 3 ticks
+            //must wait until the fourth tick to doSomething
+        }
+        //if in rest state
+        //increment ticks
+        //return
+        else if (leave_the_oil_field == true){
+            if (getX() == 60 && getY() == 60){
+                setAlive(false);
+            }
+            else if(getX()!=60 && !blockedByIceOrBoulder(getX(), getY(), studW)){
                 //turn direction based on Q
                 moveTo(getX() + 1, getY());
                 return;
@@ -377,6 +491,15 @@ void Protester::doSomething(){
                 moveTo(getX(), getY() + 1);
                 return;
             }
+        }
+        else if (is4Away(studW) == "IceMan" && isFacingIceMan(getDirection(), studW) && hasShoutedLast15==true){
+            getWorld()->playSound(SOUND_PROTESTER_YELL);
+            //IceMan -2 hitpoints
+            hasShoutedLast15 = false;
+            return;
+        }
+        //else if (isGreaterThan4Away(studW)== "IceMan"){
+            //double M =16 + current_level_number * 2;
         
         }
 
@@ -436,50 +559,6 @@ void Protester::doSomething(){
     //return;
 }
 
-bool Protester::blockedByIceOrBoulder(int x, int y, StudentWorld* world){
-    Boulder* rock = world->getBoulder();
-    Ice* coldRock = world->getIce();
-    int xI = coldRock->getX();
-    int yI = coldRock->getY();
-    int xB = rock->getX();
-    int yB = rock->getY();
-     if (x + 1 == xB ||x + 1 == xI || x - 1 == xB ||x - 1 == xI){
-         delete rock;
-         delete coldRock;
-         return true;
-    }
-    else if (y + 1 == xB ||y + 1 == xI ||y - 1 == xB ||y - 1 == xI){
-        delete rock;
-        delete coldRock;
-        return true;
-    }
-    delete rock;
-    delete coldRock;
-    return false;
-}
-
-bool Protester::iceManisInSight(int x, int y, StudentWorld* world){
-    IceMan* man = world->getIceMan();
-    int xI = man->getX();
-    int yI = man->getY();
-    if (x == xI){ //if they are on same row
-        delete man;
-        return true;
-    }
-    else if (y == yI){ //if they are on same column
-        delete man;
-        return true;
-    }
-    delete man;
-    return false;
-}
-
-//Hardcore Protestor
-
-void HardcoreProtester::doSomething() {
-
-}
-
 //Prop
 
 
@@ -487,12 +566,14 @@ void HardcoreProtester::doSomething() {
 
 void Gold::doSomething(){
     if(isAlive()){
+        IceMan* man = getWorld()->getIceMan();
             if (!isVisible() && is4Away(studW) == "IceMan"){
                 setVisible(true);//appear on screen
                 return;}
             else if (getState() == icePickUp && is3Away(studW)== "IceMan"){
                 setAlive(false);
                 getWorld()->playSound(SOUND_GOT_GOODIE);
+                man->setGold(1);
                 studW->increaseScore(10);//increment score by 10
                 //increment iceMan's gold  by 1
             }
@@ -518,6 +599,7 @@ void Gold::doSomething(){
 //oil
 
 void Oil::doSomething(){
+    IceMan* man = getWorld()->getIceMan();
     if (isAlive()){
         if (!isVisible() && is4Away(studW) == "IceMan"){
             setVisible(true);
@@ -526,6 +608,7 @@ void Oil::doSomething(){
         else if (is3Away(studW) == "IceMan"){//is pick up able by iceMan
             setAlive(false);
             getWorld()->playSound(SOUND_FOUND_OIL);
+            man->setOil(1);
             studW->increaseScore(1000);
         }
     }
@@ -533,38 +616,40 @@ void Oil::doSomething(){
 }
 
 //Squirt
-void Squirt::setDirectiontoIceMan(Direction d, StudentWorld* world){
-    IceMan* man = world->getIceMan();
-        if (d != man->getDirection()){
-            Direction iceManDirection = man->getDirection();
-            setDirection(iceManDirection);
-        }
-    delete man;
-}
+
 
 
 //sonar kit
 
 void SonarKit::doSomething(){
+    IceMan* man = getWorld()->getIceMan();
     if (isAlive()){
         if(is3Away(studW) == "IceMan"){//&& !timeEllapsed
             setAlive(false);
             getWorld()->playSound(SOUND_GOT_GOODIE);
-            //increment ice man inventory
+            man->setSonar(1);
             studW->increaseScore(75);
         }
         //if (timeEllapsed){
         //setAlive(false);
         //}
+        else{
+            cout << "hello im alive!" << endl;
+        }
     }
     return;
 }
 
 //water pool
 void WaterPool::doSomething(){
+    IceMan* man = getWorld()->getIceMan();
     if (isAlive()){
         if (is3Away(studW) == "IceMan"){//&& !timeEllapsed
             setAlive(false);
+            if (man->getSquirt() >= 5){
+                return;
+            }
+            man->setWater(1);
             getWorld()->playSound(SOUND_GOT_GOODIE);
             //increment 5 water squirts to ice man's inventory
             studW->increaseScore(100);
