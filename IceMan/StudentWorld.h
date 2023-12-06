@@ -95,6 +95,7 @@ public:
         characterList.push_back(new Protester(60, 60, this));
         //currNumPro++;
 
+        //characterList.push_back(new Squirt(60, 60, 1, 1, this));
         
         return GWSTATUS_CONTINUE_GAME;
     }

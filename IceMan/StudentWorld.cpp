@@ -311,10 +311,18 @@ void StudentWorld::useSpray(int x, int y){
     Protester* proP = getProtester();
     if(player->getSquirt() > 0){
         //proP->setHitpoints(-2);
+        for (Actor* a : getCharacterList()) {
+            if (a->getID() == IID_WATER_SPURT) {
+                return;
+            }
+        }
+        Squirt* sq = new Squirt(getIceMan()->getX()-3, getIceMan()->getY(),1,1,this);
+        getCharacterList().push_back(sq);
+        //sq->moveTo(getIceMan()->getX()-3, getIceMan()->getY());
         playSound(SOUND_PLAYER_SQUIRT);
         player->setWater(-1);
     }
-    delete proP;
+    //delete proP;
 }
 
 //

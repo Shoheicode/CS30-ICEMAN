@@ -639,7 +639,14 @@ void Oil::doSomething(){
 }
 
 //Squirt
-
+int x = 0;
+void Squirt::doSomething(){
+    if (x == 5) {
+        x = 0;
+        moveTo(getWorld()->getIceMan()->getX()-4, getWorld()->getIceMan()->getY());
+    }
+    x++;
+}
 
 
 //sonar kit
