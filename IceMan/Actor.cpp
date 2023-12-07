@@ -70,6 +70,17 @@ string Actor::is4Away(StudentWorld* world){
                     return "Hard Protester";
                 }
             }
+            else if (radius > 4){
+                if (a->getID() ==IID_PLAYER){
+                    return "Greater IceMan";
+                }
+                else if (a->getID() ==IID_PROTESTER){
+                    return "Greater Protester";
+                }
+                else if (a->getID() ==IID_HARD_CORE_PROTESTER){
+                    return "Greater Hard Protester";
+                }
+            }
         }
     }
     return "nothing near";
@@ -362,7 +373,7 @@ void Protester::doSomething(){
             ticksToWait--;
             return;
         }
-        else if (ticksToWait==0){
+        else if (ticksToWait==0 && !outOfField(getX(), getY(), getDirection())){
             if(leave_the_oil_field == true){
                 if (getX()==60 && getY()==60){
                     setAlive(false);
@@ -377,7 +388,6 @@ void Protester::doSomething(){
                 }
                 else if(getY()!=60 && !blockedByIceOrBoulder(getX(), getY(), studW)){
                     //turn direction based on Q
-                    
                     moveTo(getX(), getY() + 1 );
                     //reset ticks to wait
                     return;
@@ -391,13 +401,26 @@ void Protester::doSomething(){
                     hasShoutedLast15 = false;
                 }
             }
-            else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "IceMan"&& !blockedByIceOrBoulder(getX(), getY(), studW) && !isFacingIceMan(getDirection(), studW)){
-                setFacingIceMan(getDirection(), studW);
-                //            //moveTo(getX(), getY() + 1) OR moveTo(getX() + 1, getY())
-                //            //moveTo(getX(), getY() - 1) OR moveTo(getX() - 1, getY())
-                numSquaresToMoveInCurrentDirection = 0;
-                //reset ticks to wait
-                return;
+            else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "Greater IceMan"&& !blockedByIceOrBoulder(getX(), getY(), studW) && !isFacingIceMan(getDirection(), studW)){
+            
+                    setFacingIceMan(getDirection(), studW);
+                    if (getDirection() == left){
+                        moveTo(getX() - 1, getY());
+                    }
+                    else if (getDirection() == right){
+                    moveTo(getX() + 1, getY());
+                    }
+                    else if (getDirection() == up){
+                        
+                    moveTo(getX(), getY() + 1);
+                    }
+                    else if (getDirection() == down){
+                    moveTo(getX(), getY() - 1);
+                    }
+                    numSquaresToMoveInCurrentDirection = 0;
+                    //reset ticks to wait
+                    return;
+                
             }
             else if(!iceManisInSight(getX(), getY(), studW)){
                 numSquaresToMoveInCurrentDirection--;
@@ -406,6 +429,20 @@ void Protester::doSomething(){
                     numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
                     //reset ticks to wait
                     //take 1 step in that direction
+                    if (getDirection() == left){
+                        moveTo(getX() - 1, getY());
+                    }
+                    else if (getDirection() == right){
+                    moveTo(getX() + 1, getY());
+                    }
+                    else if (getDirection() == up){
+                        
+                    moveTo(getX(), getY() + 1);
+                    }
+                    else if (getDirection() == down){
+                    moveTo(getX(), getY() - 1);
+                    }
+                    return;
                 }
             }
             //else if isAtFork && canMove1Perpindicular && !madePerpTurn in 200 ticks
@@ -433,20 +470,68 @@ bool Protester::blockedByIceOrBoulder(int x, int y, StudentWorld* world){
         int yI = coldRock->getY();
         int xB = rock->getX();
         int yB = rock->getY();
-        if (x + 1 == xB || x + 1 == xI || x - 1 == xB || x - 1 == xI) {
-            // delete rock;
-             //delete coldRock;
-            return true;
+        
+            if (x + 1 == xB || x + 1 == xI || x - 1 == xB || x - 1 == xI) {
+                // delete rock;
+                //delete coldRock;
+                return true;
+            }
+            else if (y + 1 == xB || y + 1 == xI || y - 1 == xB || y - 1 == xI) {
+                if (!outOfField(getX(), getY(), getDirection())){
+                    // delete rock;
+                    //delete coldRock;
+                    return true;
+                }
+                
+            }
         }
-        else if (y + 1 == xB || y + 1 == xI || y - 1 == xB || y - 1 == xI) {
-            //delete rock;
-           // delete coldRock;
-            return true;
-        }
-    }
+    
     //delete rock;
    // delete coldRock;
     return false;
+}
+
+bool Protester::okDistanceToIceMan(int x, int y, Direction d){
+    switch (d){
+        case up:
+            if (!outOfField(getX(), getY(), getDirection()) && !blockedByIceOrBoulder(getX(), getY(), studW)){
+                return true;
+            }
+            
+        case down:
+            
+        case right:
+            
+        case left:
+            
+            break;
+    }
+    return true;
+}
+
+bool Protester::isAtFork(int x, int y, StudentWorld* world){
+    
+    //right
+    
+    //right and left
+    
+    //right and up
+    
+    // right and down
+    
+    //left
+    
+    //left and up
+    
+    //left and down
+    
+    //up and down
+    
+    //if getX + 1 !blocked && getX -1 !blocked //left or right
+    
+    //else if getY + 1 !blocked && getY -1 !blocked //up or down
+    //else if getY + 1 !blocked && getY -1 !blocked //up or down
+    return true;
 }
 
 bool Protester::iceManisInSight(int x, int y, StudentWorld* world){
@@ -565,7 +650,7 @@ void HardcoreProtester::doSomething(){//NOT COMPLETE
     //        return;
     //        //pick new dirction in nonresting tick
     //    }
-    //    
+    //
     //}
     //return;
 
@@ -690,4 +775,3 @@ void WaterPool::doSomething(){
     }
     return;
 }
-
