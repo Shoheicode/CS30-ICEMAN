@@ -84,7 +84,7 @@ public:
     virtual bool isAtFork(int x, int y, StudentWorld* world);
     virtual void doSomething() override;
     bool overlap(Actor object); // Checks if overlap with specific object
-    virtual bool okDistanceToIceMan(int x, int y, Direction d);
+    virtual void moveOne(int x, int y, Direction d);
     virtual ~Protester() {};
 };
 class HardcoreProtester: public Protester {
