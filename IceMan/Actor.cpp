@@ -402,21 +402,8 @@ void Protester::doSomething(){
                 }
             }
             else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "Greater IceMan"&& !blockedByIceOrBoulder(getX(), getY(), studW) && !isFacingIceMan(getDirection(), studW)){
-            
                     setFacingIceMan(getDirection(), studW);
-                    if (getDirection() == left){
-                        moveTo(getX() - 1, getY());
-                    }
-                    else if (getDirection() == right){
-                    moveTo(getX() + 1, getY());
-                    }
-                    else if (getDirection() == up){
-                        
-                    moveTo(getX(), getY() + 1);
-                    }
-                    else if (getDirection() == down){
-                    moveTo(getX(), getY() - 1);
-                    }
+                    moveOne(getX(), getY(), getDirection());
                     numSquaresToMoveInCurrentDirection = 0;
                     //reset ticks to wait
                     return;
@@ -429,19 +416,7 @@ void Protester::doSomething(){
                     numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
                     //reset ticks to wait
                     //take 1 step in that direction
-                    if (getDirection() == left){
-                        moveTo(getX() - 1, getY());
-                    }
-                    else if (getDirection() == right){
-                    moveTo(getX() + 1, getY());
-                    }
-                    else if (getDirection() == up){
-                        
-                    moveTo(getX(), getY() + 1);
-                    }
-                    else if (getDirection() == down){
-                    moveTo(getX(), getY() - 1);
-                    }
+                    moveOne(getX(), getY(), getDirection());
                     return;
                 }
             }
@@ -491,22 +466,49 @@ bool Protester::blockedByIceOrBoulder(int x, int y, StudentWorld* world){
     return false;
 }
 
-bool Protester::okDistanceToIceMan(int x, int y, Direction d){
+void Protester::moveOne(int x, int y, Direction d){
     switch (d){
         case up:
-            if (!outOfField(getX(), getY(), getDirection()) && !blockedByIceOrBoulder(getX(), getY(), studW)){
-                return true;
+            if (!outOfField(x, y, d) && !blockedByIceOrBoulder(x, y, studW)){
+                moveTo(getX(), getY() + 1);
+                break;
             }
-            
+            else if (outOfField(x, y + 1, d)){
+                setDirection(down);
+            }
+            break;
         case down:
-            
+            if (!outOfField(x, y, d) && !blockedByIceOrBoulder(x, y, studW)){
+                moveTo(getX(), getY() - 1);
+                break;
+            }
+            else if (outOfField(x, y - 1, d)){
+                setDirection(up);
+                break;
+            }
+            break;
         case right:
-            
-        case left:
+            if (!outOfField(x, y, d) && !blockedByIceOrBoulder(x, y, studW)){
+                moveTo(getX() + 1, getY());
+                break;
+            }
+                cout << "turning now!!" << endl;
+                setDirection(left);
             
             break;
+        case left:
+            if (!outOfField(x, y, d) && !blockedByIceOrBoulder(x, y, studW)){
+                moveTo(getX() - 1, getY());
+                break;
+            }
+            else if (outOfField(x -1, y, d)){
+                cout << "turning now!!" << endl;
+                setDirection(right);
+            }
+            break;
+        case none:
+            return;
     }
-    return true;
 }
 
 bool Protester::isAtFork(int x, int y, StudentWorld* world){
