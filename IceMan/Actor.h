@@ -80,7 +80,7 @@ public:
     };
     //void moveTo(int x, int y) {};
     virtual void isAnnoyed(){};
-    virtual void isBribed(); //pickUp gold
+    void tryGold(int x, int y);
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
     virtual bool blockedByIceOrBoulder(int x, int y, StudentWorld* world);
     virtual bool iceManisInSight(int x, int y, StudentWorld* world);
