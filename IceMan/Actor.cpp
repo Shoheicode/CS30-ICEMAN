@@ -179,10 +179,20 @@ void Boulder::overlap(StudentWorld* world) {
 ////    }
 //    return true;
 //}
-
+bool followingPath = false;
 void IceMan::doSomething(){
     Boulder* rock = getWorld()->getBoulder();
     if (isAlive()){
+        if (followingPath) {
+            //getWorld()->findPath(60, 60, getX(), getY());
+            cout << endl;
+            cout << endl;
+            pair<int, int> coord = getWorld()->getLeadingPathDistance(getX(), getY());
+            moveTo(coord.first, coord.second);
+            if (coord.first == 60 && coord.second == 60) {
+                followingPath = false;
+            }
+        }
         overlap(studW);//dig when overlap with ice
         isInRange(studW);
         int a;
@@ -190,8 +200,11 @@ void IceMan::doSomething(){
             bool blocked = false;
             switch (a){
                 case KEY_PRESS_ESCAPE:
-                    getWorld()->decLives();
-                    setAlive(false);
+                    cout << "PRESSED ESCAPE " << endl;
+                    //getWorld()->decLives();
+                    getWorld()->findPath(60, 60, getX(), getY());
+                    followingPath = true;
+                    //setAlive(false);
                     //getWorld()->increaseScore(-getSc)
                     break;
                 case KEY_PRESS_SPACE:
@@ -358,68 +371,71 @@ void IceMan::getAnnoyed(int dAmage){
 //protester
 void Protester::doSomething(){
     if (isAlive()){
-        if (ticksToWait > 0){
-            ticksToWait--;
-            return;
-        }
-        else if (ticksToWait==0){
-            if(leave_the_oil_field == true){
-                if (getX()==60 && getY()==60){
-                    setAlive(false);
-                    //reset ticks to wait
-                    return;
-                }
-                else if(getX()!=60 && !blockedByIceOrBoulder(getX(), getY(), studW)){
-                    //turn direction based on Q
-                    moveTo(getX() + 1, getY());
-                    //reset ticks to wait
-                    return;
-                }
-                else if(getY()!=60 && !blockedByIceOrBoulder(getX(), getY(), studW)){
-                    //turn direction based on Q
-                    
-                    moveTo(getX(), getY() + 1 );
-                    //reset ticks to wait
-                    return;
-                }
-            }
-            else if(is4Away(studW) == "IceMan" && isFacingIceMan(getDirection(), studW)){
-                if (hasShoutedLast15 == true){
-                    getWorld()->playSound(SOUND_PROTESTER_YELL);
-                    //iceMan -2 hitpoints
-                    //reset ticks to wait
-                    hasShoutedLast15 = false;
-                }
-            }
-            else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "IceMan"&& !blockedByIceOrBoulder(getX(), getY(), studW) && !isFacingIceMan(getDirection(), studW)){
-                setFacingIceMan(getDirection(), studW);
-                //            //moveTo(getX(), getY() + 1) OR moveTo(getX() + 1, getY())
-                //            //moveTo(getX(), getY() - 1) OR moveTo(getX() - 1, getY())
-                numSquaresToMoveInCurrentDirection = 0;
-                //reset ticks to wait
-                return;
-            }
-            else if(!iceManisInSight(getX(), getY(), studW)){
-                numSquaresToMoveInCurrentDirection--;
-                if(numSquaresToMoveInCurrentDirection <= 0){
-                    //pick random direction that is not blocked by boulders or Ice
-                    numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
-                    //reset ticks to wait
-                    //take 1 step in that direction
-                }
-            }
-            //else if isAtFork && canMove1Perpindicular && !madePerpTurn in 200 ticks
-            //pick which 2 directions
-            //pick whichevr 2 directions if both are good pick one randomly
-            //set direction to new direction
-            else if (blockedByIceOrBoulder(getX(), getY(), studW)){
-                numSquaresToMoveInCurrentDirection = 0;
-                return;
-                //reset ticks to wait
-                //pick new dirction in nonresting tick
-            }
-            
-        }
+
+        //getWorld()->findPath(60,60,getX(), getY());
+        //if (ticksToWait > 0){
+        //    ticksToWait--;
+        //    return;
+        //}
+        //else if (ticksToWait==0){
+        //    if(leave_the_oil_field == true){
+        //        if (getX()==60 && getY()==60){
+        //            setAlive(false);
+        //            //reset ticks to wait
+        //            return;
+        //        }
+        //        else if(getX()!=60 && !blockedByIceOrBoulder(getX(), getY(), studW)){
+        //            //turn direction based on Q
+        //            moveTo(getX() + 1, getY());
+        //            //reset ticks to wait
+        //            return;
+        //        }
+        //        else if(getY()!=60 && !blockedByIceOrBoulder(getX(), getY(), studW)){
+        //            //turn direction based on Q
+        //            
+        //            moveTo(getX(), getY() + 1 );
+        //            //reset ticks to wait
+        //            return;
+        //        }
+        //    }
+        //    else if(is4Away(studW) == "IceMan" && isFacingIceMan(getDirection(), studW)){
+        //        if (hasShoutedLast15 == true){
+        //            getWorld()->playSound(SOUND_PROTESTER_YELL);
+        //            //iceMan -2 hitpoints
+        //            //reset ticks to wait
+        //            hasShoutedLast15 = false;
+        //        }
+        //    }
+        //    else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "IceMan"&& !blockedByIceOrBoulder(getX(), getY(), studW) && !isFacingIceMan(getDirection(), studW)){
+        //        setFacingIceMan(getDirection(), studW);
+        //        //            //moveTo(getX(), getY() + 1) OR moveTo(getX() + 1, getY())
+        //        //            //moveTo(getX(), getY() - 1) OR moveTo(getX() - 1, getY())
+        //        numSquaresToMoveInCurrentDirection = 0;
+        //        //reset ticks to wait
+        //        return;
+        //    }
+        //    else if(!iceManisInSight(getX(), getY(), studW)){
+        //        numSquaresToMoveInCurrentDirection--;
+        //        if(numSquaresToMoveInCurrentDirection <= 0){
+        //            //pick random direction that is not blocked by boulders or Ice
+        //            numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
+        //            //reset ticks to wait
+        //            //take 1 step in that direction
+        //        }
+        //    }
+        //    //else if isAtFork && canMove1Perpindicular && !madePerpTurn in 200 ticks
+        //    //pick which 2 directions
+        //    //pick whichevr 2 directions if both are good pick one randomly
+        //    //set direction to new direction
+        //    else if (blockedByIceOrBoulder(getX(), getY(), studW)){
+        //        numSquaresToMoveInCurrentDirection = 0;
+        //        return;
+        //        //reset ticks to wait
+        //        //pick new dirction in nonresting tick
+        //    }
+        //    ticksToWait = 3;
+        //    
+        //}
         
    }
     return;

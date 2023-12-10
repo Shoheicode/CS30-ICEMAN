@@ -4,6 +4,7 @@
 #include "GraphObject.h"
 #include "GameWorld.h"
 #include<cstdlib>
+#include <queue>
 using namespace std;
 
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
@@ -63,16 +64,18 @@ protected:
     int ticksToWait;
     int numSquaresToMoveInCurrentDirection;
     string direction = "left";
+
 public:
     Protester(int startX, int startY, StudentWorld* world) : AnnoyedActor (IID_PROTESTER, startX, startY, left,world, 1.0, 0) {
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
         hitPoints = 5;//set data members numbers specified by packet
         
-        //moves = ((getWorld()->getLevel())/4);
+        //moves = ((world->getLevel())/4);
         ticksToWait = max(0,moves);
         leave_the_oil_field = false;//doesn't leave field bc is Alive
         hasShoutedLast15 = false;
         setVisible(true);//appear on screen
+        
     };
     //void moveTo(int x, int y) {};
     virtual void isAnnoyed(){};

@@ -22,8 +22,8 @@ public:
     }
 
     ~StudentWorld() {
-        for (int i = 0; i <= 59; i++) {
-            for (int j = 0; j <= 64; j++) {
+        for (int i = 0; i < 64; i++) {
+            for (int j = 0; j < 64; j++) {
                 delete iceMap.at(i).at(j); //deletes every ice in vector;
             }
         }
@@ -93,6 +93,8 @@ public:
 
         //Adds a protestor
         characterList.push_back(new Protester(60, 60, this));
+
+        findPath(60,60,0,60);
         //currNumPro++;
 
         //characterList.push_back(new Squirt(60, 60, 1, 1, this));
@@ -173,8 +175,8 @@ public:
     virtual void cleanUp()
     {
         //Deletes all the stuff in icemap
-        for (int i = 0; i <= 59; i++) {
-            for (int j = 0; j <= 64; j++) {
+        for (int i = 0; i < 64; i++) {
+            for (int j = 0; j < 64; j++) {
                 delete iceMap.at(i).at(j); //deletes every ice in vector;
             }
         }
@@ -207,6 +209,8 @@ public:
     vector<vector<Ice*>>& getMap() {
         return iceMap;
     }
+
+    bool checkSpot(string actorType, int x, int y);
     
     IceMan* getIceMan();
     
@@ -217,6 +221,35 @@ public:
     Ice* getIce();
     
     Protester* getProtester();
+
+    void findPath(int x, int y, int objx, int objy);
+
+    pair<int,int> getLeadingPathDistance(int x, int y) {
+
+        pair<int, int> smallCoord = make_pair(x+1, y);
+        int smallest = *(leavingPath[y][x+1]);
+        cout <<"right:"<<  * leavingPath[y][x + 1] << endl;
+        cout <<"left:" << * leavingPath[y][x - 1] << endl;
+        cout << "up" << * leavingPath[y + 1][x] << endl;
+        cout << "down" << * leavingPath[y - 1][x] << endl;
+        if (*(leavingPath[y+1][x]) < smallest) {
+            smallest = *(leavingPath[y+1][x]);
+            smallCoord = make_pair(x, y+1);
+        }
+        if (*leavingPath[y-1][x] < smallest) {
+            smallest = *(leavingPath[y-1][x]);
+            smallCoord = make_pair(x, y-1);
+        }
+        if (*leavingPath[y][x-1] < smallest) {
+            smallest = *(leavingPath[y][x-1]);
+            smallCoord = make_pair(x-1, y);
+        }
+
+        //cout << "x:" << smallCoord.first << endl;
+        //cout << "y:" << smallCoord.second << endl;
+        cout << smallest << endl;
+        return smallCoord;
+    }
     
     HardcoreProtester* getHardcoreProtester();
 
@@ -225,6 +258,8 @@ private:
     vector<vector<Ice*>> iceMap; //Used to keep track of ice on map
     list<Actor*> characterList;
     IceMan* player;
+
+    int* leavingPath[64][64];
 
       void removeDeadObjects();
 
@@ -247,7 +282,6 @@ private:
     void spawnOil(int oNum);
     //Checks the distance between 2 objects
     bool checkDistance(Actor* a, int obj1X, int obj1Y, int obj2X, int obj2Y);
-
 
     //Updates the text box
     void updateTextBox();
