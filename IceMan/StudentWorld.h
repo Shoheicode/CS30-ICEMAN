@@ -195,9 +195,14 @@ public:
     }
 
     bool completeLevel();
+    void moveToShortPath(int startX, int startY);
+    bool blockedByIce (int x, int y, Actor::Direction d);
     void dropGold(int x, int y);
+    bool pickUpGold(int x, int y);
     void useSonar(int x, int y);
     void useSpray(int x, int y);
+    bool blockedbyRocksOrIce(int x, int y, Actor::Direction d);//not done
+    bool blockedByRocks(int x, int y);
     
 
     //Returns the characterlist
@@ -258,8 +263,42 @@ private:
     vector<vector<Ice*>> iceMap; //Used to keep track of ice on map
     list<Actor*> characterList;
     IceMan* player;
-
     int* leavingPath[64][64];
+    struct Point {
+    int x;
+    int y;
+
+    Point(int x, int y) : x(x), y(y) {}
+    };
+    list<Point> goldPos;
+    list<Point> rockPos;
+    list<Point> icePos;
+    struct Node{
+    Node* next;
+    bool visited;
+    int x;
+    int y;
+    int distance;
+    list<Node*> neighbors;
+    Node* parent;
+    Node(int x, int y) : x(x), y(y), distance(INFINITY), parent(NULL), visited(false), neighbors() {}
+    };
+    Node* head;
+    list<Node*> hProNodes;
+
+    Node* getNode(int x, int y) {
+    for (Node* node : hProNodes) {
+    if (node->x == x && node->y == y) {
+    return node;
+    }
+    }
+    return nullptr; // Node not found
+    }
+
+    void addNode(int x, int y);
+    void createNodes();
+    bool nodeBeenVisited(int x, int y);
+    int getNearest();
 
       void removeDeadObjects();
 
