@@ -70,8 +70,9 @@ public:
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
         hitPoints = 5;//set data members numbers specified by packet
         
-        //moves = ((world->getLevel())/4);
-        ticksToWait = max(0,moves);
+        //moves = ((getWorld()->getLevel())/4);
+//        ticksToWait = max(0,moves);
+        ticksToWait = 0;
         leave_the_oil_field = false;//doesn't leave field bc is Alive
         hasShoutedLast15 = false;
         setVisible(true);//appear on screen
@@ -83,9 +84,10 @@ public:
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
     virtual bool blockedByIceOrBoulder(int x, int y, StudentWorld* world);
     virtual bool iceManisInSight(int x, int y, StudentWorld* world);
+    virtual bool isAtFork(int x, int y, StudentWorld* world);
     virtual void doSomething() override;
     bool overlap(Actor object); // Checks if overlap with specific object
-    bool checkDistance(int objectX, int objectY);
+    virtual void moveOne(int x, int y, Direction d);
     virtual ~Protester() {};
 };
 class HardcoreProtester: public Protester {
