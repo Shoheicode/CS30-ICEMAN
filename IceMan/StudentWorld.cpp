@@ -137,52 +137,53 @@ void StudentWorld::spawnOil(int oNum){
 
 void StudentWorld::spawnBoulders(int bNum) {
 
-    //Sets the current number of boulders to 0
-    int currentNum = 0;
+//Sets the current number of boulders to 0
+int currentNum = 0;
 
-    //Creates boulders until the number of boulders equals the number needed for the level.
-    while (currentNum != bNum) {
+//Creates boulders until the number of boulders equals the number needed for the level.
+while (currentNum != bNum) {
 
-        //Sets create boulder to true
-        bool createBoulder = true;
+//Sets create boulder to true
+bool createBoulder = true;
 
-        //Creates the random numbers
-        int x = rand() % 58;
-        int y = rand() % 35 + 15;
+//Creates the random numbers
+int x = rand() % 58;
+int y = rand() % 35 + 15;
 
-        //Checks to make sure boulder isn't in the gap
-        if (x <= 33 && x >= 27) {
-            createBoulder = false;
-        }
-        //otherwise
-        else {
-            //For each character in character list
-            for (Actor* a : characterList) {
-                //Check if the distance is less than 6 and if not, don't create boulder
-                if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
-                    createBoulder = false;
-                    break;
-                }
+//Checks to make sure boulder isn't in the gap
+if (x <= 33 && x >= 27) {
+createBoulder = false;
+}
+//otherwise
+else {
+//For each character in character list
+for (Actor* a : characterList) {
+//Check if the distance is less than 6 and if not, don't create boulder
+if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
+createBoulder = false;
+break;
+}
 
-            }
-        }
-        //If the distance between each object is less than 6, create boulder
-        if (createBoulder) {
-            //Add to character list
-            characterList.push_back(new Boulder(x, y, this));
-
-            //Clear out map for boulder
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 4; j++) {
-                    Ice* temp = iceMap.at(y + i).at(x + j);
-                    iceMap.at(y + i).at(x + j) = nullptr;
-                    delete temp;
-                }
-            }
-            //Increase the number of current boulders
-            currentNum++;
-        }
+}
+}
+//If the distance between each object is less than 6, create boulder
+    if (createBoulder) {
+//Add to character list
+    characterList.push_back(new Boulder(x, y, this));
+    rockPos.push_back(Point(x, y));
+    //rocksOnMap.push_back(new Boulder(x, y, this));
+    //Clear out map for boulder
+    for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+    Ice* temp = iceMap.at(y + i).at(x + j);
+    iceMap.at(y + i).at(x + j) = nullptr;
+    delete temp;
     }
+}
+//Increase the number of current boulders
+currentNum++;
+}
+}
 
 }
 
@@ -225,7 +226,87 @@ void StudentWorld::spawnNuggets(int num) {
     }
 }
 
+bool StudentWorld::blockedByRocks(int x, int y){
+for (const Point& p : rockPos){
+double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
+if (radius <= 4){
+return true;
+}
+}
+return false;
+}
 
+bool StudentWorld::blockedbyRocksOrIce(int x, int y, Actor::Direction d){
+for (const Point& p : rockPos){
+double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
+if (radius <= 4){
+return true;
+}
+}
+// for (const auto& row : iceMap) {//iterate through the rows
+// Ice* iceObject = iceMap[y][x];
+// }
+// for (const auto& iceObject : row) {
+//
+// }
+// for (const Point& p : icePos){
+// switch (d) {
+// case Actor::up:
+// if(y + 1== p.y){
+// return true;
+// }
+// break;
+// case Actor::down:
+// if(y - 1== p.y){
+// return true;
+// }
+// break;
+// case Actor::left:
+// if(x - 1== p.x){
+// return true;
+// }
+// break;
+// case Actor::right:
+// if(x + 1== p.x){
+// return true;
+// }
+// break;
+// default:
+// break;
+// }
+// double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
+// if (radius <= 2){
+// return true;
+// }
+//}
+return false;
+}
+
+void StudentWorld::dropGold(int x, int y){
+if(player->getGold() > 0){
+//set gold to pick up able by protesters
+//player->gold--; //setGold-1
+getCharacterList().push_back(new Gold(player->getX(), player->getY(), true, this));//rest handled in constructor
+goldPos.push_back((Point(player->getX(), player->getY())));
+}
+}
+
+bool StudentWorld::pickUpGold(int x, int y){
+for (const Point& p : goldPos){
+for (Actor* a : characterList) {
+double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
+if (a->getID() == IID_GOLD && a->getX() == p.x && a->getY() == p.y){
+if (radius <= 4){
+playSound(SOUND_PROTESTER_FOUND_GOLD);
+a->setAlive(false);
+return true;
+}
+}
+return false;
+}
+}
+return false;
+}
 
 //Checks the distance between 2 objects
 bool StudentWorld::checkDistance(Actor* a, int obj1X, int obj1Y, int obj2X, int obj2Y) {
@@ -303,13 +384,7 @@ void StudentWorld::useSonar(int x, int y){
     }
     }
     
-void StudentWorld::dropGold(int x, int y){
-    if(player->getGold() > 0){
-        //set gold to pick up able by protesters
-        //player->gold--;  //setGold-1
-        getCharacterList().push_back(new Gold(player->getX(), player->getY(), true, this));//rest handled in constructor
-    }
-}
+
 void StudentWorld::useSpray(int x, int y){
     Protester* proP = getProtester();
     if(player->getSquirt() > 0){
@@ -340,7 +415,7 @@ IceMan* StudentWorld::getIceMan(){
     return NULL;
 }
 
-Boulder* StudentWorld::getBoulder(){   
+Boulder* StudentWorld::getBoulder(){
     for (Actor* a : characterList) {
         if (a->getID() == IID_BOULDER){
             return dynamic_cast<Boulder*>(a);
@@ -667,7 +742,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
     //    cout << "COUNT: " << count << endl;
     //    //cout << q.front().first << endl;
     //    distance++;
-    //    
+    //
     //    if (q.front().first > 0) {
     //        cout << "hi" << endl;
     //        cout << q.front().second << endl;
@@ -758,3 +833,4 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
 // Students:  Add code to this file (if you wish), StudentWorld.h, Actor.h and Actor.cpp
 
 //// while (The player has lives left)// {// Prompt_the_user_to_start_playing(); // “press a key to start” Initialize_the_game_world(); // you’re going to write this func// while (The player is still alive)// {// // each pass through this loop is a tick (1/20th of a sec)// // you’re going to write code to do the following// Ask_all_actors_to_do_something();// If_any_actors_died_then_delete_them_from_the_world();// // we write this code to handle the animation for// you Animate_all_of_the_alive_actors_to_the_screen();// Sleep_for_50ms_to_give_the_user_time_to_react();// }// // the player died – you’re going to write this code// Cleanup_all_game_world_objects(); // you’re going to write this  if (The player has more lives)// Prompt_the_player_to_continue();// }// Tell_the_user_the_game_is_over(); // “game over!”; we provide this
+
