@@ -200,7 +200,8 @@ public:
     void dropGold(int x, int y);
     bool pickUpGold(int x, int y);
     void useSonar(int x, int y);
-    void useSpray(int x, int y);
+    void useSpray(int x, int y, Actor::Direction d);
+    bool isSprayed(int x, int y);
     bool blockedbyRocksOrIce(int x, int y, Actor::Direction d);//not done
     bool blockedByRocks(int x, int y);
     
