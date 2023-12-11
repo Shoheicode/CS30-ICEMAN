@@ -125,6 +125,10 @@ void StudentWorld::spawnOil(int oNum){
         }
         //If the distance between each object is less than 6, create boulder
         if (createOil) {
+
+            cout << "OIl X: " << x << endl;
+            cout << "OIL Y: " << y << endl;
+
             //Add to character list
             characterList.push_back(new Oil(x, y, this));
            
@@ -492,18 +496,18 @@ bool StudentWorld::checkSpot(string actorType, int x, int y) {
     for (Actor* act : characterList) {
         if (actorType == "Boulder") {
             if (act->getID() == IID_BOULDER && abs(act->getX() - x) < 4 && abs(act->getY() - y) < 4) {
-                cout << "TRUE there is something" << endl;
+                //cout << "TRUE there is something" << endl;
                 return true;
             }
         }
     }
-    cout << "THERE IS NOTHING TRUE" << endl;
+    //cout << "THERE IS NOTHING TRUE" << endl;
     return false;
 }
 
 void StudentWorld::findPath(int x, int y, int objx, int objy) {
 
-    queue<pair<pair<int, int>, int>> q;
+    queue<pair<pair<int, int>, int>> q; // First pair inside pair is (x,y) and second value is distance
     pair <pair<int, int>, int> temp;
 
     temp = make_pair(make_pair(x, y), 0);
@@ -533,7 +537,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
                 leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
                 //cout << "HELLO" << endl;
             }
-            else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", objx - 1, objy) && *leavingPath[q.front().first.second][q.front().first.first-1] == 100000000) {
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && *leavingPath[q.front().first.second][q.front().first.first - 1] == 100000000) {
                 cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
@@ -560,7 +564,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             if (q.front().first.second == 0) {
                 leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
             }
-            else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx, objy - 1) && *leavingPath[q.front().first.second-1][q.front().first.first] == 100000000) {
+            else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first, q.front().first.second- 1) && *leavingPath[q.front().first.second-1][q.front().first.first] == 100000000) {
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
                     if (iceMap.at(q.front().first.second - 1).at(q.front().first.first + i) != nullptr) {
@@ -592,7 +596,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
                 leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
                 cout << "HELLO" << endl;
             }
-            else if (iceMap.at(q.front().first.second).at(q.front().first.first + 4) == nullptr && !checkSpot("Boulder", objx - 1, objy) && *leavingPath[q.front().first.second][q.front().first.first + 1] == 100000000) {
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first + 4) == nullptr && !checkSpot("Boulder", q.front().first.first + 4, q.front().first.second) && *leavingPath[q.front().first.second][q.front().first.first + 1] == 100000000) {
                 cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
@@ -628,7 +632,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             else if (q.front().first.second == 60 && *leavingPath[q.front().first.second][q.front().first.first] == 100000000) {
 
             }
-            else if (iceMap.at(q.front().first.second+4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx - 1, objy) && *leavingPath[q.front().first.second+1][q.front().first.first] == 100000000) {
+            else if (iceMap.at(q.front().first.second+4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first, q.front().first.second+4) && *leavingPath[q.front().first.second+1][q.front().first.first] == 100000000) {
                 cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {

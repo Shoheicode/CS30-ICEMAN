@@ -230,23 +230,22 @@ public:
 
     void findPath(int x, int y, int objx, int objy);
 
-    pair<int,int> getLeadingPathDistance(int x, int y) {
-
+    pair<pair<int,int>, string> getLeadingPathDistance(int x, int y) {
+        string direction = "right";
         pair<int, int> smallCoord = make_pair(x+1, y);
         int smallest = *(leavingPath[y][x+1]);
-        cout <<"right:"<<  * leavingPath[y][x + 1] << endl;
-        cout <<"left:" << * leavingPath[y][x - 1] << endl;
-        cout << "up" << * leavingPath[y + 1][x] << endl;
-        cout << "down" << * leavingPath[y - 1][x] << endl;
         if (*(leavingPath[y+1][x]) < smallest) {
+            direction = "up";
             smallest = *(leavingPath[y+1][x]);
             smallCoord = make_pair(x, y+1);
         }
         if (*leavingPath[y-1][x] < smallest) {
+            direction = "down";
             smallest = *(leavingPath[y-1][x]);
             smallCoord = make_pair(x, y-1);
         }
         if (*leavingPath[y][x-1] < smallest) {
+            direction = "left";
             smallest = *(leavingPath[y][x-1]);
             smallCoord = make_pair(x-1, y);
         }
@@ -254,7 +253,8 @@ public:
         //cout << "x:" << smallCoord.first << endl;
         //cout << "y:" << smallCoord.second << endl;
         cout << smallest << endl;
-        return smallCoord;
+        pair<pair<int, int>, string> movement= make_pair(smallCoord, direction);
+        return movement;
     }
     
     HardcoreProtester* getHardcoreProtester();

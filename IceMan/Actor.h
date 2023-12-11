@@ -188,7 +188,7 @@ class Oil : public Prop {
 public:
     Oil(int startX, int startY, StudentWorld* world)
            : Prop(IID_BARREL, startX, startY, 1.0, 2, right, world) {
-               setVisible(true);//appear on screen
+               setVisible(false);//appear on screen
        }
     virtual void doSomething() override;
     virtual ~Oil() {}
@@ -228,14 +228,13 @@ public:
     Gold(int startX, int startY, bool isDropped, StudentWorld* world)
         : Prop(IID_GOLD, startX, startY, 1.0, 2, right, world) {
         if (isDropped == false) {
-            setVisible(true);//hidden in ice CHANGE ONCE FINISHED
+            setVisible(false);//hidden in ice CHANGE ONCE FINISHED
             currentState = icePickUp;
             //pick-up able by Iceman
             //wont disappear
         }
 
         if (isDropped == true) {//not finished
-            cout << "AIIHLFHDLHSJK" << endl;
             setState(proPickUp);
             setVisible(true);
         }
