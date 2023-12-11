@@ -183,14 +183,6 @@ void Boulder::overlap(StudentWorld* world) {
     }
 }
 
-//Iceman
-//bool IceMan::isAlive(){
-////    if (m_lives == 0){
-////        return false;//ends level, terminates game
-////    }
-//    return true;
-//}
-
 void IceMan::doSomething(){
     if (isAlive()){
         overlap(studW);//dig when overlap with ice
@@ -205,7 +197,7 @@ void IceMan::doSomething(){
                     //getWorld()->increaseScore(-getSc)
                     break;
                 case KEY_PRESS_SPACE:
-                    getWorld()->useSpray(getX(), getY());
+                    getWorld()->useSpray(getX(), getY(), getDirection());
                     break;
                 case KEY_PRESS_LEFT:
                     if (getDirection() != left){
@@ -368,47 +360,66 @@ void IceMan::getAnnoyed(int dAmage){
 }
 
 //protester
+
+bool followingPath = false;
 void Protester::doSomething(){
+    int shoutedLast15 = 0;
     if (isAlive()){
         if (ticksToWait > 0){
             ticksToWait--;
             return;
         }
+        if (shoutedLast15 > 0){
+            shoutedLast15--;
+            return;
+        }
         else if (ticksToWait==0 && !outOfField(getX(), getY(), getDirection())){
             if(leave_the_oil_field == true){
-                if (getX()==60 && getY()==60){
+                if(sqrt(pow(60 - getX(), 2) + pow(60 - getY(), 2) <= 2)){
+                    setDirection(right);
                     setAlive(false);
-                    //reset ticks to wait
                     return;
                 }
+                
                 else if(getX()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+                    
                     //turn direction based on Q
+                    if (getDirection() != right){
+                        setDirection(right);
+                    }
                     moveTo(getX() + 1, getY());
-                    //reset ticks to wait
+                    
                     return;
+                    
                 }
                 else if(getY()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
                     //turn direction based on Q
+                    if (getDirection() != up){
+                        setDirection(up);
+                    }
                     moveTo(getX(), getY() + 1 );
                     //reset ticks to wait
                     return;
                 }
             }
             else if(is4Away(studW) == "IceMan" && isFacingIceMan(getDirection(), studW)){
-                if (hasShoutedLast15 == true){
+                if (shoutedLast15 == 0){
+                    cout << "yell!!!" << endl;
                     getWorld()->playSound(SOUND_PROTESTER_YELL);
                     //iceMan -2 hitpoints
-                    //reset ticks to wait
-                    hasShoutedLast15 = false;
+                    ticksToWait = 10;
+                    shoutedLast15 = 15;
                 }
             }
             else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "Greater IceMan" && !isFacingIceMan(getDirection(), studW)){
                     setFacingIceMan(getDirection(), studW);
                 //getWorld()->moveToShortPath();
-                moveOne(getX(), getY(), getDirection());
+               moveOne(getX(), getY(), getDirection());
                 tryGold(getX(), getY());
+                isAnnoyed();
                     numSquaresToMoveInCurrentDirection = 0;
-                    //reset ticks to wait
+                shoutedLast15 = 15;
+                ticksToWait = 10;
                     return;
                 
             }
@@ -417,10 +428,12 @@ void Protester::doSomething(){
                 if(numSquaresToMoveInCurrentDirection <= 0){
                     //pick random direction that is not blocked by boulders or Ice
                     numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
-                    //reset ticks to wait
+                    ticksToWait = 10;
+                    shoutedLast15 = 15;
                     //take 1 step in that direction
                     moveOne(getX(), getY(), getDirection());
                     tryGold(getX(), getY());
+                    isAnnoyed();
                     return;
                 }
             }
@@ -430,6 +443,9 @@ void Protester::doSomething(){
             //set direction to new direction
             else if (getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
                 numSquaresToMoveInCurrentDirection = 0;
+                shoutedLast15 = 15;
+                ticksToWait = 10;
+                isAnnoyed();
                 return;
                 //reset ticks to wait
                 //pick new dirction in nonresting tick
@@ -441,50 +457,29 @@ void Protester::doSomething(){
     return;
 }
 
-void Protester::tryGold(int x, int y){
-    if (getWorld()->pickUpGold(getX(), getY())){
-        getWorld()->playSound(SOUND_PROTESTER_FOUND_GOLD);
+void Protester::isAnnoyed(){
+    int annoyMeter = 10;
+    //if gets bonked on head by boulder
+    //annoyMeter = 0;
+    
+    //if gets sprayed by iceMan
+    if (getWorld()->isSprayed(getX(), getY())){
+        getWorld()->playSound(SOUND_PROTESTER_ANNOYED);
+        annoyMeter--;
+        annoyMeter--;
+    }
+    if (annoyMeter == 0){
+        getWorld()->playSound(SOUND_PROTESTER_GIVE_UP);
         leave_the_oil_field = true;
     }
 }
 
-bool Protester::blockedByIceOrBoulder(int x, int y, StudentWorld* world){
-//    Boulder* rock = world->getBoulder(x, y);
-//    Ice* coldRock = world->getIce(x, y);
-//    if (coldRock != nullptr) {
-//        int xI = coldRock->getX();
-//        int yI = coldRock->getY();
-//        int xB = rock->getX();
-//        int yB = rock->getY();
-//        
-//            if (x + 4 == xB || x + 4 == xI || x - 4 == xB || x - 4 == xI) {
-//                // delete rock;
-//                //delete coldRock;
-//                return true;
-//            }
-//            else if (y + 4 == yB || y + 4 == yI || y - 4 == yB || y - 4 == yI) {
-//                    // delete rock;
-//                    //delete coldRock;
-//                    return true;
-//                
-//                
-//            }
-//        }
-    for (Actor* a : world->getCharacterList()){
-        if (a->getID() == IID_ICE){
-            if (x == a->getX()|| x == a->getX() || y == a->getY()|| y == a->getY()){
-                return true;
-            }
-            else if (a->getID() == IID_BOULDER){
-                if (x + 4 == a->getX()|| x - 4 == a->getX() || y + 4 == a->getY()|| y - 4 == a->getY()){
-                    return true;
-                }
-            }
-        }
+void Protester::tryGold(int x, int y){
+    if (getWorld()->pickUpGold(getX(), getY())){
+        cout << "Im walking back now!!" << endl;
+        getWorld()->playSound(SOUND_PROTESTER_FOUND_GOLD);
+        leave_the_oil_field = true;
     }
-    //delete rock;
-   // delete coldRock;
-    return false;
 }
 
 void Protester::moveOne(int x, int y, Direction d){
@@ -572,9 +567,7 @@ bool Protester::iceManisInSight(int x, int y, StudentWorld* world){
                 //delete man;
                 return true;
             }
-            else if (yI > y){
-                
-            }
+            
         }
         else if (y == yI) { //if they are on same column
             if (xI < x || xI > x){
@@ -600,17 +593,30 @@ void HardcoreProtester::doSomething(){//NOT COMPLETE
         //increment ticks
         //return
         else if (leave_the_oil_field == true){
-            if (getX() == 60 && getY() == 60){
+            if(sqrt(pow(60 - getX(), 2) + pow(60 - getY(), 2) <= 2)){
+                setDirection(right);
                 setAlive(false);
-            }
-            else if(getX()!=60 && !blockedByIceOrBoulder(getX(), getY(), studW)){
-                //turn direction based on Q
-                moveTo(getX() + 1, getY());
                 return;
             }
-            else if (getY() != 60 && !blockedByIceOrBoulder(getX(), getY(), studW)) {
+            
+            else if(getX()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+                
                 //turn direction based on Q
-                moveTo(getX(), getY() + 1);
+                if (getDirection() != right){
+                    setDirection(right);
+                }
+                moveTo(getX() + 1, getY());
+                
+                return;
+                
+            }
+            else if(getY()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+                //turn direction based on Q
+                if (getDirection() != up){
+                    setDirection(up);
+                }
+                moveTo(getX(), getY() + 1 );
+                //reset ticks to wait
                 return;
             }
         }
