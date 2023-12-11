@@ -293,17 +293,17 @@ goldPos.push_back((Point(player->getX(), player->getY())));
 
 bool StudentWorld::pickUpGold(int x, int y){
 for (const Point& p : goldPos){
-for (Actor* a : characterList) {
 double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
-if (a->getID() == IID_GOLD && a->getX() == p.x && a->getY() == p.y){
 if (radius <= 4){
 playSound(SOUND_PROTESTER_FOUND_GOLD);
-a->setAlive(false);
-return true;
+    for (Actor* a : characterList) {
+    if (a->getID() == IID_GOLD && a->getX() == p.x && a->getY() == p.y){
+        a->setAlive(false);
+        return true;
+    }
 }
 }
 return false;
-}
 }
 return false;
 }
@@ -385,22 +385,56 @@ void StudentWorld::useSonar(int x, int y){
     }
     
 
-void StudentWorld::useSpray(int x, int y){
-    Protester* proP = getProtester();
+void StudentWorld::useSpray(int x, int y, Actor::Direction d){
+    Protester* p= getProtester();
+    int sprayTick = 10;
     if(player->getSquirt() > 0){
         //proP->setHitpoints(-2);
-        for (Actor* a : getCharacterList()) {
-            if (a->getID() == IID_WATER_SPURT) {
-                return;
-            }
-        }
-        Squirt* sq = new Squirt(getIceMan()->getX()-3, getIceMan()->getY(),1,1,this);
+        Squirt* sq;
+        switch (d){
+            case Actor::up:
+                sq = new Squirt(getIceMan()->getX(), getIceMan()->getY() + 3, Actor::up, 1,1.0, this);
+                sprayTick--;
+                break;
+            case Actor::down:
+                sq = new Squirt(getIceMan()->getX(), getIceMan()->getY()-3,Actor::down, 1,1.0,this);
+                sprayTick--;
+                break;
+            case Actor::left:
+                sq = new Squirt(getIceMan()->getX()-3, getIceMan()->getY(),Actor::left,1,1.0,this);
+                sprayTick--;
+                break;
+            case Actor::right:
+                sq = new Squirt(getIceMan()->getX()+3, getIceMan()->getY(),Actor::right,1,1.0,this);
+                break;
+            case Actor::none:
+                
+                break;
+                
+        };
+        
         getCharacterList().push_back(sq);
-        //sq->moveTo(getIceMan()->getX()-3, getIceMan()->getY());
         playSound(SOUND_PLAYER_SQUIRT);
         player->setWater(-1);
+        if(sqrt(pow(p->getX() - x, 2) + pow(p->getY() - y, 2) <= 4)){
+            
+            p->setHitpoints(-2);
+        }
     }
     //delete proP;
+}
+
+bool StudentWorld::isSprayed(int x, int y){
+    //if squirt is within a rad of 3
+    for (Actor* p : characterList) {
+        if (p->getID() == IID_WATER_SPURT){
+            if(sqrt(pow(p->getX() - x, 2) + pow(p->getY() - y, 2) <= 3)){
+                p->setAlive(false);
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 //
@@ -621,63 +655,6 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
         if (q.front().first.first == objx && q.front().first.second == objy) {
             break;
         }
-        //if (q.front().first.first < 64) {
-        //    //cout << "hi" << endl;
-        //    //cout << q.front().second << endl;
-        //    //cout << q.front().first << endl;
-        //    if (q.front().first.first == 0) {
-        //        leavingPath[q.front().first.second][q.front().first.first] = q.front().second;
-
-        //    }
-        //    else if (iceMap.at(q.front().first.second).at(q.front().first.first + 1) == nullptr && !checkSpot("Boulder", objx - 1, objy)) {
-        //        bool addtopath = true;
-        //        for (int i = 0; i < 4; i++) {
-        //            if (iceMap.at(q.front().first.second + i).at(q.front().first.first + 1) != nullptr) {
-        //                addtopath = false;
-        //                break;
-        //            }
-        //            /*else {
-        //                addtopath = false;
-        //                break;
-        //            }*/
-        //        }
-        //        if (addtopath) {
-        //            //cout << "ADDED TO THE PATH" << endl;
-        //            //cout << q.front().first << endl;
-        //            //cout << q.front().second << endl;
-        //            leavingPath[q.front().first.second][q.front().first.first + 1] = q.front().second;
-        //            pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first + 1, q.front().first.second), q.front().second);
-        //            q.push(a);
-        //        }
-        //    }
-        //}
-        //if (q.front().first.second < 64) {
-        //    if (q.front().second == 0) {
-        //        leavingPath[q.front().first.second][q.front().first.first] = ++q.front().second;
-        //    }
-        //    else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx, objy - 1)) {
-        //        bool addtopath = true;
-        //        for (int i = 0; i < 4; i++) {
-        //            if (iceMap.at(q.front().first.second - 1).at(q.front().first.first + i) != nullptr) {
-        //                addtopath = false;
-        //                cout << "AM BREAKING" << endl;
-        //                break;
-        //            }
-        //            /*else {
-        //                addtopath = false;
-        //                break;
-        //            }*/
-        //        }
-        //        if (addtopath) {
-        //            cout << "ADDED TO THE PATH" << endl;
-        //            cout << "x:" << q.front().first.first << endl;
-        //            cout << "y:" << q.front().first.second << endl;
-        //            leavingPath[q.front().first.second - 1][q.front().first.first] = ++q.front().second;
-        //            pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first, q.front().first.second - 1), q.front().second);
-        //            q.push(a);
-        //        }
-        //    }
-        //}
         cout << "I AM POPING" << endl;
         q.pop();
         cout << "SIZE: " << q.size() << endl;
@@ -700,137 +677,10 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
         cout << endl;
     }
 
-    
-    /*if (y <=56) {
-        if (iceMap.at(y+1).at(x) == nullptr && !checkSpot("Boulder", objx, objy+1)) {
-            bool addtopath = true;
-            for (int i = 0; i < 4; i++) {
-                if (x+i<60) {
-                    if (iceMap.at(y + 1).at(x + i) != nullptr) {
-                        addtopath = false;
-                        break;
-                    }
-                }
-                else {
-                    addtopath = false;
-                    break;
-                }
-            }
-            if (addtopath) {
-                leavingPath[y][x] = distance;
-                pair<int, int> a = make_pair(x, y+1);
-                q.push(a);
-            }
-        }
-    }*/
-    /*if (x > 1 && x < 60) {
-        if (icemap.at(y).at(x - 1) == nullptr && !checkspot("boulder", x-1, y)) {
-            leavingpath[y][x] = distance;
-        }
-    }
-    if (y > 11) {
-        if (icemap.at(y-1).at(x) == nullptr && !checkspot("boulder", objx + 1, objy)) {
-            leavingpath[y][x] = distance;
-        }
-    }*/
-
-    /*q.pop();
-    count++;
-    cout << q.size() << endl;*/
-
-    //while (!q.empty()) {
-    //    cout << "COUNT: " << count << endl;
-    //    //cout << q.front().first << endl;
-    //    distance++;
-    //
-    //    if (q.front().first > 0) {
-    //        cout << "hi" << endl;
-    //        cout << q.front().second << endl;
-    //        cout << q.front().first << endl;
-    //        if (iceMap.at(q.front().second).at(q.front().first-1) == nullptr && !checkSpot("Boulder", objx - 1, objy)) {
-    //            bool addtopath = true;
-    //            for (int i = 0; i < 4; i++) {
-    //                if (iceMap.at(q.front().second+i).at(q.front().first-1) != nullptr) {
-    //                    addtopath = false;
-    //                    break;
-    //                }
-    //                /*else {
-    //                    addtopath = false;
-    //                    break;
-    //                }*/
-    //            }
-    //            if (addtopath) {
-    //                cout << "ADDED TO THE PATH" << endl;
-    //                leavingPath[y][x] = distance;
-    //                pair<int, int> a = make_pair(x-1,y);
-    //                q.push(a);
-    //            }
-
-    //        }
-    //    }
-    //    /*if (y <=56) {
-    //        if (iceMap.at(y+1).at(x) == nullptr && !checkSpot("Boulder", objx, objy+1)) {
-    //            bool addtopath = true;
-    //            for (int i = 0; i < 4; i++) {
-    //                if (x+i<60) {
-    //                    if (iceMap.at(y + 1).at(x + i) != nullptr) {
-    //                        addtopath = false;
-    //                        break;
-    //                    }
-    //                }
-    //                else {
-    //                    addtopath = false;
-    //                    break;
-    //                }
-    //            }
-    //            if (addtopath) {
-    //                leavingPath[y][x] = distance;
-    //                pair<int, int> a = make_pair(x, y+1);
-    //                q.push(a);
-    //            }
-    //        }
-    //    }*/
-    //    /*if (x > 1 && x < 60) {
-    //        if (icemap.at(y).at(x - 1) == nullptr && !checkspot("boulder", x-1, y)) {
-    //            leavingpath[y][x] = distance;
-    //        }
-    //    }
-    //    if (y > 11) {
-    //        if (icemap.at(y-1).at(x) == nullptr && !checkspot("boulder", objx + 1, objy)) {
-    //            leavingpath[y][x] = distance;
-    //        }
-    //    }*/
-
-    //    q.pop();
-    //    count++;
-
-    //    if (objx == x && objy == y) {
-    //        break;
-    //    }
-    //}
-
-    //for (int i = 0; i < 65; i++) {
-    //    for (int j = 0; j < 60; j++) {
-    //        leavingPath[i][j] = 0;
-    //    }
-    //}
-
-    //for (int i = 0; i < 65; i++) {
-    //    for (int j = 0; j < 60; j++) {
-    //        cout << leavingPath[i][j];
-    //    }
-    //    cout << endl;
-    //}
-
 }
 
 
-//maybe causes error cuz hardpro has no doSomething...?
-//HardcoreProtester* StudentWorld::getHardcoreProtester(){   for (auto a : characterList) {       if (a->getID() == IID_HARD_CORE_PROTESTER){           return dynamic_cast<HardcoreProtester*>(a);           break;       }   }   return nullptr;}
-//
+
 
 
 // Students:  Add code to this file (if you wish), StudentWorld.h, Actor.h and Actor.cpp
-
-//// while (The player has lives left)// {// Prompt_the_user_to_start_playing(); // “press a key to start” Initialize_the_game_world(); // you’re going to write this func// while (The player is still alive)// {// // each pass through this loop is a tick (1/20th of a sec)// // you’re going to write code to do the following// Ask_all_actors_to_do_something();// If_any_actors_died_then_delete_them_from_the_world();// // we write this code to handle the animation for// you Animate_all_of_the_alive_actors_to_the_screen();// Sleep_for_50ms_to_give_the_user_time_to_react();// }// // the player died – you’re going to write this code// Cleanup_all_game_world_objects(); // you’re going to write this  if (The player has more lives)// Prompt_the_player_to_continue();// }// Tell_the_user_the_game_is_over(); // “game over!”; we provide this
-
