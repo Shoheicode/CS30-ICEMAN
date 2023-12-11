@@ -297,17 +297,16 @@ goldPos.push_back((Point(player->getX(), player->getY())));
 
 bool StudentWorld::pickUpGold(int x, int y){
 for (const Point& p : goldPos){
-double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
-if (radius <= 4){
-playSound(SOUND_PROTESTER_FOUND_GOLD);
-    for (Actor* a : characterList) {
-    if (a->getID() == IID_GOLD && a->getX() == p.x && a->getY() == p.y){
-        a->setAlive(false);
-        return true;
+    double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
+    if (radius <= 4){
+        playSound(SOUND_PROTESTER_FOUND_GOLD);
+        for (Actor* a : characterList) {
+            if (a->getID() == IID_GOLD && a->getX() == p.x && a->getY() == p.y){
+                a->setAlive(false);
+                return true;
+            }
+        }   
     }
-}
-}
-return false;
 }
 return false;
 }

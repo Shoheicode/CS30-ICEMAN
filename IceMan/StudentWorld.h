@@ -129,6 +129,8 @@ public:
         
         //Updates the Textbox
         updateTextBox();
+
+        spawnCharacters();
         
         //Goes through each character and asks if it does something
         for (Actor* a : characterList) {
@@ -215,6 +217,8 @@ public:
     vector<vector<Ice*>>& getMap() {
         return iceMap;
     }
+
+    void spawnCharacters();
 
     bool checkSpot(string actorType, int x, int y);
     
