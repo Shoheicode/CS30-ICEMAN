@@ -53,7 +53,7 @@ class AnnoyedActor : public Actor {
         }
 
     protected:
-        bool isAnnoyed();
+    virtual void isAnnoyed() =0;
 };
 
 class Protester: public AnnoyedActor {
@@ -72,17 +72,17 @@ public:
         
         //moves = ((getWorld()->getLevel())/4);
 //        ticksToWait = max(0,moves);
-        ticksToWait = 0;
+        ticksToWait = 10;
         leave_the_oil_field = false;//doesn't leave field bc is Alive
         hasShoutedLast15 = false;
         setVisible(true);//appear on screen
         
     };
     //void moveTo(int x, int y) {};
-    virtual void isAnnoyed(){};
-    void tryGold(int x, int y);
+    virtual void isAnnoyed();
+    void virtual tryGold(int x, int y);
+    //void tryBoulder(int x, int y);
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
-    virtual bool blockedByIceOrBoulder(int x, int y, StudentWorld* world);
     virtual bool iceManisInSight(int x, int y, StudentWorld* world);
     virtual bool isAtFork(int x, int y, StudentWorld* world);
     virtual void doSomething() override;
@@ -172,9 +172,9 @@ public:
 
 class Squirt : public Prop {
 public:
-    Squirt(int startX, int startY, double size, int depth, StudentWorld* world)
-           : Prop(IID_WATER_SPURT, startX, startY, size, depth, left, world) {
-               setFacingIceMan(getDirection(), studW);
+    Squirt(int startX, int startY, Direction d, double size, int depth, StudentWorld* world)
+           : Prop(IID_WATER_SPURT, startX, startY, 1.0, 1, d, world) {
+               //setFacingIceMan(getDirection(), studW);
                distance = 4;
                setVisible(true);//appear on screen
        }
