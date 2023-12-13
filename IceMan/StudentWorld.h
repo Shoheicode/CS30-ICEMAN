@@ -66,7 +66,19 @@ public:
         
         //Number of Water Pools
         int wNum = max(100, 300 - (10 * static_cast<int>(getLevel())));
+        
+        int pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
+        
+        int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
+        
+        int probOfSonarOrWater = static_cast<int>(getLevel()) * 25 + 300;
 
+        int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
+        
+        int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
+        
+        int proTickWait = max(0, 3 - (static_cast<int>(getLevel())/4));
+        
         srand(time(NULL));
 
         //Creates the player
@@ -92,7 +104,9 @@ public:
         spawnOil(oNum);
 
         //Adds a protestor
-        characterList.push_back(new Protester(60, 60, this));
+        //spawnProtesters(pNum);
+        characterList.push_back(new Protester(20, 60, IID_PROTESTER, this));
+        characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
 
         findPath(60,60,0,60);
         //currNumPro++;
@@ -129,8 +143,6 @@ public:
         
         //Updates the Textbox
         updateTextBox();
-
-        spawnCharacters();
         
         //Goes through each character and asks if it does something
         for (Actor* a : characterList) {
@@ -217,8 +229,6 @@ public:
     vector<vector<Ice*>>& getMap() {
         return iceMap;
     }
-
-    void spawnCharacters();
 
     bool checkSpot(string actorType, int x, int y);
     
@@ -317,13 +327,15 @@ private:
     void spawnNuggets(int num);
     
     //Spawn Water sq
-    void spawnWater(int wNum);
+    void spawnWater(int wNum, int tickNum);
     
     //Spawn sonar
-    void spawnSonar(int sNum);
+    void spawnSonar(int sNum, int tickNum);
     
     //Spawn Oil
     void spawnOil(int oNum);
+    
+    void spawnProtesters(int pNum);
     //Checks the distance between 2 objects
     bool checkDistance(Actor* a, int obj1X, int obj1Y, int obj2X, int obj2Y);
 
