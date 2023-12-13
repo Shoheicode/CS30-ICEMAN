@@ -4,6 +4,7 @@
 #include "GraphObject.h"
 #include "GameWorld.h"
 #include<cstdlib>
+#include <cmath>
 #include <queue>
 using namespace std;
 
@@ -66,7 +67,7 @@ protected:
     string direction = "left";
 
 public:
-    Protester(int startX, int startY, StudentWorld* world) : AnnoyedActor (IID_PROTESTER, startX, startY, left,world, 1.0, 0) {
+    Protester(int startX, int startY, int imageID, StudentWorld* world) : AnnoyedActor (imageID, startX, startY, left,world, 1.0, 0) {
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
         hitPoints = 5;//set data members numbers specified by packet
         
@@ -93,17 +94,26 @@ public:
 class HardcoreProtester: public Protester {
 public:
     //Hardcore Protestor -> Protestor -> Actor -> GraphObject
-    HardcoreProtester(int startX, int startY, StudentWorld* world) : Protester (startX, startY, world) {
+    HardcoreProtester(int startX, int startY, int ticks_to_stare, StudentWorld* world) : Protester (startX, startY, IID_HARD_CORE_PROTESTER, world) {
         //decide how many numSquaresToMoveInCurrentDirection between 8 and 60
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
+        //ticks_to_stare = max(50, 100 – current_level_number * 10);
+        goldInv = 0;
         leave_the_oil_field = false;//doesn't leave field bc is Alive
         hitPoints = 20;//set data members numbers specified by packet
         setVisible(true);//appear on screen
     };
     virtual void doSomething() override;
+    virtual void tryGold(int x, int y) override;
+    void setGoldInv(int a){goldInv += a;}
+    int getGold(){return goldInv;}
+    int getTickStare() {return ticks_to_stare;}
     virtual ~HardcoreProtester() {};
 private:
     int ticksToWaitBetweenMoves;
+    int ticks_to_stare;
+    int goldInv;
+    
 };
 
 class Prop : public Actor{
@@ -172,9 +182,8 @@ public:
 
 class Squirt : public Prop {
 public:
-    Squirt(int startX, int startY, Direction d, double size, int depth, StudentWorld* world)
+    Squirt(int startX, int startY, Direction d, StudentWorld* world)
            : Prop(IID_WATER_SPURT, startX, startY, 1.0, 1, d, world) {
-               //setFacingIceMan(getDirection(), studW);
                distance = 4;
                setVisible(true);//appear on screen
        }
@@ -188,7 +197,7 @@ class Oil : public Prop {
 public:
     Oil(int startX, int startY, StudentWorld* world)
            : Prop(IID_BARREL, startX, startY, 1.0, 2, right, world) {
-               setVisible(false);//appear on screen
+               setVisible(true);//appear on screen
        }
     virtual void doSomething() override;
     virtual ~Oil() {}
@@ -228,7 +237,7 @@ public:
     Gold(int startX, int startY, bool isDropped, StudentWorld* world)
         : Prop(IID_GOLD, startX, startY, 1.0, 2, right, world) {
         if (isDropped == false) {
-            setVisible(false);//hidden in ice CHANGE ONCE FINISHED
+            setVisible(true);//hidden in ice CHANGE ONCE FINISHED
             currentState = icePickUp;
             //pick-up able by Iceman
             //wont disappear
@@ -263,6 +272,8 @@ public:
     //1.0 and 2 and right
     SonarKit(int startX, int startY, bool canAppear, StudentWorld* world)
            : Prop(IID_SONAR, startX, startY, 1.0, 2, right, world) {
+               
+               
                if (canAppear== false){
                    //tick span loop
                    //canAppear = true;
@@ -278,6 +289,7 @@ public:
                // numTicks will exist T = max(100, 300 – 10*current_level_number)
        }
     virtual void doSomething() override;
+    void setTicks(int a){ticksToWait = a;}
     virtual ~SonarKit() {}
 private:
     int ticksToWait;
@@ -285,15 +297,22 @@ private:
 
 class WaterPool : public Prop {
 public:
-    WaterPool(int startX, int startY, double size, int depth, StudentWorld* world)
-           : Prop(IID_WATER_POOL, startX, startY, size, depth, right, world) {
-               GraphObject::setVisible(true);//appear on screen
-               //pick-up able Iceman
-               //will be in temp state (limited num of ticks b4 disappearing
-               // numTicks will exist T = max(100, 300 – 10*current_level_number)
+    WaterPool(int startX, int startY, int tixWait, StudentWorld* world)
+           : Prop(IID_WATER_POOL, startX, startY, 1.0, 2, right, world) {
+               saveTix = tixWait;
+               while (tixWait != 0){
+                   tixWait--;
+               }
+               if (tixWait == 0){
+                   GraphObject::setVisible(true);//appear on screen
+               }
        }
     virtual void doSomething() override;
+    bool tickEllapsed(int tixWait);
     virtual ~WaterPool() {}
+private:
+    int tixWait;
+    int saveTix;
 };
 
 #endif ////ACTOR_H_
