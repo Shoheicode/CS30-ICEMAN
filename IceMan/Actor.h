@@ -62,25 +62,31 @@ protected:
     bool leave_the_oil_field;
     int shoutLast15;
     int moves;
-    int pHealth;
+    int tickStun;
     int ticksToWait;
     int numSquaresToMoveInCurrentDirection;
+    bool stun;
     string direction = "left";
 
 public:
-    Protester(int startX, int startY, int imageID, StudentWorld* world) : AnnoyedActor (imageID, startX, startY, left,world, 1.0, 0) {
+    Protester(int startX, int startY, int imageID, int tStun, StudentWorld* world) : AnnoyedActor (imageID, startX, startY, left,world, 1.0, 0) {
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
         hitPoints = 5;//set data members numbers specified by packet
         shoutLast15 = 15;
+        stun = false;
+        tickStun = tStun;
         ticksToWait = 10;
         leave_the_oil_field = false;//doesn't leave field bc is Alive
         setVisible(true);//appear on screen
         
     };
     virtual void isAnnoyed();
+    virtual bool setHit(int a) {hitPoints += 2; stun = true; return stun;}
     void virtual tryGold(int x, int y);
     virtual bool yell(int x, int y);
     virtual void det15(){shoutLast15--;}
+    virtual int getStun(){return tickStun;}
+    virtual void detStun(){tickStun--;}
     virtual void reset15(){shoutLast15 = 15;}
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
     virtual bool iceManisInSight(int x, int y, StudentWorld* world);
@@ -93,7 +99,7 @@ public:
 class HardcoreProtester: public Protester {
 public:
     //Hardcore Protestor -> Protestor -> Actor -> GraphObject
-    HardcoreProtester(int startX, int startY, int ticks_to_stare, StudentWorld* world) : Protester (startX, startY, IID_HARD_CORE_PROTESTER, world) {
+    HardcoreProtester(int startX, int startY, int ticks_to_stare, StudentWorld* world) : Protester (startX, startY, IID_HARD_CORE_PROTESTER, ticks_to_stare, world) {
         //decide how many numSquaresToMoveInCurrentDirection between 8 and 60
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
         //ticks_to_stare = max(50, 100 – current_level_number * 10);
