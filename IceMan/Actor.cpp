@@ -177,6 +177,7 @@ void Boulder::overlap(StudentWorld* world) {
         if (a->getID() == IID_PROTESTER || a->getID() == IID_HARD_CORE_PROTESTER && (abs(getY() - a->getY()) < 4)) {
             if (abs(getX() - a->getX()) < 4) {
                 getWorld()->playSound(SOUND_PROTESTER_GIVE_UP);
+                studW->increaseScore(500);
                 a->setAlive(false);
             }
         }
@@ -455,13 +456,8 @@ void Protester::doSomething(){
 void Protester::isAnnoyed(){
     //boulder already covered
     //if gets sprayed by iceMan
-    if (getWorld()->isSprayed(getX(), getY())){
-        cout << "im soaked!" << endl;
-        getWorld()->playSound(SOUND_PROTESTER_ANNOYED);
-        getHurt(-2);
-        return;
-    }
-    if (pHealth == 0){
+    if (getHitpoints() <= 0){
+        studW->increaseScore(100);
         getWorld()->playSound(SOUND_PROTESTER_GIVE_UP);
         leave_the_oil_field = true;
         return;
@@ -470,9 +466,9 @@ void Protester::isAnnoyed(){
 
 bool Protester::yell(int x, int y){//disabled for testingg
     cout << "yell!!!" << endl;
-    getWorld()->playSound(SOUND_PROTESTER_YELL);
-   IceMan* man = getWorld()->getIceMan();
-  man->setHitpoints(-2);
+//    getWorld()->playSound(SOUND_PROTESTER_YELL);
+//   IceMan* man = getWorld()->getIceMan();
+//  man->setHitpoints(-2);
     return true;
 }
 
