@@ -70,7 +70,7 @@ protected:
 public:
     Protester(int startX, int startY, int imageID, StudentWorld* world) : AnnoyedActor (imageID, startX, startY, left,world, 1.0, 0) {
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
-        pHealth = 5;//set data members numbers specified by packet
+        hitPoints = 5;//set data members numbers specified by packet
         shoutLast15 = 15;
         ticksToWait = 10;
         leave_the_oil_field = false;//doesn't leave field bc is Alive
@@ -78,7 +78,6 @@ public:
         
     };
     virtual void isAnnoyed();
-    virtual void getHurt(int a){pHealth += a;}
     void virtual tryGold(int x, int y);
     virtual bool yell(int x, int y);
     virtual void det15(){shoutLast15--;}
