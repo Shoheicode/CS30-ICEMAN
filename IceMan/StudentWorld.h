@@ -130,7 +130,7 @@ public:
         //Updates the Textbox
         updateTextBox();
 
-        spawnCharacters();
+        //spawnCharacters();
         
         //Goes through each character and asks if it does something
         for (Actor* a : characterList) {
