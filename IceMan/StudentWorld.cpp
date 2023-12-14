@@ -120,24 +120,15 @@ void StudentWorld::spawnSonar(int sNum, int tickNum) {
     while (currentNum != sNum) {
         bool createSonar = true;
         ticWait--;
-
-        // Check if the distance between existing objects and the specified point is less than 6
-        for (Actor* a : characterList) {
-            if (!checkDistance(a, a->getX(), a->getY(), 60, 60)) {
-                createSonar = false;
-                break;
-            }
-        }
-
-        // If createSonar is true and ticWait has reached 0, create the SonarKit
+        //sdeT(ticWait);
         if (createSonar && ticWait == 0) {
-            characterList.push_back(new SonarKit(60, 60, tickNum, this));
+            characterList.push_back(new SonarKit(0, 60, tickNum, this));
             cout << "sonar created get it quick!" << endl;
             currentNum++;
             ticWait = tickNum; // Reset tick wait
         }
     }
-    cout << "all sonar created" << endl;
+    cout << "all sonar created!" << endl;
 }
 
 void StudentWorld::spawnOil(int oNum){
@@ -457,44 +448,14 @@ void StudentWorld::useSonar(int x, int y){
     
     
 
-void StudentWorld::useSpray(int x, int y, Actor::Direction d){
+void StudentWorld::useSpray(int x, int y){
     Protester* p= getProtester();
-    int sprayTick = 10;
     if(player->getSquirt() > 0){
-        //proP->setHitpoints(-2);
-        Squirt* sq;
-        switch (d){
-            case Actor::up:
-                //set ticks
-                
-                sq = new Squirt(getIceMan()->getX(), getIceMan()->getY() + 4, Actor::up, this);
-                sprayTick--;
-                break;
-            case Actor::down:
-                sq = new Squirt(getIceMan()->getX(), getIceMan()->getY()-4,Actor::down,this);
-                sprayTick--;
-                break;
-            case Actor::left:
-                sq = new Squirt(getIceMan()->getX() - 4, getIceMan()->getY(),Actor::left,this);
-                sprayTick--;
-                break;
-            case Actor::right:
-                sq = new Squirt(getIceMan()->getX() + 4, getIceMan()->getY(),Actor::right,this);
-                break;
-            case Actor::none:
-                break;
-                
-        };
-        
-        getCharacterList().push_back(sq);
+        getCharacterList().push_back(new Squirt(x, y, player->getDirection(), this));
         playSound(SOUND_PLAYER_SQUIRT);
         player->setWater(-1);
-        if(sqrt(pow(p->getX() - x, 2) + pow(p->getY() - y, 2) <= 4)){
-            
-            p->setHitpoints(-2);
-        }
     }
-    //delete proP;
+   
 }
 
 bool StudentWorld::isSprayed(int x, int y){
@@ -502,7 +463,6 @@ bool StudentWorld::isSprayed(int x, int y){
     for (Actor* p : characterList) {
         if (p->getID() == IID_WATER_SPURT){
             if(sqrt(pow(p->getX() - x, 2) + pow(p->getY() - y, 2) <= 3)){
-                p->setAlive(false);
                 return true;
             }
         }
@@ -514,7 +474,6 @@ bool StudentWorld::isSprayed(int x, int y){
 IceMan* StudentWorld::getIceMan(){
     for (Actor* a : characterList) {
         if (a->getID() == IID_PLAYER){
-            //cout << "AM RUNNING BOIIIII" << endl;
             return dynamic_cast<IceMan*>(a);
             break;
         }
