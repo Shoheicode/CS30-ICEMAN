@@ -842,7 +842,7 @@ void WaterPool::doSomething(){
     return;
 }
 
-//ice
+//ice//
 bool Ice::overlap(StudentWorld* world) {
     for (Actor* a : world->getCharacterList()) {
         //Checking if overlaping with characters
