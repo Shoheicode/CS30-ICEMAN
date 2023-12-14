@@ -60,8 +60,9 @@ class AnnoyedActor : public Actor {
 class Protester: public AnnoyedActor {
 protected:
     bool leave_the_oil_field;
-    bool hasShoutedLast15;
+    int shoutLast15;
     int moves;
+    int pHealth;
     int ticksToWait;
     int numSquaresToMoveInCurrentDirection;
     string direction = "left";
@@ -69,20 +70,19 @@ protected:
 public:
     Protester(int startX, int startY, int imageID, StudentWorld* world) : AnnoyedActor (imageID, startX, startY, left,world, 1.0, 0) {
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
-        hitPoints = 5;//set data members numbers specified by packet
-        
-        //moves = ((getWorld()->getLevel())/4);
-//        ticksToWait = max(0,moves);
+        pHealth = 5;//set data members numbers specified by packet
+        shoutLast15 = 15;
         ticksToWait = 10;
         leave_the_oil_field = false;//doesn't leave field bc is Alive
-        hasShoutedLast15 = false;
         setVisible(true);//appear on screen
         
     };
-    //void moveTo(int x, int y) {};
     virtual void isAnnoyed();
+    virtual void getHurt(int a){pHealth += a;}
     void virtual tryGold(int x, int y);
     virtual bool yell(int x, int y);
+    virtual void det15(){shoutLast15--;}
+    virtual void reset15(){shoutLast15 = 15;}
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
     virtual bool iceManisInSight(int x, int y, StudentWorld* world);
     virtual bool isAtFork(int x, int y, StudentWorld* world);
@@ -185,13 +185,19 @@ class Squirt : public Prop {
 public:
     Squirt(int startX, int startY, Direction d, StudentWorld* world)
            : Prop(IID_WATER_SPURT, startX, startY, 1.0, 1, d, world) {
+               if(!isFacingIceMan(getDirection(), world)){
+                   setFacingIceMan(getDirection(), studW);
+               }
                distance = 4;
                setVisible(true);//appear on screen
        }
     virtual void doSomething() override;
+    void deT(){ticksToWait--;}
+    void detD(){distance--;}
     virtual ~Squirt() {}
 private:
     int distance;
+    int ticksToWait;
 };
 
 class Oil : public Prop {
@@ -277,7 +283,7 @@ public:
                setVisible(true);
        }
     virtual void doSomething() override;
-    void setTicks(int a){ticksToWait = a;}
+    void deT(){ticksToWait--;}
     virtual ~SonarKit() {}
 private:
     int ticksToWait;
@@ -287,14 +293,15 @@ class WaterPool : public Prop {
 public:
     WaterPool(int startX, int startY, int tixWait, StudentWorld* world)
            : Prop(IID_WATER_POOL, startX, startY, 1.0, 2, right, world) {
-               saveTix = tixWait;
+               ticksToWait = tixWait;
                setVisible(true);
        }
     virtual void doSomething() override;
+    void deT(){ticksToWait--;}
     bool tickEllapsed(int tixWait);
     virtual ~WaterPool() {}
 private:
-    int tixWait;
+    int ticksToWait;
     int saveTix;
 };
 
