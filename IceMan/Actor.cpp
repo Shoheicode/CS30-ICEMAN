@@ -198,7 +198,8 @@ void IceMan::doSomething(){
                     //getWorld()->increaseScore(-getSc)
                     break;
                 case KEY_PRESS_SPACE:
-                    getWorld()->useSpray(getX(), getY(), getDirection());
+                    
+                    getWorld()->useSpray(getX(), getY());
                     break;
                 case KEY_PRESS_LEFT:
                     if (getDirection() != left){
@@ -362,17 +363,13 @@ void IceMan::checkAnnoyed(){
 
 bool followingPath = false;
 void Protester::doSomething(){
-    int shoutedLast15 = 0;
     if (isAlive()){
         if (ticksToWait > 0){
             ticksToWait--;
             return;
         }
-        if (shoutedLast15 > 0){
-            shoutedLast15--;
-            return;
-        }
-        else if (ticksToWait==0 && !outOfField(getX(), getY(), getDirection())){
+        det15();
+        if (ticksToWait==0 && !outOfField(getX(), getY(), getDirection())){
             if(leave_the_oil_field == true){
                 if(sqrt(pow(60 - getX(), 2) + pow(60 - getY(), 2) <= 2)){
                     setDirection(right);
@@ -402,11 +399,12 @@ void Protester::doSomething(){
                 }
             }
             else if(is4Away(studW) == "IceMan"){// && isFacingIceMan(getDirection(), studW)
-                if (shoutedLast15 == 0){
+                if (shoutLast15 == 0){
                     yell(getX(), getY());
                     ticksToWait = 10;
-                    shoutedLast15 = 15;
+                    reset15();
                 }
+                
             }
             else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "Greater IceMan" && !isFacingIceMan(getDirection(), studW)){
                     setFacingIceMan(getDirection(), studW);
@@ -415,7 +413,7 @@ void Protester::doSomething(){
                 tryGold(getX(), getY());
                 isAnnoyed();
                     numSquaresToMoveInCurrentDirection = 0;
-                shoutedLast15 = 15;
+                reset15();
                 ticksToWait = 10;
                     return;
                 
@@ -426,7 +424,7 @@ void Protester::doSomething(){
                     //pick random direction that is not blocked by boulders or Ice
                     numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
                     ticksToWait = 10;
-                    shoutedLast15 = 15;
+                    reset15();
                     //take 1 step in that direction
                     moveOne(getX(), getY(), getDirection());
                     tryGold(getX(), getY());
@@ -440,7 +438,7 @@ void Protester::doSomething(){
             //set direction to new direction
             else if (getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
                 numSquaresToMoveInCurrentDirection = 0;
-                shoutedLast15 = 15;
+                reset15();
                 ticksToWait = 10;
                 isAnnoyed();
                 return;
@@ -455,25 +453,26 @@ void Protester::doSomething(){
 }
 
 void Protester::isAnnoyed(){
-    int annoyMeter = 10;
     //boulder already covered
     //if gets sprayed by iceMan
     if (getWorld()->isSprayed(getX(), getY())){
+        cout << "im soaked!" << endl;
         getWorld()->playSound(SOUND_PROTESTER_ANNOYED);
-        annoyMeter--;
-        annoyMeter--;
+        getHurt(-2);
+        return;
     }
-    if (annoyMeter == 0){
+    if (pHealth == 0){
         getWorld()->playSound(SOUND_PROTESTER_GIVE_UP);
         leave_the_oil_field = true;
+        return;
     }
 }
 
-bool Protester::yell(int x, int y){
+bool Protester::yell(int x, int y){//disabled for testingg
     cout << "yell!!!" << endl;
     getWorld()->playSound(SOUND_PROTESTER_YELL);
-    IceMan* man = getWorld()->getIceMan();
-    man->setHitpoints(-2);
+   IceMan* man = getWorld()->getIceMan();
+  man->setHitpoints(-2);
     return true;
 }
 
@@ -588,17 +587,13 @@ bool Protester::iceManisInSight(int x, int y, StudentWorld* world){
 //Hardcore Protester
 
 void HardcoreProtester::doSomething(){//NOT COMPLETE
-    int shoutedLast15 = 0;
     if (isAlive()){
         if (ticksToWait > 0){
             ticksToWait--;
             return;
         }
-        if (shoutedLast15 > 0){
-            shoutedLast15--;
-            return;
-        }
-        else if (ticksToWait==0 && !outOfField(getX(), getY(), getDirection())){
+        det15();
+        if (ticksToWait==0 && !outOfField(getX(), getY(), getDirection())){
             if(leave_the_oil_field == true){
                 if(sqrt(pow(60 - getX(), 2) + pow(60 - getY(), 2) <= 2)){
                     setDirection(right);
@@ -627,13 +622,11 @@ void HardcoreProtester::doSomething(){//NOT COMPLETE
                     return;
                 }
             }
-            else if(is4Away(studW) == "IceMan" && isFacingIceMan(getDirection(), studW)){
-                if (shoutedLast15 == 0){
-                    cout << "yell!!!" << endl;
-                    getWorld()->playSound(SOUND_PROTESTER_YELL);
-                    //iceMan -2 hitpoints
+            else if(is4Away(studW) == "IceMan"){// && isFacingIceMan(getDirection(), studW)
+                if (shoutLast15 == 0){
+                    yell(getX(), getY());
                     ticksToWait = 10;
-                    shoutedLast15 = 15;
+                    reset15();
                 }
             }
             else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "Greater IceMan" && !isFacingIceMan(getDirection(), studW)){
@@ -643,7 +636,7 @@ void HardcoreProtester::doSomething(){//NOT COMPLETE
                 tryGold(getX(), getY());
                 isAnnoyed();
                     numSquaresToMoveInCurrentDirection = 0;
-                shoutedLast15 = 15;
+                reset15();
                 ticksToWait = 10;
                     return;
                 
@@ -654,7 +647,7 @@ void HardcoreProtester::doSomething(){//NOT COMPLETE
                     //pick random direction that is not blocked by boulders or Ice
                     numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
                     ticksToWait = 10;
-                    shoutedLast15 = 15;
+                    reset15();
                     //take 1 step in that direction
                     moveOne(getX(), getY(), getDirection());
                     tryGold(getX(), getY());
@@ -668,7 +661,7 @@ void HardcoreProtester::doSomething(){//NOT COMPLETE
             //set direction to new direction
             else if (getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
                 numSquaresToMoveInCurrentDirection = 0;
-                shoutedLast15 = 15;
+                reset15();
                 ticksToWait = 10;
                 isAnnoyed();
                 return;
@@ -771,12 +764,45 @@ void Oil::doSomething(){
 //Squirt
 int x = 0;
 void Squirt::doSomething(){
-    if (x == 4) {
-        x = 0;
-        //if radius <= 3 of 1+ protesters
-        moveTo(getWorld()->getIceMan()->getX()-4, getWorld()->getIceMan()->getY());
+    if (getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())) {
+        setAlive(false);
+        }
+    if (distance == 0){
+        setAlive(false);
     }
-    x++;
+    //if protester in the way
+    //hurt then set to dead
+    if (distance > 0){
+        switch (getDirection()) {
+            case up:
+                if (getWorld()->blockedbyRocksOrIce(getX(), getY() + 3,getDirection())){
+                    setAlive(false);
+                }
+                moveTo(getX(), getY() + 1);
+                break;
+            case down:
+                if (getWorld()->blockedbyRocksOrIce(getX(), getY() - 3,getDirection())){
+                    setAlive(false);
+                }
+                moveTo(getX(), getY() - 1);
+                break;
+            case left:
+                if (getWorld()->blockedbyRocksOrIce(getX() - 3, getY(),getDirection())){
+                    setAlive(false);
+                }
+                moveTo(getX() - 1, getY());
+                break;
+            case right:
+                if (getWorld()->blockedbyRocksOrIce(getX() + 3, getY(),getDirection())){
+                    setAlive(false);
+                }
+                moveTo(getX() + 1, getY());
+                break;
+            default:
+                break;
+        }
+        detD();
+    }
 }
 
 
@@ -785,17 +811,15 @@ void Squirt::doSomething(){
 void SonarKit::doSomething(){
     IceMan* man = getWorld()->getIceMan();
     if (isAlive()){
+        deT();
         if(is3Away(studW) == "IceMan"){//&& !timeEllapsed
             setAlive(false);
             getWorld()->playSound(SOUND_GOT_GOODIE);
             man->setSonar(1);
             studW->increaseScore(75);
         }
-        //if (timeEllapsed){
-        //setAlive(false);
-        //}
-        else{
-            cout << "hello im alive!" << endl;
+        else if (ticksToWait == 0){
+            setAlive(false);
         }
     }
     return;
@@ -804,20 +828,18 @@ void SonarKit::doSomething(){
 //water pool
 void WaterPool::doSomething(){
     IceMan* man = getWorld()->getIceMan();
-    tixWait = saveTix;
-    cout << "Im alive, life set!" << endl;
     if (isAlive()){
+        deT();
         if (is3Away(studW) == "IceMan"){//&& !timeEllapsed
             setAlive(false);
             if (man->getSquirt() >= 5){
                 return;
             }
-            tixWait--;
             man->setWater(5);
             getWorld()->playSound(SOUND_GOT_GOODIE);
             studW->increaseScore(100);
         }
-        else if (tixWait == 0){
+        else if (ticksToWait == 0){
         setAlive(false);
         }
     }
