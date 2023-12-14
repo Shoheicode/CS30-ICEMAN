@@ -71,7 +71,7 @@ public:
         
         int probOfSonarOrWater = static_cast<int>(getLevel()) * 25 + 300;
 
-        int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
+
         
         int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
         
@@ -107,7 +107,6 @@ public:
         characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
 
         findPath(60,60,0,60);
-        spawnSonar(sWNum, ticksSonarWater);
        
         //spawnSW(sWNum, ticksSonarWater);
         //currNumPro++;
@@ -145,11 +144,34 @@ public:
         //Updates the Textbox
         updateTextBox();
         
+        //spawn sonar and water
+        int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
+        int spawn = rand() % ticksSonarWater;
+        if (spawn == 1) {
+            int spawnS = rand() % 5 + 1;
+            if (spawnS == 1){
+                cout << "a wild sonar appeared!" << endl;
+                characterList.push_back(new SonarKit(0, 60, ticksSonarWater, this));
+            }
+            
+                else {
+                       int x = 0;
+                       int y = 0;
+                       while (!noIce(x, y) && !blockedbyRocksOrIce(x, y, Actor::up)) {
+                           x = rand() % 61;
+                           y = rand() % 57;
+                           
+                       }
+                    cout << "a wild water pool appeared!" << endl;
+                    characterList.push_back(new WaterPool(x, y, ticksSonarWater, this));
+                   }
+               }
+        
         //Goes through each character and asks if it does something
         for (Actor* a : characterList) {
             if (a->isAlive()) {
                 a->doSomething();
-
+                
                 if (!player->isAlive()) { //Checks if player dies and returns dies
                     return GWSTATUS_PLAYER_DIED;
                 }
@@ -217,7 +239,8 @@ public:
     void sdeT(int t){t--;}
     void useSonar(int x, int y);
     bool useSpray(int x, int y);
-    bool isEmpty(vector<vector<Ice*>>& iceMap);
+    bool noIce(int x, int y);
+    bool empty4(int x, int y);
     bool blockedbyRocksOrIce(int x, int y, Actor::Direction d);//not done
     bool blockedByRocks(int x, int y);
     double getRadius(int x1, int x2, int y2, int y1){return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));}
@@ -284,7 +307,7 @@ private:
     struct Point {
     int x;
     int y;
-
+        int ticksSonarWater = 0;
     Point(int x, int y) : x(x), y(y) {}
     };
     list<Point> goldPos;
