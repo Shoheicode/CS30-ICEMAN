@@ -11,6 +11,7 @@ bool Actor::outOfField(int x, int y, Actor::Direction d){
                 return true;
             }
             break;
+            
         case Actor::down://if faced down, and is moved lower than 0 units it is out of Field
             if(y <= 0){
                 return true;
@@ -22,7 +23,7 @@ bool Actor::outOfField(int x, int y, Actor::Direction d){
             }
             break;
         case Actor::right://if faced right, and is moved farther than 60 units it is out of Field
-            if(x >= 60){
+            if(x >= 61){
                 return true;
             }
             break;
@@ -34,22 +35,7 @@ bool Actor::outOfField(int x, int y, Actor::Direction d){
 }
 
 bool Actor::isFacingIceMan(Direction d, StudentWorld* world){
-    IceMan* temp = world->getIceMan();
-    if (temp->getX() < getX() && d == left) {
-        return true;
-    }
-    else if (temp->getX() > getX() && d == right) {
-        return true;
-    }
-    else if (temp->getY() < getY() && d == down) {
-        return true;
-    }
-    else if (temp->getX() < getX() && d == up) {
-        return true;
-    }
-    return false;
-
-    /*for (Actor* a : world->getCharacterList()) {
+    for (Actor* a : world->getCharacterList()) {
         if(a->getID() ==IID_PLAYER && a->getDirection() != getDirection()){
             break;
             return false;
@@ -57,7 +43,7 @@ bool Actor::isFacingIceMan(Direction d, StudentWorld* world){
         break;
         return true;
     }
-    return false;*/
+    return false;
 }
 void Actor::setFacingIceMan(Direction d,StudentWorld* world){
     //IceMan* man = world->getIceMan();
@@ -176,6 +162,7 @@ void Boulder::overlap(StudentWorld* world) {
         //Checking if overlaping with characters
         if (a->getID() == IID_BOULDER && a->getY() + 4 == getY()) {
             if (abs(getX() - a->getX()) < 4) {
+                getWorld()->playSound(SOUND_PLAYER_GIVE_UP);
                 setAlive(false);
                 //cout << "I HIT THE PLAYER"
             }
@@ -183,56 +170,31 @@ void Boulder::overlap(StudentWorld* world) {
         if (a->getID() == IID_PLAYER && (abs(getY() - a->getY()) < 4)) {
             if (abs(getX() - a->getX()) < 4) {
                 world->decLives();
-                //setAlive(false);
+                getWorld()->playSound(SOUND_PLAYER_GIVE_UP);
                 a->setAlive(false);
             }
         }
-        if (a->getID() == IID_PROTESTER && (abs(getY() - a->getY()) < 4)) {
+        if (a->getID() == IID_PROTESTER || a->getID() == IID_HARD_CORE_PROTESTER && (abs(getY() - a->getY()) < 4)) {
             if (abs(getX() - a->getX()) < 4) {
-                //Create annoyance
-                //world->decLives();
-                ////setAlive(false);
-                //a->setAlive(false);
+                getWorld()->playSound(SOUND_PROTESTER_GIVE_UP);
+                a->setAlive(false);
             }
         }
     }
 }
-bool findshortestpath = false;
+
 void IceMan::doSomething(){
     if (isAlive()){
         overlap(studW);//dig when overlap with ice
         isInRange(studW);
+        checkAnnoyed();
         int a;
-        if (findshortestpath) {
-            pair<pair<int, int>, string> move = getWorld()->getLeadingPathDistance(getX(), getY());
-            if (move.second == "left") {
-                setDirection(left);
-            }
-            else if (move.second == "up") {
-                setDirection(up);
-            }
-            else if (move.second == "down") {
-                setDirection(down);
-            }
-            else if (move.second == "right") {
-                setDirection(right);
-            }
-
-            moveTo(move.first.first, move.first.second);
-
-            if (move.first.first == 60 && move.first.second == 60) {
-                findshortestpath = false;
-            }
-        }
         if (getWorld()->getKey(a) == true) { //player pressed key
             bool blocked = false;
-
             switch (a){
                 case KEY_PRESS_ESCAPE:
-                    /*getWorld()->decLives();
-                    setAlive(false);*/
-                    getWorld()->findPath(60, 60, getX(), getY());
-                    findshortestpath = true;
+                    getWorld()->decLives();
+                    setAlive(false);
                     //getWorld()->increaseScore(-getSc)
                     break;
                 case KEY_PRESS_SPACE:
@@ -243,10 +205,8 @@ void IceMan::doSomething(){
                         setDirection(left); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        moveTo(getX(), getY());
                         break;
                     }
-            
                     else {
                         for (Actor* a : getWorld()->getCharacterList()) {
                             if (a->getID() == IID_BOULDER && a->getX() + 3 == getX() - 1 && abs(getY() - a->getY()) < 4) {
@@ -263,7 +223,6 @@ void IceMan::doSomething(){
                         setDirection(right); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        moveTo(getX(), getY());
                         break;
                     }
                     else {
@@ -284,7 +243,6 @@ void IceMan::doSomething(){
                         setDirection(up); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        moveTo(getX(), getY());
                         break;
                     }
                     else {
@@ -303,7 +261,6 @@ void IceMan::doSomething(){
                         setDirection(down); //turn direction DON'T MOVE
                     }
                     else if (outOfField(getX(), getY(), getDirection())){ //out of scope
-                        moveTo(getX(), getY());
                         break;
                     }
                     else {
@@ -380,11 +337,13 @@ void IceMan::isInRange(StudentWorld* world){
         else if (a->getID() == IID_SONAR && a->is3Away(studW)=="IceMan")
         {
             sonarC++;//picks up sonar
+            getWorld()->increaseScore(75);
             return;
         }
         else if (a->getID() == IID_WATER_POOL && a->is3Away(studW)=="IceMan")
         {
             waterSq++;//picks up water
+            getWorld()->increaseScore(100);
             return;
         }
     }
@@ -392,13 +351,10 @@ void IceMan::isInRange(StudentWorld* world){
 }
 
 //NOT DONE YET
-void IceMan::getAnnoyed(int dAmage){
-    //if is shouted at
-    setHitpoints(-2);
-    if(hitPoints == 0){
-        setAlive(false);
+void IceMan::checkAnnoyed(){
+    if(getHitpoints() == 0){
         getWorld()->playSound(SOUND_PLAYER_GIVE_UP);
-        //loose a life
+        getWorld()->decLives();
     }
 }
 
@@ -417,35 +373,37 @@ void Protester::doSomething(){
             return;
         }
         else if (ticksToWait==0 && !outOfField(getX(), getY(), getDirection())){
-            if(leave_the_oil_field ){
-                getWorld()->findPath(60,60, getX(), getY());
-                pair<pair<int, int>, string> move = getWorld()->getLeadingPathDistance(getX(), getY());
-                if (move.second == "left") {
-                    setDirection(left);
-                }
-                else if (move.second == "up") {
-                    setDirection(up);
-                }
-                else if (move.second == "down") {
-                    setDirection(down);
-                }
-                else if (move.second == "right") {
+            if(leave_the_oil_field == true){
+                if(sqrt(pow(60 - getX(), 2) + pow(60 - getY(), 2) <= 2)){
                     setDirection(right);
-                }
-
-                moveTo(move.first.first, move.first.second);
-                
-                if (move.first.first == 60 && move.first.second == 60) {
                     setAlive(false);
+                    return;
                 }
-
+                
+                else if(getX()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+                    
+                    //turn direction based on Q
+                    if (getDirection() != right){
+                        setDirection(right);
+                    }
+                    moveTo(getX() + 1, getY());
+                    
+                    return;
+                    
+                }
+                else if(getY()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+                    //turn direction based on Q
+                    if (getDirection() != up){
+                        setDirection(up);
+                    }
+                    moveTo(getX(), getY() + 1 );
+                    //reset ticks to wait
+                    return;
+                }
             }
-
-            else if(is4Away(studW) == "IceMan" && isFacingIceMan(getDirection(), studW)){
+            else if(is4Away(studW) == "IceMan"){// && isFacingIceMan(getDirection(), studW)
                 if (shoutedLast15 == 0){
-                    cout << "yell!!!" << endl;
-                    getWorld()->playSound(SOUND_PROTESTER_YELL);
-                    //iceMan -2 hitpoints
+                    yell(getX(), getY());
                     ticksToWait = 10;
                     shoutedLast15 = 15;
                 }
@@ -456,7 +414,7 @@ void Protester::doSomething(){
                moveOne(getX(), getY(), getDirection());
                 tryGold(getX(), getY());
                 isAnnoyed();
-                numSquaresToMoveInCurrentDirection = 0;
+                    numSquaresToMoveInCurrentDirection = 0;
                 shoutedLast15 = 15;
                 ticksToWait = 10;
                     return;
@@ -489,7 +447,6 @@ void Protester::doSomething(){
                 //reset ticks to wait
                 //pick new dirction in nonresting tick
             }
-            //moveOne(getX(), getY(), getDirection());
             
         }
         
@@ -499,9 +456,7 @@ void Protester::doSomething(){
 
 void Protester::isAnnoyed(){
     int annoyMeter = 10;
-    //if gets bonked on head by boulder
-    //annoyMeter = 0;
-    
+    //boulder already covered
     //if gets sprayed by iceMan
     if (getWorld()->isSprayed(getX(), getY())){
         getWorld()->playSound(SOUND_PROTESTER_ANNOYED);
@@ -514,9 +469,19 @@ void Protester::isAnnoyed(){
     }
 }
 
+bool Protester::yell(int x, int y){
+    cout << "yell!!!" << endl;
+    getWorld()->playSound(SOUND_PROTESTER_YELL);
+    IceMan* man = getWorld()->getIceMan();
+    man->setHitpoints(-2);
+    return true;
+}
+
 void Protester::tryGold(int x, int y){
     if (getWorld()->pickUpGold(getX(), getY())){
         cout << "Im walking back now!!" << endl;
+        
+        studW->increaseScore(25);
         getWorld()->playSound(SOUND_PROTESTER_FOUND_GOLD);
         leave_the_oil_field = true;
     }
@@ -597,7 +562,7 @@ bool Protester::isAtFork(int x, int y, StudentWorld* world){
     return true;
 }
 
-bool Protester::iceManisInSight(int x, int y, StudentWorld* world){ // Gets the X, Y, and world for protestor
+bool Protester::iceManisInSight(int x, int y, StudentWorld* world){
     //IceMan* man = world->getIceMan();
     if (world->getIceMan() != NULL) {
         int xI = world->getIceMan()->getX();
@@ -623,108 +588,116 @@ bool Protester::iceManisInSight(int x, int y, StudentWorld* world){ // Gets the 
 //Hardcore Protester
 
 void HardcoreProtester::doSomething(){//NOT COMPLETE
+    int shoutedLast15 = 0;
     if (isAlive()){
-        //ticksToWaitBetweenMoves = max(0, (3 – getLevel())/4);
-        if (ticksToWaitBetweenMoves == 3){
-            //wait 3 ticks
-            //must wait until the fourth tick to doSomething
-        }
-        //if in rest state
-        //increment ticks
-        //return
-        else if (leave_the_oil_field == true){
-            if(sqrt(pow(60 - getX(), 2) + pow(60 - getY(), 2) <= 2)){
-                setDirection(right);
-                setAlive(false);
-                return;
-            }
-            
-            else if(getX()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
-                
-                //turn direction based on Q
-                if (getDirection() != right){
-                    setDirection(right);
-                }
-                moveTo(getX() + 1, getY());
-                
-                return;
-                
-            }
-            else if(getY()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
-                //turn direction based on Q
-                if (getDirection() != up){
-                    setDirection(up);
-                }
-                moveTo(getX(), getY() + 1 );
-                //reset ticks to wait
-                return;
-            }
-        }
-        else if (is4Away(studW) == "IceMan" && isFacingIceMan(getDirection(), studW) && hasShoutedLast15==true){
-            getWorld()->playSound(SOUND_PROTESTER_YELL);
-            //IceMan -2 hitpoints
-            hasShoutedLast15 = false;
+        if (ticksToWait > 0){
+            ticksToWait--;
             return;
         }
-        //else if (isGreaterThan4Away(studW)== "IceMan"){
-            //double M =16 + current_level_number * 2;
-        
+        if (shoutedLast15 > 0){
+            shoutedLast15--;
+            return;
         }
-
+        else if (ticksToWait==0 && !outOfField(getX(), getY(), getDirection())){
+            if(leave_the_oil_field == true){
+                if(sqrt(pow(60 - getX(), 2) + pow(60 - getY(), 2) <= 2)){
+                    setDirection(right);
+                    setAlive(false);
+                    return;
+                }
+                
+                else if(getX()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+                    
+                    //turn direction based on Q
+                    if (getDirection() != right){
+                        setDirection(right);
+                    }
+                    moveTo(getX() + 1, getY());
+                    
+                    return;
+                    
+                }
+                else if(getY()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+                    //turn direction based on Q
+                    if (getDirection() != up){
+                        setDirection(up);
+                    }
+                    moveTo(getX(), getY() + 1 );
+                    //reset ticks to wait
+                    return;
+                }
+            }
+            else if(is4Away(studW) == "IceMan" && isFacingIceMan(getDirection(), studW)){
+                if (shoutedLast15 == 0){
+                    cout << "yell!!!" << endl;
+                    getWorld()->playSound(SOUND_PROTESTER_YELL);
+                    //iceMan -2 hitpoints
+                    ticksToWait = 10;
+                    shoutedLast15 = 15;
+                }
+            }
+            else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "Greater IceMan" && !isFacingIceMan(getDirection(), studW)){
+                    setFacingIceMan(getDirection(), studW);
+                //getWorld()->moveToShortPath();
+               moveOne(getX(), getY(), getDirection());
+                tryGold(getX(), getY());
+                isAnnoyed();
+                    numSquaresToMoveInCurrentDirection = 0;
+                shoutedLast15 = 15;
+                ticksToWait = 10;
+                    return;
+                
+            }
+            else if(!iceManisInSight(getX(), getY(), studW) && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+                numSquaresToMoveInCurrentDirection--;
+                if(numSquaresToMoveInCurrentDirection <= 0){
+                    //pick random direction that is not blocked by boulders or Ice
+                    numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
+                    ticksToWait = 10;
+                    shoutedLast15 = 15;
+                    //take 1 step in that direction
+                    moveOne(getX(), getY(), getDirection());
+                    tryGold(getX(), getY());
+                    isAnnoyed();
+                    return;
+                }
+            }
+            //else if isAtFork && canMove1Perpindicular && !madePerpTurn in 200 ticks
+            //pick which 2 directions
+            //pick whichevr 2 directions if both are good pick one randomly
+            //set direction to new direction
+            else if (getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+                numSquaresToMoveInCurrentDirection = 0;
+                shoutedLast15 = 15;
+                ticksToWait = 10;
+                isAnnoyed();
+                return;
+                //reset ticks to wait
+                //pick new dirction in nonresting tick
+            }
+            
+        }
+        
+   }
+    return;
     }
-    //if (isAlive()){
-    //    // if in rest state {
-    //    //increment ticks;
-    //    //return;}
-    //    if(leave_the_oil_field == true){
-    //        if (getX()==60 && getY()==60){
-    //            setAlive(false);
-    //            return;
-    //        }
-    //        else if(getX()!=60 && !blockedByIceOrBoulder(getX(), getY(), studW)){
-    //            //turn direction based on Q
-    //            moveTo(getX() + 1, getY());
-    //            return;
-    //        }
-    //        else if(getY()!=60 && !blockedByIceOrBoulder(getX(), getY(), studW)){
-    //            //turn direction based on Q
-    //            moveTo(getX(), getY() + 1 );
-    //            return;
-    //        }
-    //    }
-    //    else if(is4Away(studW) == "IceMan" && isFacingIceMan(getDirection(), studW)){
-    //        //if hasn't shouted in 15 ticks
-    //        getWorld()->playSound(SOUND_PROTESTER_YELL);
-    //        //iceMan -2 hitpoints
-    //        //update state, wont shout in the next 15 ticks
-    //    }
-    //    else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "IceMan"&& !blockedByIceOrBoulder(getX(), getY(), studW) && !isFacingIceMan(getDirection(), studW)){
-    //            setFacingIceMan(getDirection(), studW);
-    //            //            //moveTo(getX(), getY() + 1) OR moveTo(getX() + 1, getY())
-    //            //            //moveTo(getX(), getY() - 1) OR moveTo(getX() - 1, getY())
-    //            numSquaresToMoveInCurrentDirection = 0;
-    //            return;
-    //        }
-    //    else if(!iceManisInSight(getX(), getY(), studW)){
-    //        numSquaresToMoveInCurrentDirection--;
-    //        if(numSquaresToMoveInCurrentDirection <= 0){
-    //            //pick random direction that is not blocked by boulders or Ice
-    //            //pick random number 8 <= numSquaresToMoveInCurrentDirection <= 60
-    //            //take 1 step in that direction
-    //        }
-    //    }
-    //    //else if isAtFork && canMove1Perpindicular && !madePerpTurn in 200 ticks
-    //        //pick which 2 directions
-    //        //pick whichevr 2 directions if both are good pick one randomly
-    //        //set direction to new direction
-    //    else if (blockedByIceOrBoulder(getX(), getY(), studW)){
-    //        numSquaresToMoveInCurrentDirection = 0;
-    //        return;
-    //        //pick new dirction in nonresting tick
-    //    }
-    //
-    //}
-    //return;
+
+void HardcoreProtester::tryGold(int x, int y){
+    if (getWorld()->pickUpGold(getX(), getY())){
+        if (getGold() == 2){
+            cout << "Im MEGA RICHHH!!" << endl;
+            getWorld()->playSound(SOUND_PROTESTER_FOUND_GOLD);
+            studW->increaseScore(50);
+            leave_the_oil_field = true;
+        }
+        else{
+            cout << "youre too cheap" << endl;
+            setGoldInv(1);
+        }
+    }
+}
+
+
 
 //Prop
 
@@ -798,8 +771,9 @@ void Oil::doSomething(){
 //Squirt
 int x = 0;
 void Squirt::doSomething(){
-    if (x == 5) {
+    if (x == 4) {
         x = 0;
+        //if radius <= 3 of 1+ protesters
         moveTo(getWorld()->getIceMan()->getX()-4, getWorld()->getIceMan()->getY());
     }
     x++;
@@ -830,20 +804,35 @@ void SonarKit::doSomething(){
 //water pool
 void WaterPool::doSomething(){
     IceMan* man = getWorld()->getIceMan();
+    tixWait = saveTix;
+    cout << "Im alive, life set!" << endl;
     if (isAlive()){
         if (is3Away(studW) == "IceMan"){//&& !timeEllapsed
             setAlive(false);
             if (man->getSquirt() >= 5){
                 return;
             }
-            man->setWater(1);
+            tixWait--;
+            man->setWater(5);
             getWorld()->playSound(SOUND_GOT_GOODIE);
-            //increment 5 water squirts to ice man's inventory
             studW->increaseScore(100);
         }
-        //if (timeEllapsed){
-        //setAlive(false);
-        //}
+        else if (tixWait == 0){
+        setAlive(false);
+        }
     }
     return;
+}
+
+//ice
+bool Ice::overlap(StudentWorld* world) {
+    for (Actor* a : world->getCharacterList()) {
+        //Checking if overlaping with characters
+        if (a->getID() == IID_PROTESTER || a->getID() == IID_HARD_CORE_PROTESTER && (abs(getY() - a->getY()) < 4)) {
+            if (abs(getX() - a->getX()) < 4) {
+                return true;
+            }
+        }
+    }
+    return false;
 }

@@ -52,47 +52,94 @@ void StudentWorld::createIceMap(){
     }
 }
 
-void StudentWorld::spawnSonar(int sNum){//TICKSPAN IMPLEMENTATION and specified point?
-    //must appear in x num of ticks into the game and disappear
+void StudentWorld::spawnWater(int wNum, int tickNum){
+    cout <<"spawnWater was called!" << endl;
+    int tickWait = tickNum;
+    //wait for 10 seconds to spawn
+    //look for a place on map that doesnt have ice
+    
+    //convert to ice block if not picked up
     
     int currentNum = 0;
-
-    //Creates oil until the number of oil equals the number needed for the level.
-    while (currentNum != sNum) {
-
+    //Creates water until the number of oil equals the number needed for the level.
+    while (currentNum != wNum && tickWait !=0) {
         //Sets create boulder to true
-        bool createSonar = true;
+        bool createWater = true;
 
         //Creates the random numbers
         int x = rand() % 58;
         int y = rand() % 37 + 20;
-
+        while (iceMap[x][y] !=NULL){//checks if coords dont have ice
+            x = rand() % 58;
+            y = rand() % 37 + 20;
+        }
+        cout << tickWait<< endl;
+        tickWait--;
         //Checks to make sure boulder isn't in the gap
         if (x <= 33 && x >= 27) {
-            createSonar = false;
+            createWater = false;
         }
         //otherwise
         else {
             //For each character in character list
             for (Actor* a : characterList) {
-                //Check if the distance is less than 6 and if not, don't create boulder
+                //Check if the distance is less than 6 and if not, don't create water
                 if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
-                    createSonar = false;
+                    createWater = false;
                     break;
                 }
 
             }
         }
         //If the distance between each object is less than 6, create boulder
-        if (createSonar) {
+        if (createWater && tickWait ==0) {
             //Add to character list
-            characterList.push_back(new SonarKit(x, y, false, this));
-           
+            characterList.push_back(new WaterPool(x, y, tickNum, this));
             //Increase the number of current boulders
             currentNum++;
+            tickWait = tickNum; //resets time to wait until next drop
+            cout << "I spawned A Water Pool at " << x << "," << y << endl;
+//                }
+            }
+                //if x && y point to a NULL pointer on icemap add to character list
+            
+//            //Add to character list
+//            characterList.push_back(new WaterPool(x, y, tickNum, this));
+//            //Increase the number of current boulders
+//            currentNum++;
+            
+
+            
         }
     }
+
+void StudentWorld::spawnSonar(int sNum, int tickNum) {
+    int ticWait = tickNum;
+    int currentNum = 0;
+
+    while (currentNum != sNum) {
+        bool createSonar = true;
+        ticWait--;
+
+        // Check if the distance between existing objects and the specified point is less than 6
+        for (Actor* a : characterList) {
+            if (!checkDistance(a, a->getX(), a->getY(), 60, 60)) {
+                createSonar = false;
+                break;
+            }
+        }
+
+        // If createSonar is true and ticWait has reached 0, create the SonarKit
+        if (createSonar && ticWait == 0) {
+            characterList.push_back(new SonarKit(60, 60, tickNum, this));
+            cout << "sonar created get it quick!" << endl;
+            currentNum++;
+            ticWait = tickNum; // Reset tick wait
+        }
+    }
+    cout << "all sonar created" << endl;
 }
+
 void StudentWorld::spawnOil(int oNum){
     //Sets the current number of oil to 0
     int currentNum = 0;
@@ -125,10 +172,6 @@ void StudentWorld::spawnOil(int oNum){
         }
         //If the distance between each object is less than 6, create boulder
         if (createOil) {
-
-            cout << "OIl X: " << x << endl;
-            cout << "OIL Y: " << y << endl;
-
             //Add to character list
             characterList.push_back(new Oil(x, y, this));
            
@@ -163,12 +206,12 @@ else {
 //For each character in character list
 for (Actor* a : characterList) {
 //Check if the distance is less than 6 and if not, don't create boulder
-if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
-createBoulder = false;
-break;
-}
+    if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
+    createBoulder = false;
+    break;
+    }
 
-}
+    }
 }
 //If the distance between each object is less than 6, create boulder
     if (createBoulder) {
@@ -185,8 +228,8 @@ break;
     }
 }
 //Increase the number of current boulders
-currentNum++;
-}
+        currentNum++;
+    }
 }
 
 }
@@ -230,6 +273,44 @@ void StudentWorld::spawnNuggets(int num) {
     }
 }
 
+void StudentWorld::spawnProtesters(int pNum){
+    
+    bool createPros= false;
+
+    //Sets the current number of nuggets created to 0
+    int currentNum = 0;
+
+    while (currentNum != pNum) {
+
+        createPros = true;
+
+        //Generate random positions
+        int x = rand() % 61;
+        int y = 60;
+
+        //Make sure the hole in the center is empty
+        if (x <= 33 && x >= 27) {
+            createPros = false;
+        }
+        else {
+            //For each of the actors in character list
+            for (Actor* a : characterList) {
+                //Check to ensure the distance between all the characters is not less than 6.
+                if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
+                    createPros = false;
+                    break;
+                }
+
+            }
+        }
+        //If create nugget is true, create a nugget and increase current number of nuggets
+        if (createPros) {
+            characterList.push_back(new Protester(x, 60, IID_PROTESTER, this));
+            currentNum++;
+        }
+    }
+}
+
 bool StudentWorld::blockedByRocks(int x, int y){
 for (const Point& p : rockPos){
 double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
@@ -240,56 +321,38 @@ return true;
 return false;
 }
 
+bool StudentWorld::blockedByIce(int x, int y){
+    for (int i = x; i < x+4; i++) {
+            for (int j = y; j < y+4; j++) {
+                if (iceMap[i][j] != nullptr)
+                    return false;
+            }
+        }
+        return true;
+   
+}
+
 bool StudentWorld::blockedbyRocksOrIce(int x, int y, Actor::Direction d){
-for (const Point& p : rockPos){
-double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
-if (radius <= 4){
-return true;
-}
-}
-// for (const auto& row : iceMap) {//iterate through the rows
-// Ice* iceObject = iceMap[y][x];
-// }
-// for (const auto& iceObject : row) {
-//
-// }
-// for (const Point& p : icePos){
-// switch (d) {
-// case Actor::up:
-// if(y + 1== p.y){
-// return true;
-// }
-// break;
-// case Actor::down:
-// if(y - 1== p.y){
-// return true;
-// }
-// break;
-// case Actor::left:
-// if(x - 1== p.x){
-// return true;
-// }
-// break;
-// case Actor::right:
-// if(x + 1== p.x){
-// return true;
-// }
-// break;
-// default:
-// break;
-// }
-// double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
-// if (radius <= 2){
-// return true;
-// }
-//}
+    if (blockedByIce(x, y) || blockedByRocks(x, y)){
+        return true;
+    }
+        
+//    for (Actor* p : characterList) {
+//        Ice* iceP = iceMap[x][y];
+//        if (a->getID() == IID_PROTESTER || a->getID() == IID_HARD_CORE_PROTESTER && (abs(iceP->getY() - a->getY()) < 4)) {
+//            if (abs(iceP->getX() - a->getX()) < 4) {
+//                return true;
+//            }
+//        }
+//    }
+
 return false;
 }
 
 void StudentWorld::dropGold(int x, int y){
 if(player->getGold() > 0){
 //set gold to pick up able by protesters
-//player->gold--; //setGold-1
+    player->setGold(-1);
 getCharacterList().push_back(new Gold(player->getX(), player->getY(), true, this));//rest handled in constructor
 goldPos.push_back((Point(player->getX(), player->getY())));
 }
@@ -298,23 +361,26 @@ goldPos.push_back((Point(player->getX(), player->getY())));
 bool StudentWorld::pickUpGold(int x, int y){
 for (const Point& p : goldPos){
     double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
-    if (radius <= 4){
-        playSound(SOUND_PROTESTER_FOUND_GOLD);
-        for (Actor* a : characterList) {
-            if (a->getID() == IID_GOLD && a->getX() == p.x && a->getY() == p.y){
-                a->setAlive(false);
-                return true;
+    
+        if (radius <= 4){
+            for (Actor* a : characterList) {
+                if (a->getID() == IID_GOLD && a->getX() == p.x && a->getY() == p.y){
+                    cout << "protester picked up gold!" << endl;
+                    a->setAlive(false);
+                    return true;
+                }
             }
-        }   
+        }
+
     }
-}
 return false;
-}
+    }
 
 //Checks the distance between 2 objects
 bool StudentWorld::checkDistance(Actor* a, int obj1X, int obj1Y, int obj2X, int obj2Y) {
     //Checks the distnace between 2 objects using distance formula
     double distance = pow(pow(obj1X - obj2X, 2) + pow(obj1Y - obj2Y, 2), 0.5);
+    
     
     //Returns false if the distance is less than 6
     if (distance < 6) {
@@ -380,12 +446,15 @@ void StudentWorld::useSonar(int x, int y){
     if(player->getSonarCount() > 0){
         playSound(SOUND_SONAR);
         for (Actor* p : characterList){
-            if(sqrt(pow(p->getX() - x, 2) + pow(p->getY() - y, 2) <= 12)){               //im not sure if this works please check
-                p->setVisible(true);
+            if(getRadius(x, p->getX(), y, p->getY()) <= 12){
+                if (p->isAlive())
+                    p->setVisible(true);
+                }
             }
-        }       player->setSonar(-1);
+        }
+        player->setSonar(-1);
     }
-    }
+    
     
 
 void StudentWorld::useSpray(int x, int y, Actor::Direction d){
@@ -396,22 +465,23 @@ void StudentWorld::useSpray(int x, int y, Actor::Direction d){
         Squirt* sq;
         switch (d){
             case Actor::up:
-                sq = new Squirt(getIceMan()->getX(), getIceMan()->getY() + 3, Actor::up, 1,1.0, this);
+                //set ticks
+                
+                sq = new Squirt(getIceMan()->getX(), getIceMan()->getY() + 4, Actor::up, this);
                 sprayTick--;
                 break;
             case Actor::down:
-                sq = new Squirt(getIceMan()->getX(), getIceMan()->getY()-3,Actor::down, 1,1.0,this);
+                sq = new Squirt(getIceMan()->getX(), getIceMan()->getY()-4,Actor::down,this);
                 sprayTick--;
                 break;
             case Actor::left:
-                sq = new Squirt(getIceMan()->getX()-3, getIceMan()->getY(),Actor::left,1,1.0,this);
+                sq = new Squirt(getIceMan()->getX() - 4, getIceMan()->getY(),Actor::left,this);
                 sprayTick--;
                 break;
             case Actor::right:
-                sq = new Squirt(getIceMan()->getX()+3, getIceMan()->getY(),Actor::right,1,1.0,this);
+                sq = new Squirt(getIceMan()->getX() + 4, getIceMan()->getY(),Actor::right,this);
                 break;
             case Actor::none:
-                
                 break;
                 
         };
@@ -495,18 +565,18 @@ bool StudentWorld::checkSpot(string actorType, int x, int y) {
     for (Actor* act : characterList) {
         if (actorType == "Boulder") {
             if (act->getID() == IID_BOULDER && abs(act->getX() - x) < 4 && abs(act->getY() - y) < 4) {
-                //cout << "TRUE there is something" << endl;
+                cout << "TRUE there is something" << endl;
                 return true;
             }
         }
     }
-    //cout << "THERE IS NOTHING TRUE" << endl;
+    cout << "THERE IS NOTHING TRUE" << endl;
     return false;
 }
 
 void StudentWorld::findPath(int x, int y, int objx, int objy) {
 
-    queue<pair<pair<int, int>, int>> q; // First pair inside pair is (x,y) and second value is distance
+    queue<pair<pair<int, int>, int>> q;
     pair <pair<int, int>, int> temp;
 
     temp = make_pair(make_pair(x, y), 0);
@@ -536,7 +606,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
                 leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
                 //cout << "HELLO" << endl;
             }
-            else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && *leavingPath[q.front().first.second][q.front().first.first - 1] == 100000000) {
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", objx - 1, objy) && *leavingPath[q.front().first.second][q.front().first.first-1] == 100000000) {
                 cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
@@ -563,7 +633,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             if (q.front().first.second == 0) {
                 leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
             }
-            else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first, q.front().first.second- 1) && *leavingPath[q.front().first.second-1][q.front().first.first] == 100000000) {
+            else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx, objy - 1) && *leavingPath[q.front().first.second-1][q.front().first.first] == 100000000) {
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
                     if (iceMap.at(q.front().first.second - 1).at(q.front().first.first + i) != nullptr) {
@@ -595,7 +665,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
                 leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
                 cout << "HELLO" << endl;
             }
-            else if (iceMap.at(q.front().first.second).at(q.front().first.first + 4) == nullptr && !checkSpot("Boulder", q.front().first.first + 4, q.front().first.second) && *leavingPath[q.front().first.second][q.front().first.first + 1] == 100000000) {
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first + 4) == nullptr && !checkSpot("Boulder", objx - 1, objy) && *leavingPath[q.front().first.second][q.front().first.first + 1] == 100000000) {
                 cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
@@ -631,7 +701,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             else if (q.front().first.second == 60 && *leavingPath[q.front().first.second][q.front().first.first] == 100000000) {
 
             }
-            else if (iceMap.at(q.front().first.second+4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first, q.front().first.second+4) && *leavingPath[q.front().first.second+1][q.front().first.first] == 100000000) {
+            else if (iceMap.at(q.front().first.second+4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx - 1, objy) && *leavingPath[q.front().first.second+1][q.front().first.first] == 100000000) {
                 cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
@@ -687,3 +757,5 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
 
 
 // Students:  Add code to this file (if you wish), StudentWorld.h, Actor.h and Actor.cpp
+
+
