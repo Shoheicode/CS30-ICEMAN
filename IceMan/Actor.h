@@ -60,11 +60,13 @@ class AnnoyedActor : public Actor {
 class Protester: public AnnoyedActor {
 protected:
     bool leave_the_oil_field;
-    bool hasShoutedLast15;
+    int hasShoutedLast15;
     int moves;
     int ticksToWait;
     int numSquaresToMoveInCurrentDirection;
     string direction = "left";
+    Direction listOfDir[4] = { left, right, up, down };
+    int ticksforFork = 200;
 
 public:
     Protester(int startX, int startY, int imageID, StudentWorld* world) : AnnoyedActor (imageID, startX, startY, left,world, 1.0, 0) {
@@ -75,7 +77,7 @@ public:
 //        ticksToWait = max(0,moves);
         ticksToWait = 10;
         leave_the_oil_field = false;//doesn't leave field bc is Alive
-        hasShoutedLast15 = false;
+        hasShoutedLast15 = 15;
         setVisible(true);//appear on screen
         
     };
@@ -85,7 +87,7 @@ public:
     virtual bool yell(int x, int y);
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
     virtual bool iceManisInSight(int x, int y, StudentWorld* world);
-    virtual bool isAtFork(int x, int y, StudentWorld* world);
+    virtual bool isAtFork(int x, int y, StudentWorld* world, vector<Direction>& path);
     virtual void doSomething() override;
     bool overlap(Actor object); // Checks if overlap with specific object
     virtual void moveOne(int x, int y, Direction d);

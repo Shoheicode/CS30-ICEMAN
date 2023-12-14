@@ -322,13 +322,19 @@ return false;
 }
 
 bool StudentWorld::blockedByIce(int x, int y){
-    for (int i = x; i < x+4; i++) {
-            for (int j = y; j < y+4; j++) {
-                if (iceMap[i][j] != nullptr)
-                    return false;
+    if (y == 61 || x == -1 || x == 61 || y == -1) {
+        return true;
+    }
+    for (int i = y; i < y+4; i++) {
+            for (int j = x; j < x+4; j++) {
+                //cout << "HELLO" << endl;
+                if (iceMap[i][j] != nullptr) {
+                    //cout << "HIII" << endl;
+                    return true;
+                }
             }
         }
-        return true;
+    return false;
    
 }
 
@@ -570,7 +576,7 @@ bool StudentWorld::checkSpot(string actorType, int x, int y) {
             }
         }
     }
-    cout << "THERE IS NOTHING TRUE" << endl;
+    //cout << "THERE IS NOTHING TRUE" << endl;
     return false;
 }
 
@@ -752,6 +758,23 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
 
 }
 
+bool StudentWorld::checkFacingDirection(int x, int y, Actor::Direction d) {
+    if (player->getX() < x && d == Actor::Direction::left) {
+        return true;
+    }
+    else if (player->getY() < y && d == Actor::Direction::down) {
+        return true;
+    }
+    else if (player->getY() > y && d == Actor::Direction::up) {
+        return true;
+    }
+    else if (player->getX() > x && d == Actor::Direction::right) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 
 

@@ -23,7 +23,7 @@ bool Actor::outOfField(int x, int y, Actor::Direction d){
             }
             break;
         case Actor::right://if faced right, and is moved farther than 60 units it is out of Field
-            if(x >= 61){
+            if(x >= 60){
                 return true;
             }
             break;
@@ -362,93 +362,196 @@ void IceMan::checkAnnoyed(){
 
 bool followingPath = false;
 void Protester::doSomething(){
-    int shoutedLast15 = 0;
+    vector<Direction> paths;
     if (isAlive()){
+        cout << "PROTESTOR X: " << getX() << endl;
         if (ticksToWait > 0){
             ticksToWait--;
             return;
         }
-        if (shoutedLast15 > 0){
-            shoutedLast15--;
+        if (hasShoutedLast15 > 0){
+            hasShoutedLast15--;
             return;
         }
-        else if (ticksToWait==0 && !outOfField(getX(), getY(), getDirection())){
-            if(leave_the_oil_field == true){
-                if(sqrt(pow(60 - getX(), 2) + pow(60 - getY(), 2) <= 2)){
-                    setDirection(right);
-                    setAlive(false);
-                    return;
-                }
-                
-                else if(getX()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
-                    
-                    //turn direction based on Q
-                    if (getDirection() != right){
-                        setDirection(right);
-                    }
-                    moveTo(getX() + 1, getY());
-                    
-                    return;
-                    
-                }
-                else if(getY()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
-                    //turn direction based on Q
-                    if (getDirection() != up){
-                        setDirection(up);
-                    }
-                    moveTo(getX(), getY() + 1 );
-                    //reset ticks to wait
-                    return;
-                }
+
+        //if (!outOfField(getX(), getY(), getDirection())) {
+            if (leave_the_oil_field) {
+
             }
-            else if(is4Away(studW) == "IceMan"){// && isFacingIceMan(getDirection(), studW)
-                if (shoutedLast15 == 0){
-                    yell(getX(), getY());
-                    ticksToWait = 10;
-                    shoutedLast15 = 15;
-                }
-            }
-            else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "Greater IceMan" && !isFacingIceMan(getDirection(), studW)){
-                    setFacingIceMan(getDirection(), studW);
-                //getWorld()->moveToShortPath();
-               moveOne(getX(), getY(), getDirection());
-                tryGold(getX(), getY());
-                isAnnoyed();
-                    numSquaresToMoveInCurrentDirection = 0;
-                shoutedLast15 = 15;
-                ticksToWait = 10;
+            else if (is4Away(studW) == "IceMan" && getWorld()->checkFacingDirection(getX(), getY(), getDirection())) {
+                if (hasShoutedLast15 >= 0) {
+                    getWorld()->playSound(SOUND_PROTESTER_YELL);//Playannoyedsound
+                    hasShoutedLast15 = 15;
+                    getWorld()->getIceMan()->setHitpoints(-2);
                     return;
-                
+                }
+                moveTo(getX(), getY() - 1);
             }
-            else if(!iceManisInSight(getX(), getY(), studW) && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
-                numSquaresToMoveInCurrentDirection--;
-                if(numSquaresToMoveInCurrentDirection <= 0){
-                    //pick random direction that is not blocked by boulders or Ice
-                    numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
-                    ticksToWait = 10;
-                    shoutedLast15 = 15;
-                    //take 1 step in that direction
+            else if (is4Away(studW) == "Greater IceMan" && iceManisInSight(getX(), getY(), getWorld())) {
                     moveOne(getX(), getY(), getDirection());
-                    tryGold(getX(), getY());
-                    isAnnoyed();
-                    return;
-                }
+                    numSquaresToMoveInCurrentDirection = 0;
             }
-            //else if isAtFork && canMove1Perpindicular && !madePerpTurn in 200 ticks
-            //pick which 2 directions
-            //pick whichevr 2 directions if both are good pick one randomly
-            //set direction to new direction
-            else if (getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
-                numSquaresToMoveInCurrentDirection = 0;
-                shoutedLast15 = 15;
-                ticksToWait = 10;
-                isAnnoyed();
-                return;
-                //reset ticks to wait
-                //pick new dirction in nonresting tick
+            else {
+                cout << "RUNNING THE ELSE" << endl;
+                if (numSquaresToMoveInCurrentDirection == 0) {
+                    //cout << "changing Directions" << endl;
+                    bool chooseDirection = false;
+                    int randomDir = rand() % 4;
+                    //Direction dir = left;
+                    //setDirection(listOfDir[randomDir]);
+                    while (!chooseDirection) {
+                        cout << randomDir << endl;
+                        if (listOfDir[randomDir] == left) {
+                            if (!getWorld()->blockedByIce(getX() - 1, getY()) && !getWorld()->checkSpot("Boulder", getX() - 1, getY()) && getX() != 0) {
+                                chooseDirection = true;
+                                break;
+                            }
+                        }
+                        if (listOfDir[randomDir] == right) {
+                            if (!getWorld()->blockedByIce(getX() + 1, getY()) && !getWorld()->checkSpot("Boulder", getX() + 1, getY()) && getX() != 60) {
+                                chooseDirection = true;
+                                break;
+                            }
+                        }
+                        else if (listOfDir[randomDir] == up) {
+                            if (!getWorld()->blockedByIce(getX(), getY() + 1) && !getWorld()->checkSpot("Boulder", getX(), getY() + 1) && getY() != 60) {
+                                chooseDirection = true;
+                                break;
+                            }
+                        }
+                        else if (listOfDir[randomDir] == down) {
+                            if (!getWorld()->blockedByIce(getX(), getY() - 1) && !getWorld()->checkSpot("Boulder", getX(), getY() - 1) && getY() != 0) {
+                                chooseDirection = true;
+                                break;
+                            }
+                        }
+                        randomDir = rand() % 4;
+                    }
+                    setDirection(listOfDir[randomDir]);//listOfDir[randomDir]);
+                    numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
+                }
+                if (ticksforFork ==0) {
+                    cout << "IT IS FORKTIME" << endl;
+                    if (isAtFork(getX(), getY(), getWorld(), paths)) {
+                        int random = rand() % paths.size();
+
+                        setDirection(paths.at(random));
+                        numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
+                        ticksforFork = 200;
+                        paths.clear();
+                    }
+                }
+                else {
+                    ticksforFork--;
+                }
+                
+
+                moveOne(getX(), getY(), getDirection());
+                numSquaresToMoveInCurrentDirection--;
+                cout << "Number of Squares: "<<numSquaresToMoveInCurrentDirection << endl;
+                if (getDirection() == left && getX() == 0) {
+                    numSquaresToMoveInCurrentDirection = 0;
+                }
+                else if (getDirection() == right && getX() == 60) {
+                    numSquaresToMoveInCurrentDirection = 0;
+                }
+                else if (getDirection() == up && getY() == 60) {
+                    numSquaresToMoveInCurrentDirection = 0;
+                }
+                else if (getDirection() == down && getX() == 0) {
+                    numSquaresToMoveInCurrentDirection = 0;
+                }
+                
             }
             
-        }
+            /*else if (!getWorld()->blockedByIce(getX() + 1, getY()) && random == 1) {
+                 moveTo(getX() + 1, getY());
+            }
+            else if (!getWorld()->blockedByIce(getX()-1, getY()) && random == 2) {
+                moveTo(getX() - 1, getY());
+            }
+            else if (!getWorld()->blockedByIce(getX(), getY()+1) && random == 3) {
+                moveTo(getX(), getY()+1);
+            }*/
+        //}
+
+        //if (ticksToWait==0 && !outOfField(getX(), getY(), getDirection())){
+        //    if(leave_the_oil_field == true){
+        //        if(sqrt(pow(60 - getX(), 2) + pow(60 - getY(), 2) <= 2)){
+        //            setDirection(right);
+        //            setAlive(false);
+        //            return;
+        //        }
+        //        
+        //        else if(getX()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+        //            
+        //            //turn direction based on Q
+        //            if (getDirection() != right){
+        //                setDirection(right);
+        //            }
+        //            moveTo(getX() + 1, getY());
+        //            
+        //            return;
+        //            
+        //        }
+        //        else if(getY()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+        //            //turn direction based on Q
+        //            if (getDirection() != up){
+        //                setDirection(up);
+        //            }
+        //            moveTo(getX(), getY() + 1 );
+        //            //reset ticks to wait
+        //            return;
+        //        }
+        //    }
+        //    else if(is4Away(studW) == "IceMan"){// && isFacingIceMan(getDirection(), studW)
+        //        if (shoutedLast15 == 0){
+        //            yell(getX(), getY());
+        //            //ticksToWait = 10;
+        //            //shoutedLast15 = 15;
+        //        }
+        //    }
+        //    else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "Greater IceMan" && !isFacingIceMan(getDirection(), studW)){
+        //        //setFacingIceMan(getDirection(), studW);
+        //        //getWorld()->moveToShortPath();
+        //       moveOne(getX(), getY(), getDirection());
+        //        tryGold(getX(), getY());
+        //        isAnnoyed();
+        //            numSquaresToMoveInCurrentDirection = 0;
+        //        //shoutedLast15 = 15;
+        //        //ticksToWait = 10;
+        //            return;
+        //        
+        //    }
+        //    else if(!iceManisInSight(getX(), getY(), studW) && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+        //        numSquaresToMoveInCurrentDirection--;
+        //        if(numSquaresToMoveInCurrentDirection <= 0){
+        //            //pick random direction that is not blocked by boulders or Ice
+        //            numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
+        //            //ticksToWait = 10;
+        //            //shoutedLast15 = 15;
+        //            //take 1 step in that direction
+        //            moveOne(getX(), getY(), getDirection());
+        //            tryGold(getX(), getY());
+        //            isAnnoyed();
+        //            return;
+        //        }
+        //    }
+        //    //else if isAtFork && canMove1Perpindicular && !madePerpTurn in 200 ticks
+        //    //pick which 2 directions
+        //    //pick whichevr 2 directions if both are good pick one randomly
+        //    //set direction to new direction
+        //    else if (getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
+        //        numSquaresToMoveInCurrentDirection = 0;
+        //        //shoutedLast15 = 15;
+        //        //ticksToWait = 10;
+        //        isAnnoyed();
+        //        return;
+        //        //reset ticks to wait
+        //        //pick new dirction in nonresting tick
+        //    }
+        //    
+        //}
         
    }
     return;
@@ -484,50 +587,51 @@ void Protester::tryGold(int x, int y){
         studW->increaseScore(25);
         getWorld()->playSound(SOUND_PROTESTER_FOUND_GOLD);
         leave_the_oil_field = true;
+        //Kind, more reserved, someone she can open up, 
     }
 }
 
 void Protester::moveOne(int x, int y, Direction d){
     switch (d){
         case up:
-            if (!outOfField(x, y + 1, d) && !getWorld()->blockedbyRocksOrIce(x, y + 1, getDirection())){
+            if (!outOfField(x, y, d) && !getWorld()->blockedbyRocksOrIce(x, y + 1, getDirection())){
                 moveTo(getX(), getY() + 1);
                 break;
             }
             else if (outOfField(x, y + 1, d) || getWorld()->blockedbyRocksOrIce(x, y + 1, getDirection())){
-                setDirection(down);
+                //setDirection(down);
                 return;
             }
             break;
         case down:
-            if (!outOfField(x, y -1, d) && !getWorld()->blockedbyRocksOrIce(x, y - 1, getDirection())){
+            if (!outOfField(x, y, d) && !getWorld()->blockedbyRocksOrIce(x, y - 1, getDirection())){
                 moveTo(getX(), getY() - 1);
                 break;
             }
             else if (outOfField(x, y - 1, d) || getWorld()->blockedbyRocksOrIce(x, y - 1, getDirection())){
-                setDirection(up);
+                //setDirection(up);
                 return;
                 break;
             }
             break;
         case right:
-            if (!outOfField(x + 1, y, d) && !getWorld()->blockedbyRocksOrIce(x +1, y, getDirection())){
+            if (!outOfField(x, y, d) && !getWorld()->blockedbyRocksOrIce(x +1, y, getDirection())){
                 moveTo(getX() + 1, getY());
                 break;
             }
             else if (outOfField(x + 1, y, d) || getWorld()->blockedbyRocksOrIce(x + 1, y, getDirection())){
-                setDirection(left);
+                //setDirection(left);
                 return;
                 break;
             }
             break;
         case left:
-            if (!outOfField(x - 1, y, d) && !getWorld()->blockedbyRocksOrIce(x - 1, y, getDirection())){
+            if (!outOfField(x, y, d) && !getWorld()->blockedbyRocksOrIce(x - 1, y, getDirection())){
                 moveTo(getX() - 1, getY());
                 break;
             }
             else if (outOfField(x - 1, y, d) || getWorld()->blockedbyRocksOrIce(x - 1, y, getDirection())){
-                setDirection(right);
+                //setDirection(right);
                 return;
                 break;
             }
@@ -537,10 +641,42 @@ void Protester::moveOne(int x, int y, Direction d){
     }
 }
 
-bool Protester::isAtFork(int x, int y, StudentWorld* world){
+bool Protester::isAtFork(int x, int y, StudentWorld* world,vector<Direction>& path){
     
     //right
+    int paths = 0;
+
+    if (getDirection() != left && getDirection() != right) {
+        //Checking left
+        if (!getWorld()->blockedByIce(getX() - 1, getY()) && !getWorld()->checkSpot("Boulder", getX() - 1, getY())) {
+            paths++;
+            path.push_back(left);
+        }
+        //Checking right
+        if (!getWorld()->blockedByIce(getX() + 1, getY()) && !getWorld()->checkSpot("Boulder", getX() + 1, getY())) {
+            paths++;
+            path.push_back(right);
+        }
+    }
     
+    if (getDirection() != up && getDirection() != down) {
+        //Checking up
+        if (!getWorld()->blockedByIce(getX(), getY() + 1) && !getWorld()->checkSpot("Boulder", getX(), getY() - 1)) {
+            paths++;
+            path.push_back(up);
+
+        }
+
+        //Checking down
+        if (!getWorld()->blockedByIce(getX(), getY() - 1) && !getWorld()->checkSpot("Boulder", getX(), getY() - 1)) {
+            paths++;
+            path.push_back(down);
+        }
+    }
+
+    //cout << paths << endl;
+
+    return paths != 0 ? true : false;
     //right and left
     
     //right and up
@@ -559,7 +695,7 @@ bool Protester::isAtFork(int x, int y, StudentWorld* world){
     
     //else if getY + 1 !blocked && getY -1 !blocked //up or down
     //else if getY + 1 !blocked && getY -1 !blocked //up or down
-    return true;
+    //return true;
 }
 
 bool Protester::iceManisInSight(int x, int y, StudentWorld* world){
@@ -568,15 +704,58 @@ bool Protester::iceManisInSight(int x, int y, StudentWorld* world){
         int xI = world->getIceMan()->getX();
         int yI = world->getIceMan()->getY();
         if (x == xI) { //if they are on same row
-            if (yI < y){ //check if ice in way!
-                //delete man;
+            if (y <= yI) {
+                for (int j = y; j <= yI; j++) {
+                    for (int i = x; i < 4; i++) {
+                        if (world->getMap()[j][x + i] != nullptr || world->checkSpot("Boulder", x+i, j)) {
+                            return false;
+                        }
+                    }
+                }
+                cout << "UP" << endl;
+                setDirection(up);
                 return true;
             }
-            
+            else {
+                for (int j = y; j >= yI; j--) {
+                    for (int i = 0; i < 4; i++) {
+                        if (world->getMap()[j][x + i] != nullptr || world->checkSpot("Boulder", x + i, j)) {
+                            return false;
+                        }
+                    }
+                }
+                cout << "Down" << endl;
+                setDirection(down);
+                return true;
+            }
         }
         else if (y == yI) { //if they are on same column
-            if (xI < x || xI > x){
-                //delete man;
+            if (x <= xI) {
+                for (int j = x; j <= xI; j++) {
+                    for (int i = 0; i < 4; i++) {
+                        if (world->getMap()[y+i][j] != nullptr || world->checkSpot("Boulder", j, y+i)) {
+                            return false;
+                        }
+                    }
+                }
+                cout << "Right" << endl;
+                setDirection(right);
+                return true;
+            }
+            else {
+                /*cout << "x1: " << x << endl;
+                cout << "y1: " << y << endl;
+                cout << "x2: " <<xI << endl;
+                cout << "y2: " << yI << endl;*/
+                for ( int j = x; j >= xI; j--) {
+                    for (int i = 0; i < 4; i++) {
+                        if (world->getMap()[y+i][j] != nullptr || world->checkSpot("Boulder", j, y+i)) {
+                            return false;
+                        }
+                    }
+                }
+                cout << "left" << endl;
+                setDirection(left);
                 return true;
             }
         }

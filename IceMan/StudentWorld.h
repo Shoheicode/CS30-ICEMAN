@@ -105,8 +105,8 @@ public:
 
         //Adds a protestor
         //spawnProtesters(pNum);
-        characterList.push_back(new Protester(20, 60, IID_PROTESTER, this));
-        characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
+        characterList.push_back(new Protester(60, 60, IID_PROTESTER, this));
+        //characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
 
         findPath(60,60,0,60);
         //spawnSonar(sNum, ticksSonarWater);
@@ -220,7 +220,7 @@ public:
     bool blockedbyRocksOrIce(int x, int y, Actor::Direction d);//not done
     bool blockedByRocks(int x, int y);
     double getRadius(int x1, int x2, int y2, int y1){return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));}
-    
+    bool checkFacingDirection(int x, int y, Actor::Direction d);
     //Returns the characterlist
     list<Actor*>& getCharacterList() {
         return characterList;
