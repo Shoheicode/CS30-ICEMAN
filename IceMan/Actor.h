@@ -70,15 +70,16 @@ protected:
     string direction = "left";
     Direction listOfDir[4] = { left, right, up, down };
     int ticksforFork = 200;
+    int path[64][64];
 
 public:
-    Protester(int startX, int startY, int imageID, int tStun, StudentWorld* world) : AnnoyedActor (imageID, startX, startY, left,world, 1.0, 0) {
+    Protester(int startX, int startY, int imageID, int tStun, int waitTime, StudentWorld* world) : AnnoyedActor (imageID, startX, startY, left,world, 1.0, 0) {
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
         hitPoints = 5;//set data members numbers specified by packet
         shoutLast15 = 15;
         stun = false;
         tickStun = tStun;
-        ticksToWait = 10;
+        ticksToWait = waitTime;
         hasShoutedLast15 = 15;
         leave_the_oil_field = false;//doesn't leave field bc is Alive
         setVisible(true);//appear on screen
@@ -96,6 +97,7 @@ public:
     virtual bool iceManisInSight(int x, int y, StudentWorld* world);
     virtual bool isAtFork(int x, int y, StudentWorld* world, vector<Direction>& path);
     virtual void doSomething() override;
+    virtual void setLeaveOil(bool leave) { leave_the_oil_field = leave; }
     bool overlap(Actor object); // Checks if overlap with specific object
     virtual void moveOne(int x, int y, Direction d);
     virtual ~Protester() {};
@@ -103,7 +105,7 @@ public:
 class HardcoreProtester: public Protester {
 public:
     //Hardcore Protestor -> Protestor -> Actor -> GraphObject
-    HardcoreProtester(int startX, int startY, int ticks_to_stare, StudentWorld* world) : Protester (startX, startY, IID_HARD_CORE_PROTESTER, ticks_to_stare, world) {
+    HardcoreProtester(int startX, int startY, int ticks_to_stare, int waitTime, StudentWorld* world) : Protester (startX, startY, IID_HARD_CORE_PROTESTER, ticks_to_stare,waitTime, world) {
         //decide how many numSquaresToMoveInCurrentDirection between 8 and 60
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
         //ticks_to_stare = max(50, 100 – current_level_number * 10);
@@ -213,7 +215,7 @@ class Oil : public Prop {
 public:
     Oil(int startX, int startY, StudentWorld* world)
            : Prop(IID_BARREL, startX, startY, 1.0, 2, right, world) {
-               setVisible(true);//appear on screen
+               setVisible(false);//appear on screen
        }
     virtual void doSomething() override;
     virtual ~Oil() {}
@@ -253,7 +255,7 @@ public:
     Gold(int startX, int startY, bool isDropped, StudentWorld* world)
         : Prop(IID_GOLD, startX, startY, 1.0, 2, right, world) {
         if (isDropped == false) {
-            setVisible(true);//hidden in ice CHANGE ONCE FINISHED
+            setVisible(false);//hidden in ice CHANGE ONCE FINISHED
             currentState = icePickUp;
             //pick-up able by Iceman
             //wont disappear
@@ -290,6 +292,7 @@ public:
            : Prop(IID_SONAR, startX, startY, 1.0, 2, right, world) {
                ticksToWait = ticks;
                setVisible(true);
+               setAlive(true);
        }
     virtual void doSomething() override;
     void deT(){ticksToWait--;}

@@ -1,6 +1,7 @@
 #include "Actor.h"
 #include "StudentWorld.h"
 #include <cmath>
+#include <future>
 
 // Students:  Add code to this file (if you wish), Actor.h, StudentWorld.h, and StudentWorld.cpp
 //Actor
@@ -19,6 +20,7 @@ bool Actor::outOfField(int x, int y, Actor::Direction d){
             break;
         case Actor::left://if faced left, and is moved farther than 0 units it is out of Field
             if(x <= 0){
+                //cout << "DO NOT MOVE" << endl;
                 return true;
             }
             break;
@@ -124,13 +126,13 @@ void Boulder::doSomething() {
             }
             if (numBelow == 4) {
                 currentState = waiting;
-                cout << numBelow << endl;
+                //cout << numBelow << endl;
             }
         }
         else if (getState() == waiting) {
             if (wait != 0) {
                 wait--;
-                cout << wait << endl;
+                //cout << wait << endl;
             }
             else {
                 //cout << "DONE WAITING! It is falling time" << endl;
@@ -356,7 +358,8 @@ void IceMan::isInRange(StudentWorld* world){
 void IceMan::checkAnnoyed(){
     if(getHitpoints() == 0){
         getWorld()->playSound(SOUND_PLAYER_GIVE_UP);
-        getWorld()->decLives();
+        //getWorld()->decLives();
+        setAlive(false);
     }
 }
 
@@ -366,7 +369,11 @@ bool followingPath = false;
 void Protester::doSomething(){
     vector<Direction> paths;
     if (isAlive()){
-        cout << "PROTESTOR X: " << getX() << endl;
+        if (getHitpoints() <= 0 && leave_the_oil_field == false) {
+            getWorld()->playSound(SOUND_PROTESTER_GIVE_UP);
+            leave_the_oil_field = true;
+        }
+        //cout << "PROTESTOR X: " << getX() << endl;
         if (ticksToWait > 0){
             ticksToWait--;
             return;
@@ -375,96 +382,125 @@ void Protester::doSomething(){
             hasShoutedLast15--;
             return;
         }
-
-        //if (!outOfField(getX(), getY(), getDirection())) {
+        if (ticksToWait == 0) {
+            //cout << "MOVING HOPEFULLY" << endl;
+            //if (!outOfField(getX(), getY(), getDirection())) {
             if (leave_the_oil_field) {
-
-            }
-            else if (is4Away(studW) == "IceMan" && getWorld()->checkFacingDirection(getX(), getY(), getDirection())) {
-                if (hasShoutedLast15 >= 0) {
-                    getWorld()->playSound(SOUND_PROTESTER_YELL);//Playannoyedsound
-                    hasShoutedLast15 = 15;
-                    getWorld()->getIceMan()->setHitpoints(-2);
-                    return;
+                getWorld()->findPath(60,60, getX(), getY());
+                string movement = getWorld()->getLeadingPathDistance(getX(),getY());
+                if (movement == "left") {
+                    setDirection(left);
+                    moveTo(getX() - 1, getY());
                 }
-                moveTo(getX(), getY() - 1);
-            }
-            else if (is4Away(studW) == "Greater IceMan" && iceManisInSight(getX(), getY(), getWorld())) {
-                    moveOne(getX(), getY(), getDirection());
-                    numSquaresToMoveInCurrentDirection = 0;
+                else if (movement == "right") {
+                    setDirection(right);
+                    moveTo(getX() + 1, getY());
+                }
+                else if (movement == "down") {
+                    setDirection(down);
+                    moveTo(getX(), getY()-1);
+                }
+                else if (movement == "up") {
+                    setDirection(up);
+                    moveTo(getX(), getY()+1);
+                }
+                if (getX() == 60 && getY() == 60) {
+                    setAlive(false);
+                }
+
             }
             else {
-                cout << "RUNNING THE ELSE" << endl;
-                if (numSquaresToMoveInCurrentDirection == 0) {
-                    //cout << "changing Directions" << endl;
-                    bool chooseDirection = false;
-                    int randomDir = rand() % 4;
-                    //Direction dir = left;
-                    //setDirection(listOfDir[randomDir]);
-                    while (!chooseDirection) {
-                        cout << randomDir << endl;
-                        if (listOfDir[randomDir] == left) {
-                            if (!getWorld()->blockedByIce(getX() - 1, getY()) && !getWorld()->checkSpot("Boulder", getX() - 1, getY()) && getX() != 0) {
-                                chooseDirection = true;
-                                break;
-                            }
-                        }
-                        if (listOfDir[randomDir] == right) {
-                            if (!getWorld()->blockedByIce(getX() + 1, getY()) && !getWorld()->checkSpot("Boulder", getX() + 1, getY()) && getX() != 60) {
-                                chooseDirection = true;
-                                break;
-                            }
-                        }
-                        else if (listOfDir[randomDir] == up) {
-                            if (!getWorld()->blockedByIce(getX(), getY() + 1) && !getWorld()->checkSpot("Boulder", getX(), getY() + 1) && getY() != 60) {
-                                chooseDirection = true;
-                                break;
-                            }
-                        }
-                        else if (listOfDir[randomDir] == down) {
-                            if (!getWorld()->blockedByIce(getX(), getY() - 1) && !getWorld()->checkSpot("Boulder", getX(), getY() - 1) && getY() != 0) {
-                                chooseDirection = true;
-                                break;
-                            }
-                        }
-                        randomDir = rand() % 4;
+                tryGold(getX(), getY());
+                if (is4Away(studW) == "IceMan" && getWorld()->checkFacingDirection(getX(), getY(), getDirection())) {
+                    if (hasShoutedLast15 >= 0) {
+                        getWorld()->playSound(SOUND_PROTESTER_YELL);//Playannoyedsound
+                        hasShoutedLast15 = 15;
+                        getWorld()->getIceMan()->setHitpoints(-2);
+                        return;
                     }
-                    setDirection(listOfDir[randomDir]);//listOfDir[randomDir]);
-                    numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
+                    moveTo(getX(), getY() - 1);
                 }
-                if (ticksforFork ==0) {
-                    cout << "IT IS FORKTIME" << endl;
-                    if (isAtFork(getX(), getY(), getWorld(), paths)) {
-                        int random = rand() % paths.size();
-
-                        setDirection(paths.at(random));
-                        numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
-                        ticksforFork = 200;
-                        paths.clear();
-                    }
+                else if (is4Away(studW) == "Greater IceMan" && iceManisInSight(getX(), getY(), getWorld())) {
+                    //cout << "MOVE GUY" << endl;
+                    moveOne(getX(), getY(), getDirection());
+                    numSquaresToMoveInCurrentDirection = 0;
                 }
                 else {
-                    ticksforFork--;
-                }
-                
+                    //cout << "RUNNING THE ELSE" << endl;
+                    if (numSquaresToMoveInCurrentDirection == 0) {
+                        //cout << "changing Directions" << endl;
+                        bool chooseDirection = false;
+                        int randomDir = rand() % 4;
+                        //Direction dir = left;
+                        //setDirection(listOfDir[randomDir]);
+                        while (!chooseDirection) {
+                            cout << randomDir << endl;
+                            if (listOfDir[randomDir] == left) {
+                                if (!getWorld()->blockedByIce(getX() - 1, getY()) && !getWorld()->checkSpot("Boulder", getX() - 1, getY()) && getX() != 0) {
+                                    chooseDirection = true;
+                                    break;
+                                }
+                            }
+                            if (listOfDir[randomDir] == right) {
+                                if (!getWorld()->blockedByIce(getX() + 1, getY()) && !getWorld()->checkSpot("Boulder", getX() + 1, getY()) && getX() != 60) {
+                                    chooseDirection = true;
+                                    break;
+                                }
+                            }
+                            else if (listOfDir[randomDir] == up) {
+                                if (!getWorld()->blockedByIce(getX(), getY() + 1) && !getWorld()->checkSpot("Boulder", getX(), getY() + 1) && getY() != 60) {
+                                    chooseDirection = true;
+                                    break;
+                                }
+                            }
+                            else if (listOfDir[randomDir] == down) {
+                                if (!getWorld()->blockedByIce(getX(), getY() - 1) && !getWorld()->checkSpot("Boulder", getX(), getY() - 1) && getY() != 0) {
+                                    chooseDirection = true;
+                                    break;
+                                }
+                            }
+                            randomDir = rand() % 4;
+                        }
+                        setDirection(listOfDir[randomDir]);//listOfDir[randomDir]);
+                        numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
+                    }
+                    //cout << "FORK TIME"
+                    if (ticksforFork == 0) {
+                        //cout << "IT IS FORKTIME" << endl;
+                        if (isAtFork(getX(), getY(), getWorld(), paths)) {
+                            int random = rand() % paths.size();
 
-                moveOne(getX(), getY(), getDirection());
-                numSquaresToMoveInCurrentDirection--;
-                cout << "Number of Squares: "<<numSquaresToMoveInCurrentDirection << endl;
-                if (getDirection() == left && getX() == 0) {
-                    numSquaresToMoveInCurrentDirection = 0;
-                }
-                else if (getDirection() == right && getX() == 60) {
-                    numSquaresToMoveInCurrentDirection = 0;
-                }
-                else if (getDirection() == up && getY() == 60) {
-                    numSquaresToMoveInCurrentDirection = 0;
-                }
-                else if (getDirection() == down && getX() == 0) {
-                    numSquaresToMoveInCurrentDirection = 0;
+                            setDirection(paths.at(random));
+                            numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
+                            ticksforFork = 200;
+                            paths.clear();
+                        }
+                    }
+                    else {
+                        ticksforFork--;
+                    }
+
+
+                    moveOne(getX(), getY(), getDirection());
+                    numSquaresToMoveInCurrentDirection--;
+                    //cout << "Number of Squares: " << numSquaresToMoveInCurrentDirection << endl;
+                    if (getDirection() == left && getX() == 0) {
+                        numSquaresToMoveInCurrentDirection = 0;
+                    }
+                    else if (getDirection() == right && getX() == 60) {
+                        numSquaresToMoveInCurrentDirection = 0;
+                    }
+                    else if (getDirection() == up && getY() == 60) {
+                        numSquaresToMoveInCurrentDirection = 0;
+                    }
+                    else if (getDirection() == down && getX() == 0) {
+                        numSquaresToMoveInCurrentDirection = 0;
+                    }
                 }
                 
             }
+            ticksToWait = max(0, 3 - static_cast<int>(getWorld()->getLevel() / 4));
+        }
             
             /*else if (!getWorld()->blockedByIce(getX() + 1, getY()) && random == 1) {
                  moveTo(getX() + 1, getY());
@@ -626,6 +662,7 @@ void Protester::moveOne(int x, int y, Direction d){
             break;
         case left:
             if (!outOfField(x, y, d) && !getWorld()->blockedbyRocksOrIce(x - 1, y, getDirection())){
+                //cout << "MOVING LEFT" << endl;
                 moveTo(getX() - 1, getY());
                 break;
             }
@@ -765,94 +802,145 @@ bool Protester::iceManisInSight(int x, int y, StudentWorld* world){
 
 //Hardcore Protester
 
-void HardcoreProtester::doSomething(){//NOT COMPLETE
-    if (isAlive()){
-        if (ticksToWait > 0){
+void HardcoreProtester::doSomething() {//NOT COMPLETE
+    vector<Direction> paths;
+    if (isAlive()) {
+        if (getHitpoints() <= 0) {
+            getWorld()->playSound(SOUND_PROTESTER_GIVE_UP);
+            leave_the_oil_field = true;
+        }
+        //cout << "PROTESTOR X: " << getX() << endl;
+        if (ticksToWait > 0) {
             ticksToWait--;
             return;
         }
-        det15();
-        if (ticksToWait==0 && !outOfField(getX(), getY(), getDirection())){
-            if(leave_the_oil_field == true){
-                if(sqrt(pow(60 - getX(), 2) + pow(60 - getY(), 2) <= 2)){
-                    setDirection(right);
-                    setAlive(false);
-                    return;
-                }
-                
-                else if(getX()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
-                    
-                    //turn direction based on Q
-                    if (getDirection() != right){
-                        setDirection(right);
-                    }
-                    moveTo(getX() + 1, getY());
-                    
-                    return;
-                    
-                }
-                else if(getY()!=60 && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
-                    //turn direction based on Q
-                    if (getDirection() != up){
-                        setDirection(up);
-                    }
-                    moveTo(getX(), getY() + 1 );
-                    //reset ticks to wait
-                    return;
-                }
-            }
-            else if(is4Away(studW) == "IceMan"){// && isFacingIceMan(getDirection(), studW)
-                if (shoutLast15 == 0){
-                    yell(getX(), getY());
-                    ticksToWait = 10;
-                    reset15();
-                }
-            }
-            else if (iceManisInSight(getX(), getY(), studW) && is4Away(studW) == "Greater IceMan" && !isFacingIceMan(getDirection(), studW)){
-                    setFacingIceMan(getDirection(), studW);
-                //getWorld()->moveToShortPath();
-               moveOne(getX(), getY(), getDirection());
-                tryGold(getX(), getY());
-                isAnnoyed();
-                    numSquaresToMoveInCurrentDirection = 0;
-                reset15();
-                ticksToWait = 10;
-                    return;
-                
-            }
-            else if(!iceManisInSight(getX(), getY(), studW) && !getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
-                numSquaresToMoveInCurrentDirection--;
-                if(numSquaresToMoveInCurrentDirection <= 0){
-                    //pick random direction that is not blocked by boulders or Ice
-                    numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
-                    ticksToWait = 10;
-                    reset15();
-                    //take 1 step in that direction
-                    moveOne(getX(), getY(), getDirection());
-                    tryGold(getX(), getY());
-                    isAnnoyed();
-                    return;
-                }
-            }
-            //else if isAtFork && canMove1Perpindicular && !madePerpTurn in 200 ticks
-            //pick which 2 directions
-            //pick whichevr 2 directions if both are good pick one randomly
-            //set direction to new direction
-            else if (getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())){
-                numSquaresToMoveInCurrentDirection = 0;
-                reset15();
-                ticksToWait = 10;
-                isAnnoyed();
-                return;
-                //reset ticks to wait
-                //pick new dirction in nonresting tick
-            }
-            
+        if (hasShoutedLast15 > 0) {
+            hasShoutedLast15--;
+            return;
         }
-        
-   }
-    return;
+        if (ticksToWait == 0) {
+            //cout << "MOVING HOPEFULLY" << endl;
+            //if (!outOfField(getX(), getY(), getDirection())) {
+            if (leave_the_oil_field) {
+                getWorld()->findPath(60, 60, getX(), getY());
+                string movement = getWorld()->getLeadingPathDistance(getX(), getY());
+                if (movement == "left") {
+                    setDirection(left);
+                    moveTo(getX() - 1, getY());
+                }
+                else if (movement == "right") {
+                    setDirection(right);
+                    moveTo(getX() + 1, getY());
+                }
+                else if (movement == "down") {
+                    setDirection(down);
+                    moveTo(getX(), getY() - 1);
+                }
+                else if (movement == "up") {
+                    setDirection(up);
+                    moveTo(getX(), getY() + 1);
+                }
+                if (getX() == 60 && getY() == 60) {
+                    setAlive(false);
+                }
+
+            }
+            else {
+                tryGold(getX(), getY());
+                if (is4Away(studW) == "IceMan" && getWorld()->checkFacingDirection(getX(), getY(), getDirection())) {
+                    if (hasShoutedLast15 >= 0) {
+                        getWorld()->playSound(SOUND_PROTESTER_YELL);//Playannoyedsound
+                        hasShoutedLast15 = 15;
+                        getWorld()->getIceMan()->setHitpoints(-2);
+                        return;
+                    }
+                    moveTo(getX(), getY() - 1);
+                }
+                else if (is4Away(studW) == "Greater IceMan" && iceManisInSight(getX(), getY(), getWorld())) {
+                    //cout << "MOVE GUY" << endl;
+                    moveOne(getX(), getY(), getDirection());
+                    numSquaresToMoveInCurrentDirection = 0;
+                }
+                else {
+                    //cout << "RUNNING THE ELSE" << endl;
+                    if (numSquaresToMoveInCurrentDirection == 0) {
+                        //cout << "changing Directions" << endl;
+                        bool chooseDirection = false;
+                        int randomDir = rand() % 4;
+                        //Direction dir = left;
+                        //setDirection(listOfDir[randomDir]);
+                        while (!chooseDirection) {
+                            cout << randomDir << endl;
+                            if (listOfDir[randomDir] == left) {
+                                if (!getWorld()->blockedByIce(getX() - 1, getY()) && !getWorld()->checkSpot("Boulder", getX() - 1, getY()) && getX() != 0) {
+                                    chooseDirection = true;
+                                    break;
+                                }
+                            }
+                            if (listOfDir[randomDir] == right) {
+                                if (!getWorld()->blockedByIce(getX() + 1, getY()) && !getWorld()->checkSpot("Boulder", getX() + 1, getY()) && getX() != 60) {
+                                    chooseDirection = true;
+                                    break;
+                                }
+                            }
+                            else if (listOfDir[randomDir] == up) {
+                                if (!getWorld()->blockedByIce(getX(), getY() + 1) && !getWorld()->checkSpot("Boulder", getX(), getY() + 1) && getY() != 60) {
+                                    chooseDirection = true;
+                                    break;
+                                }
+                            }
+                            else if (listOfDir[randomDir] == down) {
+                                if (!getWorld()->blockedByIce(getX(), getY() - 1) && !getWorld()->checkSpot("Boulder", getX(), getY() - 1) && getY() != 0) {
+                                    chooseDirection = true;
+                                    break;
+                                }
+                            }
+                            randomDir = rand() % 4;
+                        }
+                        setDirection(listOfDir[randomDir]);//listOfDir[randomDir]);
+                        numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
+                    }
+                    //cout << "FORK TIME"
+                    if (ticksforFork == 0) {
+                        //cout << "IT IS FORKTIME" << endl;
+                        if (isAtFork(getX(), getY(), getWorld(), paths)) {
+                            int random = rand() % paths.size();
+
+                            setDirection(paths.at(random));
+                            numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
+                            ticksforFork = 200;
+                            paths.clear();
+                        }
+                    }
+                    else {
+                        ticksforFork--;
+                    }
+
+
+                    moveOne(getX(), getY(), getDirection());
+                    numSquaresToMoveInCurrentDirection--;
+                    //cout << "Number of Squares: " << numSquaresToMoveInCurrentDirection << endl;
+                    if (getDirection() == left && getX() == 0) {
+                        numSquaresToMoveInCurrentDirection = 0;
+                    }
+                    else if (getDirection() == right && getX() == 60) {
+                        numSquaresToMoveInCurrentDirection = 0;
+                    }
+                    else if (getDirection() == up && getY() == 60) {
+                        numSquaresToMoveInCurrentDirection = 0;
+                    }
+                    else if (getDirection() == down && getX() == 0) {
+                        numSquaresToMoveInCurrentDirection = 0;
+                    }
+                }
+
+            }
+            ticksToWait = max(0, 3 - static_cast<int>(getWorld()->getLevel() / 4));
+        }
+
     }
+    return;
+}
 
 void HardcoreProtester::tryGold(int x, int y){
     if (getWorld()->pickUpGold(getX(), getY())){
@@ -945,9 +1033,11 @@ int x = 0;
 void Squirt::doSomething(){
     if (getWorld()->blockedbyRocksOrIce(getX(), getY(), getDirection())) {
         setAlive(false);
+        return;
         }
     if (distance == 0){
         setAlive(false);
+        return;
     }
     //if protester in the way
     //hurt then set to dead

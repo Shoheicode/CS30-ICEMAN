@@ -36,6 +36,12 @@ public:
         }
         characterList.clear();
 
+        for (int i = 0; i < 64; i++) {
+            for (int j = 0; j < 64; j++) {
+                delete leavingPath[i][j]; //deletes every ice in vector;
+            }
+        }
+
     }
 
     /*
@@ -66,7 +72,15 @@ public:
                 
         int probOfSonarOrWater = static_cast<int>(getLevel()) * 25 + 300;
 
+        ticksToWaitBetweenMoves = max(0, 3 - static_cast<int>(getLevel() / 4));
 
+        //int diceShuff = rand() % 101;
+        tickBetween = max(25, 200 - static_cast<int>(getLevel()));
+        currentNum = 0;
+        pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
+        cout << "NUMBER OF PROSTERS:" << pNum << endl;
+        proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
+        probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
         
         int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
         
@@ -94,11 +108,13 @@ public:
         
         
         //Spawns Oil
-        spawnOil(oNum);
+        //spawnOil(oilLeft);
 
         //Adds a protestor
         //spawnProtesters(pNum);
         //characterList.push_back(new Protester(60, 60, IID_PROTESTER, this));
+        characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun, ticksToWaitBetweenMoves, this));
+        currentNum++;
         //characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
         spawnOil(oilLeft);
 
@@ -140,27 +156,33 @@ public:
         updateTextBox();
         
         //protester and hpro spawn
-        int diceShuff = rand() % 101;
+        /*int diceShuff = rand() % 101;
         int tickBetween =  max(25, 200 - static_cast<int>(getLevel()));
         int currentNum = 0;
         int pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
         int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
-        int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
+        int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);*/
         
-        
-        int spawnP = rand() % tickBetween;
-        if (spawnP == 1) {
-            int spawnP = rand() % 5 + 1;
-            if (spawnP == 1 && currentNum != pNum){
+        int spawnP = --tickBetween;
+        //cout << currentNum << endl;
+        //cout << pNum << endl;
+        if (spawnP == 0) {
+            //int spawnP = rand() % 5 + 1;
+            cout << "SpawnP: " << spawnP << endl;
+            //if (spawnP == 1 && currentNum != pNum){
+            if (currentNum < pNum) {
                 if (diceShuff <= probabilityOfHardcore) {
-                    characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
+                    characterList.push_back(new HardcoreProtester(60, 60, proTickStun, ticksToWaitBetweenMoves, this));
                     cout << "a wild hardcore protester appeared!" << endl;
-                } else {
-                    characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun, this));
+                }
+                else {
+                    characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun, ticksToWaitBetweenMoves, this));
                     cout << "a wild protester appeared!" << endl;
                 }
             }
+            //}
             currentNum++;
+            cout << currentNum << endl;
             tickBetween = max(25, 200 - static_cast<int>(getLevel())); // Reset tick count
             diceShuff = rand() % 101;
         }
@@ -169,23 +191,28 @@ public:
         int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
         int spawn = rand() % ticksSonarWater;
         if (spawn == 1) {
+            
             int spawnS = rand() % 5 + 1;
+            cout << "Spawn Number: " << spawnS << endl;
             if (spawnS == 1){
+                
                 cout << "a wild sonar appeared!" << endl;
                 playSound(SOUND_SONAR);
                 characterList.push_back(new SonarKit(0, 60, ticksSonarWater, this));
             }
             
                 else {
-                       int x = 0;
-                       int y = 0;
-                       while (!noIce(x, y) && !blockedbyRocksOrIce(x, y, Actor::up)) {
+                       int x = rand() % 61;
+                       int y = rand() % 57;
+                       while (blockedbyRocksOrIce(x, y, Actor::up)) {
                            x = rand() % 61;
                            y = rand() % 57;
                            
                        }
                     //playSound(SOUND_);
                     cout << "a wild water pool appeared!" << endl;
+                    cout << "X: " << x << endl;
+                    cout << "Y: " <<  y << endl;
                     characterList.push_back(new WaterPool(x, y, ticksSonarWater, this));
                    }
                }
@@ -250,6 +277,12 @@ public:
             delete temp;
         }
         characterList.clear();
+
+        for (int i = 0; i < 64; i++) {
+            for (int j = 0; j < 64; j++) {
+                delete leavingPath[i][j]; //deletes every ice in vector;
+            }
+        }
         
         //delete characterList;
     }
@@ -264,6 +297,7 @@ public:
     bool useSpray(int x, int y);
     bool noIce(int x, int y);
     bool empty4(int x, int y);
+    int countSonar = 0;
     bool blockedbyRocksOrIce(int x, int y, Actor::Direction d);//not done
     bool blockedByRocks(int x, int y);
     double getRadius(int x1, int x2, int y2, int y1){return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));}
@@ -292,31 +326,31 @@ public:
 
     void findPath(int x, int y, int objx, int objy);
 
-    pair<pair<int,int>, string> getLeadingPathDistance(int x, int y) {
+    string getLeadingPathDistance(int x, int y) {
         string direction = "right";
-        pair<int, int> smallCoord = make_pair(x+1, y);
+        //pair<int, int> smallCoord = make_pair(x+1, y);
         int smallest = *(leavingPath[y][x+1]);
         if (*(leavingPath[y+1][x]) < smallest) {
             direction = "up";
             smallest = *(leavingPath[y+1][x]);
-            smallCoord = make_pair(x, y+1);
+            //smallCoord = make_pair(x, y+1);
         }
         if (*leavingPath[y-1][x] < smallest) {
             direction = "down";
             smallest = *(leavingPath[y-1][x]);
-            smallCoord = make_pair(x, y-1);
+            //smallCoord = make_pair(x, y-1);
         }
         if (*leavingPath[y][x-1] < smallest) {
             direction = "left";
             smallest = *(leavingPath[y][x-1]);
-            smallCoord = make_pair(x-1, y);
+            //smallCoord = make_pair(x-1, y);
         }
 
         //cout << "x:" << smallCoord.first << endl;
         //cout << "y:" << smallCoord.second << endl;
         cout << smallest << endl;
-        pair<pair<int, int>, string> movement= make_pair(smallCoord, direction);
-        return movement;
+        //pair<pair<int, int>, string> movement= direction;
+        return direction;
     }
     
     HardcoreProtester* getHardcoreProtester();
@@ -334,6 +368,15 @@ private:
         int ticksSonarWater = 0;
     Point(int x, int y) : x(x), y(y) {}
     };
+
+    int diceShuff = rand() % 101;
+    int tickBetween = max(25, 200 - static_cast<int>(getLevel()));
+    int ticksToWaitBetweenMoves;
+    int currentNum = 0;
+    int pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
+    int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
+    int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
+
     list<Point> goldPos;
     list<Point> rockPos;
     list<Point> icePos;

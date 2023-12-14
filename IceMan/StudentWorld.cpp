@@ -15,6 +15,9 @@ void StudentWorld::removeDeadObjects() {
     for (auto itr = characterList.begin(); itr != characterList.end(); itr++) {
         if ((*itr)->isAlive() == false) { //If the actors are not alive
             //Delete the Actors and set the point at it to null
+            if ((*itr)->getID() == IID_PROTESTER || (*itr)->getID() == IID_HARD_CORE_PROTESTER) {
+                currentNum--;
+            }
             Actor* a = *itr;
             *itr = nullptr;
             delete a;
@@ -300,25 +303,30 @@ return false;
 
 bool StudentWorld::blockedByIce(int x, int y){
     if (y == 61 || x == -1 || x == 61 || y == -1) {
-        return true;
+        return true; // because acutally, it is blocked by the wall and can't go outside of the border
     }
     for (int i = y; i < y+4; i++) {
             for (int j = x; j < x+4; j++) {
                 //cout << "HELLO" << endl;
                 if (iceMap[i][j] != nullptr) {
-                    //cout << "HIII" << endl;
+                    
+                    cout << "HIII" << endl;
                     return true;
                 }
             }
         }
+    //cout << "HELLO" << endl;
     return false;
    
 }
 
 bool StudentWorld::blockedbyRocksOrIce(int x, int y, Actor::Direction d){
-    if (blockedByIce(x, y) || blockedByRocks(x, y)){
+    if (blockedByIce(x, y) || checkSpot("Boulder", x, y)) {//blockedByRocks(x, y)){
+        //cout << "IT IS TRUE" << endl;
         return true;
     }
+
+    //cout << "IT IS FALSE" << endl;
         
 //    for (Actor* p : characterList) {
 //        Ice* iceP = iceMap[x][y];
@@ -444,10 +452,13 @@ bool StudentWorld::useSpray(int x, int y){
         player->setWater(-1);
         for (Actor* p : characterList){
             if((p->getID() == IID_PROTESTER || p->getID() == IID_HARD_CORE_PROTESTER) && getRadius(x, p->getX(), y, p->getY()) <= 6){
-                if (p->isAlive())
+                if (p->isAlive()) {
                     p->setHitpoints(-2);
-                playSound(SOUND_PROTESTER_ANNOYED);
-                return true;
+                    cout << "HIT POINTS: " << p->getHitpoints() << endl;
+                    playSound(SOUND_PROTESTER_ANNOYED);
+
+                    return true;
+                }
             }
         }
     }
@@ -508,7 +519,7 @@ bool StudentWorld::checkSpot(string actorType, int x, int y) {
     for (Actor* act : characterList) {
         if (actorType == "Boulder") {
             if (act->getID() == IID_BOULDER && abs(act->getX() - x) < 4 && abs(act->getY() - y) < 4) {
-                cout << "TRUE there is something" << endl;
+                //cout << "TRUE there is something" << endl;
                 return true;
             }
         }
@@ -676,22 +687,22 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
         cout << "SIZE: " << q.size() << endl;
     }
 
-    if (q.empty()) {
-        cout << "I AM EMPTY" << endl;
-    }
-    leavingPath[y][x] = new int(0);//ending place
+    //if (q.empty()) {
+    //    cout << "I AM EMPTY" << endl;
+    //}
+    //leavingPath[y][x] = new int(0);//ending place
 
-    for (int i = 63; i >= 0; i--) {
-        for (int j = 0; j < 64; j++) {
-            if (*leavingPath[i][j] == 100000000) {
-                cout << "A";
-            }
-            else {
-                cout << *(leavingPath[i][j]);
-            }
-        }
-        cout << endl;
-    }
+    //for (int i = 63; i >= 0; i--) {
+    //    for (int j = 0; j < 64; j++) {
+    //        if (*leavingPath[i][j] == 100000000) {
+    //            cout << "A";
+    //        }
+    //        else {
+    //            cout << *(leavingPath[i][j]);
+    //        }
+    //    }
+    //    cout << endl;
+    //}
 
 }
 
