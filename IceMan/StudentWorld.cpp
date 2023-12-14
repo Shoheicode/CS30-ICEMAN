@@ -378,7 +378,7 @@ void StudentWorld::updateTextBox() {
     int health = static_cast<int>((player->getHealth()/10.0) * 100);//percent of health
     int squirts = player->getSquirt();
     int gold = player->getGold();//getPlayerGoldCount();
-    int barrelsLeft = player->getOil();
+    int barrelsLeft = oilLeft - player->getOil();
     int sonar = player->getSonarCount();
     int score = getScore();
 
@@ -401,7 +401,7 @@ string StudentWorld::formatText(int level, int lives, int health, int squirts, i
     string scoreString = to_string(score);
 
     //Creates the format for the string
-    string returnString = "Lvl: " + levelString + " Lives: " + livesString + " Hlth: " + healthString + "% Wtr: " + squirtsString + " Gld: " + goldString + " Oil: " +
+    string returnString = "Lvl: " + levelString + " Lives: " + livesString + " Hlth: " + healthString + "% Wtr: " + squirtsString + " Gld: " + goldString + " Oil left: " +
         barrelsString + " Sonar: " + sonarString + " Scr: " + scoreString;
 
     //Returns the string
