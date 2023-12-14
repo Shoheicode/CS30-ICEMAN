@@ -50,7 +50,6 @@ class AnnoyedActor : public Actor {
     public:
         AnnoyedActor(int imageID, int startX, int startY, Direction startDirection, StudentWorld* world, double size = 1.0, int depth = 0) :
             Actor(imageID, startX, startY, startDirection, world, size, depth) {
-
         }
 
     protected:
@@ -104,11 +103,8 @@ public:
 };
 class HardcoreProtester: public Protester {
 public:
-    //Hardcore Protestor -> Protestor -> Actor -> GraphObject
     HardcoreProtester(int startX, int startY, int ticks_to_stare, int waitTime, StudentWorld* world) : Protester (startX, startY, IID_HARD_CORE_PROTESTER, ticks_to_stare,waitTime, world) {
-        //decide how many numSquaresToMoveInCurrentDirection between 8 and 60
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
-        //ticks_to_stare = max(50, 100 – current_level_number * 10);
         goldInv = 0;
         leave_the_oil_field = false;//doesn't leave field bc is Alive
         hitPoints = 20;//set data members numbers specified by packet
@@ -162,7 +158,6 @@ public:
         gold = 0;
         damage = 100; //set data members numbers specified by packet
         setVisible(true);//appear on screen
-        //reset score if lost life!
     };
     void isInRange(StudentWorld* world);
     void dropGold(StudentWorld* world);
@@ -187,8 +182,6 @@ public:
         setVisible(true);//appear on screen
     };
     virtual bool overlap(StudentWorld* world);
-    //virtual void doSomething() override {
-    //}; //must be here or else it will be an abstract class
     virtual ~Ice() {}
 };
 
@@ -261,9 +254,9 @@ public:
             //wont disappear
         }
 
-        if (isDropped == true) {//not finished
+        if (isDropped == true) {
             setState(proPickUp);
-            setVisible(true);
+            setVisible(true);//if dropped appear
         }
     }
                //will remain in temp state (will disappear if Protestor picks up or disappear if they don't pick up}
@@ -287,7 +280,6 @@ private:
 
 class SonarKit : public Prop {
 public:
-    //1.0 and 2 and right
     SonarKit(int startX, int startY, int ticks, StudentWorld* world)
            : Prop(IID_SONAR, startX, startY, 1.0, 2, right, world) {
                ticksToWait = ticks;
@@ -305,12 +297,6 @@ class WaterPool : public Prop {
 public:
     WaterPool(int startX, int startY, int tixWait, StudentWorld* world)
            : Prop(IID_WATER_POOL, startX, startY, 1.0, 2, right, world) {
-//               for (Actor* a : world->getCharacterList()){
-//                   if (a->getID()== IID_ICE && a->getX() == startX && a->getY() == startY){
-//                       setAlive(false);
-//                       return;
-//                   }
-//               }
                ticksToWait = tixWait;
                setVisible(true);
        }
