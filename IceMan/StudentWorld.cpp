@@ -52,40 +52,27 @@ void StudentWorld::createIceMap(){
     }
 }
 
-bool StudentWorld::isEmpty(vector<vector<Ice*>>& iceMap) {
-    for (auto rowIt = iceMap.begin(); rowIt != iceMap.end(); rowIt++) {
-        for (auto colIt = rowIt->begin(); colIt != rowIt->end(); colIt++) {
-            if (*colIt == nullptr) {
-                return true;
+bool StudentWorld::noIce(int x, int y) {
+    if (iceMap[x][y] == nullptr) {
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (iceMap[x + i][y + j] != nullptr) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
             }
+        } else {
+            return false;
         }
-    }
-    return false;
+        return false;
 }
 
-void StudentWorld::spawnSW(int swNum, int tick){
-    //int currentNum = 0;
-//    while (currentNum != swNum) {
-//        if (tick % ((int)getLevel() * 25 + 30) == 0){
-//            
-//        }
-//        
-//        characterList.push_back(new SonarKit(0, 60, tick, this));
-//        int x = rand() % 61;
-//        int y = rand() % 61;
-//    while (!findEmpty(x, y)){
-//        cout << "bad guess try again!"<< endl;
-//        x = rand() % 61;
-//        y = rand() % 61;
-//    }
-//        if (findEmpty(x, y)){
-//            cout << "water spawned!"<< endl;
-//            characterList.push_back(new WaterPool(x, y, tick, this));
-//        }
-       
-        //find empty ice spot
-        //characterList.push_back(new WaterPool(x, y, tick, this));
-}
+//bool StudentWorld::empty4(int x, int y){
+//    
+//}
+
 
 void StudentWorld::spawnWater(int wNum, int tickNum){
     cout <<"spawnWater was called!" << endl;
@@ -207,7 +194,6 @@ void StudentWorld::spawnOil(int oNum){
             currentNum++;
         }
     }
-
 }
 
 void StudentWorld::spawnBoulders(int bNum) {
