@@ -52,6 +52,41 @@ void StudentWorld::createIceMap(){
     }
 }
 
+bool StudentWorld::isEmpty(vector<vector<Ice*>>& iceMap) {
+    for (auto rowIt = iceMap.begin(); rowIt != iceMap.end(); rowIt++) {
+        for (auto colIt = rowIt->begin(); colIt != rowIt->end(); colIt++) {
+            if (*colIt == nullptr) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void StudentWorld::spawnSW(int swNum, int tick){
+    //int currentNum = 0;
+//    while (currentNum != swNum) {
+//        if (tick % ((int)getLevel() * 25 + 30) == 0){
+//            
+//        }
+//        
+//        characterList.push_back(new SonarKit(0, 60, tick, this));
+//        int x = rand() % 61;
+//        int y = rand() % 61;
+//    while (!findEmpty(x, y)){
+//        cout << "bad guess try again!"<< endl;
+//        x = rand() % 61;
+//        y = rand() % 61;
+//    }
+//        if (findEmpty(x, y)){
+//            cout << "water spawned!"<< endl;
+//            characterList.push_back(new WaterPool(x, y, tick, this));
+//        }
+       
+        //find empty ice spot
+        //characterList.push_back(new WaterPool(x, y, tick, this));
+}
+
 void StudentWorld::spawnWater(int wNum, int tickNum){
     cout <<"spawnWater was called!" << endl;
     int tickWait = tickNum;
@@ -120,6 +155,7 @@ void StudentWorld::spawnSonar(int sNum, int tickNum) {
     while (currentNum != sNum) {
         bool createSonar = true;
         ticWait--;
+        cout << ticWait << endl;
         //sdeT(ticWait);
         if (createSonar && ticWait == 0) {
             characterList.push_back(new SonarKit(0, 60, tickNum, this));
@@ -129,6 +165,7 @@ void StudentWorld::spawnSonar(int sNum, int tickNum) {
         }
     }
     cout << "all sonar created!" << endl;
+    cout << sNum << endl;
 }
 
 void StudentWorld::spawnOil(int oNum){
@@ -445,31 +482,24 @@ void StudentWorld::useSonar(int x, int y){
         }
         player->setSonar(-1);
     }
-    
-    
 
-void StudentWorld::useSpray(int x, int y){
-    Protester* p= getProtester();
+bool StudentWorld::useSpray(int x, int y){
     if(player->getSquirt() > 0){
         getCharacterList().push_back(new Squirt(x, y, player->getDirection(), this));
         playSound(SOUND_PLAYER_SQUIRT);
         player->setWater(-1);
-    }
-   
-}
-
-bool StudentWorld::isSprayed(int x, int y){
-    //if squirt is within a rad of 3
-    for (Actor* p : characterList) {
-        if (p->getID() == IID_WATER_SPURT){
-            if(sqrt(pow(p->getX() - x, 2) + pow(p->getY() - y, 2) <= 3)){
+        for (Actor* p : characterList){
+            if((p->getID() == IID_PROTESTER || p->getID() == IID_HARD_CORE_PROTESTER) && getRadius(x, p->getX(), y, p->getY()) <= 6){
+                if (p->isAlive())
+                    p->setHitpoints(-2);
+                playSound(SOUND_PROTESTER_ANNOYED);
                 return true;
             }
         }
     }
     return false;
 }
-
+   
 //
 IceMan* StudentWorld::getIceMan(){
     for (Actor* a : characterList) {
