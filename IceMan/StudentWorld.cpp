@@ -287,43 +287,6 @@ void StudentWorld::spawnNuggets(int num) {
     }
 }
 
-void StudentWorld::spawnProtesters(int pNum){
-    
-    bool createPros= false;
-
-    //Sets the current number of nuggets created to 0
-    int currentNum = 0;
-
-    while (currentNum != pNum) {
-
-        createPros = true;
-
-        //Generate random positions
-        int x = rand() % 61;
-        int y = 60;
-
-        //Make sure the hole in the center is empty
-        if (x <= 33 && x >= 27) {
-            createPros = false;
-        }
-        else {
-            //For each of the actors in character list
-            for (Actor* a : characterList) {
-                //Check to ensure the distance between all the characters is not less than 6.
-                if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
-                    createPros = false;
-                    break;
-                }
-
-            }
-        }
-        //If create nugget is true, create a nugget and increase current number of nuggets
-        if (createPros) {
-            characterList.push_back(new Protester(x, 60, IID_PROTESTER, this));
-            currentNum++;
-        }
-    }
-}
 
 bool StudentWorld::blockedByRocks(int x, int y){
 for (const Point& p : rockPos){
@@ -375,13 +338,12 @@ goldPos.push_back((Point(player->getX(), player->getY())));
 bool StudentWorld::pickUpGold(int x, int y){
 for (const Point& p : goldPos){
     double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
-    
         if (radius <= 4){
             for (Actor* a : characterList) {
                 if (a->getID() == IID_GOLD && a->getX() == p.x && a->getY() == p.y){
-                    cout << "protester picked up gold!" << endl;
-                    a->setAlive(false);
-                    return true;
+                                cout << "protester picked up gold!" << endl;
+                                a->setAlive(false);
+                                return true;
                 }
             }
         }
