@@ -63,12 +63,7 @@ public:
         
         //Number of Sonar Kits and water pools
         int sWNum = max(100, 300 - (10 * static_cast<int>(getLevel())));
-        
-        //protester
-        int pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
-        
-        int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
-        
+                
         int probOfSonarOrWater = static_cast<int>(getLevel()) * 25 + 300;
 
 
@@ -101,17 +96,11 @@ public:
         //Spawns Oil
         spawnOil(oNum);
 
-        //Adds a protestor
-        //spawnProtesters(pNum);
-        characterList.push_back(new Protester(20, 60, IID_PROTESTER, this));
-        characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
-
         findPath(60,60,0,60);
        
-        //spawnSW(sWNum, ticksSonarWater);
-        //currNumPro++;
+       // characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun,this));
 
-        //characterList.push_back(new Squirt(60, 60, 1, 1, this));
+
         
         return GWSTATUS_CONTINUE_GAME;
     }
@@ -144,6 +133,32 @@ public:
         //Updates the Textbox
         updateTextBox();
         
+        //protester and hpro spawn
+        int diceShuff = rand() % 101;
+        int tickBetween =  max(25, 200 - static_cast<int>(getLevel()));
+        int currentNum = 0;
+        int pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
+        int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
+        int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
+        
+        
+        int spawnP = rand() % tickBetween;
+        if (spawnP == 1) {
+            int spawnP = rand() % 5 + 1;
+            if (spawnP == 1 && currentNum != pNum){
+                if (diceShuff <= probabilityOfHardcore) {
+                    characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
+                    cout << "a wild hardcore protester appeared!" << endl;
+                } else {
+                    characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun, this));
+                    cout << "a wild protester appeared!" << endl;
+                }
+            }
+            currentNum++;
+            tickBetween = max(25, 200 - static_cast<int>(getLevel())); // Reset tick count
+            diceShuff = rand() % 101;
+        }
+    
         //spawn sonar and water
         int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
         int spawn = rand() % ticksSonarWater;
