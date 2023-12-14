@@ -109,6 +109,7 @@ public:
         characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
 
         findPath(60,60,0,60);
+        //spawnSonar(sNum, ticksSonarWater);
         //currNumPro++;
 
         //characterList.push_back(new Squirt(60, 60, 1, 1, this));
@@ -210,7 +211,7 @@ public:
 
     bool completeLevel();
     void moveToShortPath(int startX, int startY);
-    bool blockedByIce (int x, int y, Actor::Direction d);
+    bool blockedByIce (int x, int y);
     void dropGold(int x, int y);
     bool pickUpGold(int x, int y);
     void useSonar(int x, int y);
@@ -218,8 +219,8 @@ public:
     bool isSprayed(int x, int y);
     bool blockedbyRocksOrIce(int x, int y, Actor::Direction d);//not done
     bool blockedByRocks(int x, int y);
+    double getRadius(int x1, int x2, int y2, int y1){return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));}
     
-
     //Returns the characterlist
     list<Actor*>& getCharacterList() {
         return characterList;
