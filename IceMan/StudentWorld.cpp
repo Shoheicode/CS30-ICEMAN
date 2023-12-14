@@ -52,6 +52,28 @@ void StudentWorld::createIceMap(){
     }
 }
 
+bool StudentWorld::noIce(int x, int y) {
+    if (iceMap[x][y] == nullptr) {
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (iceMap[x + i][y + j] != nullptr) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            return false;
+        }
+        return false;
+}
+
+//bool StudentWorld::empty4(int x, int y){
+//    
+//}
+
+
 void StudentWorld::spawnWater(int wNum, int tickNum){
     cout <<"spawnWater was called!" << endl;
     int tickWait = tickNum;
@@ -120,24 +142,17 @@ void StudentWorld::spawnSonar(int sNum, int tickNum) {
     while (currentNum != sNum) {
         bool createSonar = true;
         ticWait--;
-
-        // Check if the distance between existing objects and the specified point is less than 6
-        for (Actor* a : characterList) {
-            if (!checkDistance(a, a->getX(), a->getY(), 60, 60)) {
-                createSonar = false;
-                break;
-            }
-        }
-
-        // If createSonar is true and ticWait has reached 0, create the SonarKit
+        cout << ticWait << endl;
+        //sdeT(ticWait);
         if (createSonar && ticWait == 0) {
-            characterList.push_back(new SonarKit(60, 60, tickNum, this));
+            characterList.push_back(new SonarKit(0, 60, tickNum, this));
             cout << "sonar created get it quick!" << endl;
             currentNum++;
             ticWait = tickNum; // Reset tick wait
         }
     }
-    cout << "all sonar created" << endl;
+    cout << "all sonar created!" << endl;
+    cout << sNum << endl;
 }
 
 void StudentWorld::spawnOil(int oNum){
@@ -179,7 +194,6 @@ void StudentWorld::spawnOil(int oNum){
             currentNum++;
         }
     }
-
 }
 
 void StudentWorld::spawnBoulders(int bNum) {
@@ -273,43 +287,6 @@ void StudentWorld::spawnNuggets(int num) {
     }
 }
 
-void StudentWorld::spawnProtesters(int pNum){
-    
-    bool createPros= false;
-
-    //Sets the current number of nuggets created to 0
-    int currentNum = 0;
-
-    while (currentNum != pNum) {
-
-        createPros = true;
-
-        //Generate random positions
-        int x = rand() % 61;
-        int y = 60;
-
-        //Make sure the hole in the center is empty
-        if (x <= 33 && x >= 27) {
-            createPros = false;
-        }
-        else {
-            //For each of the actors in character list
-            for (Actor* a : characterList) {
-                //Check to ensure the distance between all the characters is not less than 6.
-                if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
-                    createPros = false;
-                    break;
-                }
-
-            }
-        }
-        //If create nugget is true, create a nugget and increase current number of nuggets
-        if (createPros) {
-            characterList.push_back(new Protester(x, 60, IID_PROTESTER, this));
-            currentNum++;
-        }
-    }
-}
 
 bool StudentWorld::blockedByRocks(int x, int y){
 for (const Point& p : rockPos){
@@ -367,13 +344,12 @@ goldPos.push_back((Point(player->getX(), player->getY())));
 bool StudentWorld::pickUpGold(int x, int y){
 for (const Point& p : goldPos){
     double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
-    
         if (radius <= 4){
             for (Actor* a : characterList) {
                 if (a->getID() == IID_GOLD && a->getX() == p.x && a->getY() == p.y){
-                    cout << "protester picked up gold!" << endl;
-                    a->setAlive(false);
-                    return true;
+                                cout << "protester picked up gold!" << endl;
+                                a->setAlive(false);
+                                return true;
                 }
             }
         }
@@ -408,7 +384,7 @@ void StudentWorld::updateTextBox() {
     int health = static_cast<int>((player->getHealth()/10.0) * 100);//percent of health
     int squirts = player->getSquirt();
     int gold = player->getGold();//getPlayerGoldCount();
-    int barrelsLeft = player->getOil();
+    int barrelsLeft = oilLeft - player->getOil();
     int sonar = player->getSonarCount();
     int score = getScore();
 
@@ -431,7 +407,7 @@ string StudentWorld::formatText(int level, int lives, int health, int squirts, i
     string scoreString = to_string(score);
 
     //Creates the format for the string
-    string returnString = "Lvl: " + levelString + " Lives: " + livesString + " Hlth: " + healthString + "% Wtr: " + squirtsString + " Gld: " + goldString + " Oil: " +
+    string returnString = "Lvl: " + levelString + " Lives: " + livesString + " Hlth: " + healthString + "% Wtr: " + squirtsString + " Gld: " + goldString + " Oil left: " +
         barrelsString + " Sonar: " + sonarString + " Scr: " + scoreString;
 
     //Returns the string
@@ -460,67 +436,28 @@ void StudentWorld::useSonar(int x, int y){
         }
         player->setSonar(-1);
     }
-    
-    
 
-void StudentWorld::useSpray(int x, int y, Actor::Direction d){
-    Protester* p= getProtester();
-    int sprayTick = 10;
+bool StudentWorld::useSpray(int x, int y){
     if(player->getSquirt() > 0){
-        //proP->setHitpoints(-2);
-        Squirt* sq;
-        switch (d){
-            case Actor::up:
-                //set ticks
-                
-                sq = new Squirt(getIceMan()->getX(), getIceMan()->getY() + 4, Actor::up, this);
-                sprayTick--;
-                break;
-            case Actor::down:
-                sq = new Squirt(getIceMan()->getX(), getIceMan()->getY()-4,Actor::down,this);
-                sprayTick--;
-                break;
-            case Actor::left:
-                sq = new Squirt(getIceMan()->getX() - 4, getIceMan()->getY(),Actor::left,this);
-                sprayTick--;
-                break;
-            case Actor::right:
-                sq = new Squirt(getIceMan()->getX() + 4, getIceMan()->getY(),Actor::right,this);
-                break;
-            case Actor::none:
-                break;
-                
-        };
-        
-        getCharacterList().push_back(sq);
+        getCharacterList().push_back(new Squirt(x, y, player->getDirection(), this));
         playSound(SOUND_PLAYER_SQUIRT);
         player->setWater(-1);
-        if(sqrt(pow(p->getX() - x, 2) + pow(p->getY() - y, 2) <= 4)){
-            
-            p->setHitpoints(-2);
-        }
-    }
-    //delete proP;
-}
-
-bool StudentWorld::isSprayed(int x, int y){
-    //if squirt is within a rad of 3
-    for (Actor* p : characterList) {
-        if (p->getID() == IID_WATER_SPURT){
-            if(sqrt(pow(p->getX() - x, 2) + pow(p->getY() - y, 2) <= 3)){
-                p->setAlive(false);
+        for (Actor* p : characterList){
+            if((p->getID() == IID_PROTESTER || p->getID() == IID_HARD_CORE_PROTESTER) && getRadius(x, p->getX(), y, p->getY()) <= 6){
+                if (p->isAlive())
+                    p->setHitpoints(-2);
+                playSound(SOUND_PROTESTER_ANNOYED);
                 return true;
             }
         }
     }
     return false;
 }
-
+   
 //
 IceMan* StudentWorld::getIceMan(){
     for (Actor* a : characterList) {
         if (a->getID() == IID_PLAYER){
-            //cout << "AM RUNNING BOIIIII" << endl;
             return dynamic_cast<IceMan*>(a);
             break;
         }

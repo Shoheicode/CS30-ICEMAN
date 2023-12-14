@@ -61,30 +61,37 @@ class Protester: public AnnoyedActor {
 protected:
     bool leave_the_oil_field;
     int hasShoutedLast15;
+    int shoutLast15;
     int moves;
+    int tickStun;
     int ticksToWait;
     int numSquaresToMoveInCurrentDirection;
+    bool stun;
     string direction = "left";
     Direction listOfDir[4] = { left, right, up, down };
     int ticksforFork = 200;
 
 public:
-    Protester(int startX, int startY, int imageID, StudentWorld* world) : AnnoyedActor (imageID, startX, startY, left,world, 1.0, 0) {
+    Protester(int startX, int startY, int imageID, int tStun, StudentWorld* world) : AnnoyedActor (imageID, startX, startY, left,world, 1.0, 0) {
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 53);
         hitPoints = 5;//set data members numbers specified by packet
-        
-        //moves = ((getWorld()->getLevel())/4);
-//        ticksToWait = max(0,moves);
+        shoutLast15 = 15;
+        stun = false;
+        tickStun = tStun;
         ticksToWait = 10;
-        leave_the_oil_field = false;//doesn't leave field bc is Alive
         hasShoutedLast15 = 15;
+        leave_the_oil_field = false;//doesn't leave field bc is Alive
         setVisible(true);//appear on screen
         
     };
-    //void moveTo(int x, int y) {};
     virtual void isAnnoyed();
+    virtual bool setHit(int a) {hitPoints += 2; stun = true; return stun;}
     void virtual tryGold(int x, int y);
     virtual bool yell(int x, int y);
+    virtual void det15(){shoutLast15--;}
+    virtual int getStun(){return tickStun;}
+    virtual void detStun(){tickStun--;}
+    virtual void reset15(){shoutLast15 = 15;}
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
     virtual bool iceManisInSight(int x, int y, StudentWorld* world);
     virtual bool isAtFork(int x, int y, StudentWorld* world, vector<Direction>& path);
@@ -96,7 +103,7 @@ public:
 class HardcoreProtester: public Protester {
 public:
     //Hardcore Protestor -> Protestor -> Actor -> GraphObject
-    HardcoreProtester(int startX, int startY, int ticks_to_stare, StudentWorld* world) : Protester (startX, startY, IID_HARD_CORE_PROTESTER, world) {
+    HardcoreProtester(int startX, int startY, int ticks_to_stare, StudentWorld* world) : Protester (startX, startY, IID_HARD_CORE_PROTESTER, ticks_to_stare, world) {
         //decide how many numSquaresToMoveInCurrentDirection between 8 and 60
         numSquaresToMoveInCurrentDirection = 8 + (rand() % 60);
         //ticks_to_stare = max(50, 100 – current_level_number * 10);
@@ -187,13 +194,19 @@ class Squirt : public Prop {
 public:
     Squirt(int startX, int startY, Direction d, StudentWorld* world)
            : Prop(IID_WATER_SPURT, startX, startY, 1.0, 1, d, world) {
+               if(!isFacingIceMan(getDirection(), world)){
+                   setFacingIceMan(getDirection(), studW);
+               }
                distance = 4;
                setVisible(true);//appear on screen
        }
     virtual void doSomething() override;
+    void deT(){ticksToWait--;}
+    void detD(){distance--;}
     virtual ~Squirt() {}
 private:
     int distance;
+    int ticksToWait;
 };
 
 class Oil : public Prop {
@@ -279,7 +292,7 @@ public:
                setVisible(true);
        }
     virtual void doSomething() override;
-    void setTicks(int a){ticksToWait = a;}
+    void deT(){ticksToWait--;}
     virtual ~SonarKit() {}
 private:
     int ticksToWait;
@@ -289,14 +302,21 @@ class WaterPool : public Prop {
 public:
     WaterPool(int startX, int startY, int tixWait, StudentWorld* world)
            : Prop(IID_WATER_POOL, startX, startY, 1.0, 2, right, world) {
-               saveTix = tixWait;
+//               for (Actor* a : world->getCharacterList()){
+//                   if (a->getID()== IID_ICE && a->getX() == startX && a->getY() == startY){
+//                       setAlive(false);
+//                       return;
+//                   }
+//               }
+               ticksToWait = tixWait;
                setVisible(true);
        }
     virtual void doSomething() override;
+    void deT(){ticksToWait--;}
     bool tickEllapsed(int tixWait);
     virtual ~WaterPool() {}
 private:
-    int tixWait;
+    int ticksToWait;
     int saveTix;
 };
 

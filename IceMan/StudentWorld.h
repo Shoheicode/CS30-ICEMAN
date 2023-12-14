@@ -59,21 +59,14 @@ public:
         int gNum = max(5 - static_cast<int>(getLevel()) / 2, 2);
 
         //Number of Barrels of Oil
-        int oNum = min(static_cast<int>(getLevel()) + 2, 21);
+        oilLeft = min(static_cast<int>(getLevel()) + 2, 21);
         
-        //Number of Sonar Kits
-        int sNum = max(100, 300 - (10 * static_cast<int>(getLevel())));
-        
-        //Number of Water Pools
-        int wNum = max(100, 300 - (10 * static_cast<int>(getLevel())));
-        
-        int pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
-        
-        int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
-        
+        //Number of Sonar Kits and water pools
+        int sWNum = max(100, 300 - (10 * static_cast<int>(getLevel())));
+                
         int probOfSonarOrWater = static_cast<int>(getLevel()) * 25 + 300;
 
-        int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
+
         
         int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
         
@@ -105,14 +98,15 @@ public:
 
         //Adds a protestor
         //spawnProtesters(pNum);
-        characterList.push_back(new Protester(60, 60, IID_PROTESTER, this));
+        //characterList.push_back(new Protester(60, 60, IID_PROTESTER, this));
         //characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
+        spawnOil(oilLeft);
 
         findPath(60,60,0,60);
-        //spawnSonar(sNum, ticksSonarWater);
-        //currNumPro++;
+       
+       // characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun,this));
 
-        //characterList.push_back(new Squirt(60, 60, 1, 1, this));
+
         
         return GWSTATUS_CONTINUE_GAME;
     }
@@ -145,11 +139,62 @@ public:
         //Updates the Textbox
         updateTextBox();
         
+        //protester and hpro spawn
+        int diceShuff = rand() % 101;
+        int tickBetween =  max(25, 200 - static_cast<int>(getLevel()));
+        int currentNum = 0;
+        int pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
+        int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
+        int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
+        
+        
+        int spawnP = rand() % tickBetween;
+        if (spawnP == 1) {
+            int spawnP = rand() % 5 + 1;
+            if (spawnP == 1 && currentNum != pNum){
+                if (diceShuff <= probabilityOfHardcore) {
+                    characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
+                    cout << "a wild hardcore protester appeared!" << endl;
+                } else {
+                    characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun, this));
+                    cout << "a wild protester appeared!" << endl;
+                }
+            }
+            currentNum++;
+            tickBetween = max(25, 200 - static_cast<int>(getLevel())); // Reset tick count
+            diceShuff = rand() % 101;
+        }
+    
+        //spawn sonar and water
+        int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
+        int spawn = rand() % ticksSonarWater;
+        if (spawn == 1) {
+            int spawnS = rand() % 5 + 1;
+            if (spawnS == 1){
+                cout << "a wild sonar appeared!" << endl;
+                playSound(SOUND_SONAR);
+                characterList.push_back(new SonarKit(0, 60, ticksSonarWater, this));
+            }
+            
+                else {
+                       int x = 0;
+                       int y = 0;
+                       while (!noIce(x, y) && !blockedbyRocksOrIce(x, y, Actor::up)) {
+                           x = rand() % 61;
+                           y = rand() % 57;
+                           
+                       }
+                    //playSound(SOUND_);
+                    cout << "a wild water pool appeared!" << endl;
+                    characterList.push_back(new WaterPool(x, y, ticksSonarWater, this));
+                   }
+               }
+        
         //Goes through each character and asks if it does something
         for (Actor* a : characterList) {
             if (a->isAlive()) {
                 a->doSomething();
-
+                
                 if (!player->isAlive()) { //Checks if player dies and returns dies
                     return GWSTATUS_PLAYER_DIED;
                 }
@@ -208,15 +253,17 @@ public:
         
         //delete characterList;
     }
-
+    
     bool completeLevel();
     void moveToShortPath(int startX, int startY);
     bool blockedByIce (int x, int y);
     void dropGold(int x, int y);
     bool pickUpGold(int x, int y);
+    void sdeT(int t){t--;}
     void useSonar(int x, int y);
-    void useSpray(int x, int y, Actor::Direction d);
-    bool isSprayed(int x, int y);
+    bool useSpray(int x, int y);
+    bool noIce(int x, int y);
+    bool empty4(int x, int y);
     bool blockedbyRocksOrIce(int x, int y, Actor::Direction d);//not done
     bool blockedByRocks(int x, int y);
     double getRadius(int x1, int x2, int y2, int y1){return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));}
@@ -279,11 +326,12 @@ private:
     vector<vector<Ice*>> iceMap; //Used to keep track of ice on map
     list<Actor*> characterList;
     IceMan* player;
+    int oilLeft;
     int* leavingPath[64][64];
     struct Point {
     int x;
     int y;
-
+        int ticksSonarWater = 0;
     Point(int x, int y) : x(x), y(y) {}
     };
     list<Point> goldPos;
@@ -329,6 +377,8 @@ private:
     
     //Spawn Water sq
     void spawnWater(int wNum, int tickNum);
+    
+    void spawnSW(int swNum, int tick);
     
     //Spawn sonar
     void spawnSonar(int sNum, int tickNum);
