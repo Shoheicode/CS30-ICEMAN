@@ -101,103 +101,53 @@ public:
         
         //Spawns Nuggets
         spawnNuggets(gNum);
-        
-        //Spawns SonarKit
-        //spawnSonar(sNum);
-        //spawnWater(wNum);
-        
+
         numberOfScanners = player->getSonarCount();
         
         //Spawns Oil
         spawnOil(oilLeft);
 
-        //Adds a protestor
-        //spawnProtesters(pNum);
-        //characterList.push_back(new Protester(60, 60, IID_PROTESTER, this));
+        //Adds a protestor at start
         characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun, ticksToWaitBetweenMoves, this));
-        currentNum++;
-        //characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
-       
+        currentNum++;//increment protesters on map
 
-        findPath(60,60,0,60);
-       
-       // characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun,this));
-
-
+        findPath(60,60,0,60);//sets up shortest path to exit
         
-        return GWSTATUS_CONTINUE_GAME;
+        return GWSTATUS_CONTINUE_GAME;//once all spawned run game
     }
-
-    /*
-    move method() must:
-
-    A: Update the Status Text on the top of the screen
-
-    B: Must ask all the active actors to do something (like move)
-        -If an actor does something that makes Iceman give up, move should return GWSTATUS_PLAYER_DIED
-        -If Iceman collects all the oil, move should play the sound  SOUND_FINISHED_LEVEL
-        and then return a value of GWSTATUS_FINISHED_LEVEL
-
-    C:It must delete any actors that need be removed from the game and the STL container that tracks them
-        -A Protester leaving the upper right hand corner
-        -A Boulder hitting the ground
-        -A Gold Nugget picked up by Iceman/Protester
-        -Water Pool that has dried up
-        -ETC
-    
-    */
 
     virtual int move()
     {
-        // This code is here merely to allow the game to build, run, and terminate after you hit enter a few times.
-        // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
-        // cout << iceMap.size() << endl;
         
         //Updates the Textbox
         updateTextBox();
         
-        //protester and hpro spawn
-        /*int diceShuff = rand() % 101;
-        int tickBetween =  max(25, 200 - static_cast<int>(getLevel()));
-        int currentNum = 0;
-        int pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
-        int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
-        int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);*/
-        
         int spawnP = --tickBetween;
-        //cout << currentNum << endl;
-        //cout << pNum << endl;
+
         if (spawnP == 0) {
-            //int spawnP = rand() % 5 + 1;
-            //cout << "SpawnP: " << spawnP << endl;
-            //if (spawnP == 1 && currentNum != pNum){
-            if (currentNum < pNum) {
+            if (currentNum < pNum) {//check if current pros on map reached max pros on map
                 if (diceShuff <= probabilityOfHardcore) {
-                    characterList.push_back(new HardcoreProtester(60, 60, proTickStun, ticksToWaitBetweenMoves, this));
+                    characterList.push_back(new HardcoreProtester(60, 60, proTickStun, ticksToWaitBetweenMoves, this));//spawn hardcore protester
                     cout << "a wild hardcore protester appeared!" << endl;
                 }
                 else {
-                    characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun, ticksToWaitBetweenMoves, this));
+                    characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun, ticksToWaitBetweenMoves, this));//spawn protester
                     cout << "a wild protester appeared!" << endl;
                 }
             }
-            //}
-            currentNum++;
+            currentNum++;//update current pros
             cout << currentNum << endl;
-            tickBetween = max(25, 200 - static_cast<int>(getLevel())); // Reset tick count
-            diceShuff = rand() % 101;
+            tickBetween = max(25, 200 - static_cast<int>(getLevel())); // reset tick count
+            diceShuff = rand() % 101;//get another random num
         }
     
         //spawn sonar and water
-        
-        int spawn = --ticksSonarWater;
+        int spawn = --ticksSonarWater;//decrement ticks
         cout << spawn << endl;
-        if (spawn == 0) {
-            
-            int spawnS = rand() % 5 + 1;
+        if (spawn == 0) {//check if time to spawn
+            int spawnS = rand() % 5 + 1;//calculate random 1/5 and 4/5 chance
             cout << "Spawn Number: " << spawnS << endl;
-            
-            if (spawnS == 1){
+            if (spawnS == 1){//if 1/5 spawn sonar
                 if(numberOfScanners < 2){
                 cout << "a wild sonar appeared!" << endl;
                 playSound(SOUND_SONAR);
@@ -205,21 +155,20 @@ public:
                 }
             }
             
-                else {
+                else {//4/5 chance
                        int x = rand() % 61;
                        int y = rand() % 57;
                        while (blockedbyRocksOrIce(x, y, Actor::up)) {
-                           x = rand() % 61;
+                           x = rand() % 61;//keep getting random nums until no rocks or ice at coord
                            y = rand() % 57;
                            
                        }
-                    //playSound(SOUND_);
                     cout << "a wild water pool appeared!" << endl;
                     cout << "X: " << x << endl;
                     cout << "Y: " <<  y << endl;
-                    characterList.push_back(new WaterPool(x, y, ticksSonarWater, this));
+                    characterList.push_back(new WaterPool(x, y, ticksSonarWater, this));//spawn water
                    }
-                ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
+                ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));//reset ticks
         }
         
         //Goes through each character and asks if it does something
@@ -245,11 +194,6 @@ public:
         if (!player->isAlive()) {
             return GWSTATUS_PLAYER_DIED;
         }
-
-        //if (false) {
-        //    decLives();
-        //}
-
         //If the lives equal zero, then return the player has perished
         if (getLives() == 0) {
             return GWSTATUS_PLAYER_DIED;
@@ -257,13 +201,7 @@ public:
         //Otherwise return continue game
         return GWSTATUS_CONTINUE_GAME;
     }
-    /*
-    
-    This method is called when Iceman:
-        -Loses a life
-        -Completes the current level
 
-    */
     virtual void cleanUp()
     {
         //Deletes all the stuff in icemap
@@ -292,6 +230,7 @@ public:
         //delete characterList;
     }
     
+    //public member funcs
     bool completeLevel();
     void moveToShortPath(int startX, int startY);
     bool blockedByIce (int x, int y);
@@ -300,7 +239,6 @@ public:
     void sdeT(int t){t--;}
     void useSonar(int x, int y);
     bool useSpray(int x, int y);
-    bool noIce(int x, int y);
     bool empty4(int x, int y);
     int countSonar = 0;
     bool blockedbyRocksOrIce(int x, int y, Actor::Direction d);//not done
@@ -323,40 +261,13 @@ public:
     
     Boulder* getBoulder();
     
-    Gold* getWorldGold();
-    
     Ice* getIce();
     
     Protester* getProtester();
 
     void findPath(int x, int y, int objx, int objy);
 
-    string getLeadingPathDistance(int x, int y) {
-        string direction = "right";
-        //pair<int, int> smallCoord = make_pair(x+1, y);
-        int smallest = *(leavingPath[y][x+1]);
-        if (*(leavingPath[y+1][x]) < smallest) {
-            direction = "up";
-            smallest = *(leavingPath[y+1][x]);
-            //smallCoord = make_pair(x, y+1);
-        }
-        if (*leavingPath[y-1][x] < smallest) {
-            direction = "down";
-            smallest = *(leavingPath[y-1][x]);
-            //smallCoord = make_pair(x, y-1);
-        }
-        if (*leavingPath[y][x-1] < smallest) {
-            direction = "left";
-            smallest = *(leavingPath[y][x-1]);
-            //smallCoord = make_pair(x-1, y);
-        }
-
-        //cout << "x:" << smallCoord.first << endl;
-        //cout << "y:" << smallCoord.second << endl;
-        cout << smallest << endl;
-        //pair<pair<int, int>, string> movement= direction;
-        return direction;
-    }
+    string getLeadingPathDistance(int x, int y);
     
     HardcoreProtester* getHardcoreProtester();
 
@@ -367,52 +278,26 @@ private:
     IceMan* player;
     int oilLeft;
     int* leavingPath[64][64];
+    
     struct Point {
     int x;
     int y;
-        int ticksSonarWater = 0;
     Point(int x, int y) : x(x), y(y) {}
     };
 
+    //set math formulas///
     int diceShuff = rand() % 101;
     int tickBetween = max(25, 200 - static_cast<int>(getLevel()));
-    int ticksToWaitBetweenMoves;
-    int currentNum = 0;
     int pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
     int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
     int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
+    int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
+    
+    int ticksToWaitBetweenMoves;
     int numberOfScanners = 0;
-
+    int currentNum = 0;
     list<Point> goldPos;
     list<Point> rockPos;
-    list<Point> icePos;
-    int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
-    struct Node{
-    Node* next;
-    bool visited;
-    int x;
-    int y;
-    int distance;
-    list<Node*> neighbors;
-    Node* parent;
-    Node(int x, int y) : x(x), y(y), distance(INFINITY), parent(NULL), visited(false), neighbors() {}
-    };
-    Node* head;
-    list<Node*> hProNodes;
-
-    Node* getNode(int x, int y) {
-    for (Node* node : hProNodes) {
-    if (node->x == x && node->y == y) {
-    return node;
-    }
-    }
-    return nullptr; // Node not found
-    }
-
-    void addNode(int x, int y);
-    void createNodes();
-    bool nodeBeenVisited(int x, int y);
-    int getNearest();
 
       void removeDeadObjects();
 
@@ -424,14 +309,6 @@ private:
 
     //Spawns the gold nuggets
     void spawnNuggets(int num);
-    
-    //Spawn Water sq
-    void spawnWater(int wNum, int tickNum);
-    
-    void spawnSW(int swNum, int tick);
-    
-    //Spawn sonar
-    void spawnSonar(int sNum, int tickNum);
     
     //Spawn Oil
     void spawnOil(int oNum);
