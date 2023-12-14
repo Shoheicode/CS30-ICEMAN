@@ -292,6 +292,12 @@ class WaterPool : public Prop {
 public:
     WaterPool(int startX, int startY, int tixWait, StudentWorld* world)
            : Prop(IID_WATER_POOL, startX, startY, 1.0, 2, right, world) {
+//               for (Actor* a : world->getCharacterList()){
+//                   if (a->getID()== IID_ICE && a->getX() == startX && a->getY() == startY){
+//                       setAlive(false);
+//                       return;
+//                   }
+//               }
                ticksToWait = tixWait;
                setVisible(true);
        }
