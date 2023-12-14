@@ -61,12 +61,10 @@ public:
         //Number of Barrels of Oil
         int oNum = min(static_cast<int>(getLevel()) + 2, 21);
         
-        //Number of Sonar Kits
-        int sNum = max(100, 300 - (10 * static_cast<int>(getLevel())));
+        //Number of Sonar Kits and water pools
+        int sWNum = max(100, 300 - (10 * static_cast<int>(getLevel())));
         
-        //Number of Water Pools
-        int wNum = max(100, 300 - (10 * static_cast<int>(getLevel())));
-        
+        //protester
         int pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
         
         int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
@@ -109,9 +107,9 @@ public:
         characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
 
         findPath(60,60,0,60);
-        spawnSonar(sNum, ticksSonarWater);
+        spawnSonar(sWNum, ticksSonarWater);
        
-        characterList.push_back(new WaterPool(10, 60, ticksSonarWater, this));
+        //spawnSW(sWNum, ticksSonarWater);
         //currNumPro++;
 
         //characterList.push_back(new Squirt(60, 60, 1, 1, this));
@@ -218,8 +216,8 @@ public:
     bool pickUpGold(int x, int y);
     void sdeT(int t){t--;}
     void useSonar(int x, int y);
-    void useSpray(int x, int y);
-    bool isSprayed(int x, int y);
+    bool useSpray(int x, int y);
+    bool isEmpty(vector<vector<Ice*>>& iceMap);
     bool blockedbyRocksOrIce(int x, int y, Actor::Direction d);//not done
     bool blockedByRocks(int x, int y);
     double getRadius(int x1, int x2, int y2, int y1){return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));}
@@ -332,6 +330,8 @@ private:
     
     //Spawn Water sq
     void spawnWater(int wNum, int tickNum);
+    
+    void spawnSW(int swNum, int tick);
     
     //Spawn sonar
     void spawnSonar(int sNum, int tickNum);
