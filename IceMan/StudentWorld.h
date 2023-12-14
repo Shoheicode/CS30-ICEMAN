@@ -179,7 +179,7 @@ public:
                 else {
                        int x = 0;
                        int y = 0;
-                       while (blockedByIce(x, y)) {//find empty ice coord
+                       while (blockedbyRocksOrIce(x, y, Actor::up))  {//find empty ice coord
                            x = rand() % 61;
                            y = rand() % 57;
                            
