@@ -82,7 +82,7 @@ public:
     //void moveTo(int x, int y) {};
     virtual void isAnnoyed();
     void virtual tryGold(int x, int y);
-    //void tryBoulder(int x, int y);
+    virtual bool yell(int x, int y);
     void getNumSquaresToMoveInCurrentDirection(); //Get the number of squares to move in current direction
     virtual bool iceManisInSight(int x, int y, StudentWorld* world);
     virtual bool isAtFork(int x, int y, StudentWorld* world);
@@ -155,7 +155,7 @@ public:
     };
     void isInRange(StudentWorld* world);
     void dropGold(StudentWorld* world);
-    void getAnnoyed(int dAmage);
+    void checkAnnoyed();
     int getGold() { return gold;}
     int getOil() {return oil;}
     int getSonarCount() { return sonarC;}
@@ -175,6 +175,7 @@ public:
     Ice(int startX, int startY) : GraphObject(IID_ICE, startX, startY, left, 0.25, 3) {
         setVisible(true);//appear on screen
     };
+    virtual bool overlap(StudentWorld* world);
     //virtual void doSomething() override {
     //}; //must be here or else it will be an abstract class
     virtual ~Ice() {}
@@ -270,23 +271,10 @@ private:
 class SonarKit : public Prop {
 public:
     //1.0 and 2 and right
-    SonarKit(int startX, int startY, bool canAppear, StudentWorld* world)
+    SonarKit(int startX, int startY, int ticks, StudentWorld* world)
            : Prop(IID_SONAR, startX, startY, 1.0, 2, right, world) {
-               
-               
-               if (canAppear== false){
-                   //tick span loop
-                   //canAppear = true;
-               }
-               if (canAppear == true){
-                   //tick span loop
-                    setVisible(true);//appear on screen
-                   //end loop
-                   //setVisible(false);//disappear
-               }
-               //pick-up able Iceman
-               //will be in temp state (limited num of ticks b4 disappearing
-               // numTicks will exist T = max(100, 300 – 10*current_level_number)
+               ticksToWait = ticks;
+               setVisible(true);
        }
     virtual void doSomething() override;
     void setTicks(int a){ticksToWait = a;}
@@ -300,12 +288,7 @@ public:
     WaterPool(int startX, int startY, int tixWait, StudentWorld* world)
            : Prop(IID_WATER_POOL, startX, startY, 1.0, 2, right, world) {
                saveTix = tixWait;
-               while (tixWait != 0){
-                   tixWait--;
-               }
-               if (tixWait == 0){
-                   GraphObject::setVisible(true);//appear on screen
-               }
+               setVisible(true);
        }
     virtual void doSomething() override;
     bool tickEllapsed(int tixWait);
