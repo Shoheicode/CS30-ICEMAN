@@ -187,6 +187,7 @@ void IceMan::doSomething(){
     if (isAlive()){
         overlap(studW);//dig when overlap with ice
         isInRange(studW);
+        checkAnnoyed();
         int a;
         if (getWorld()->getKey(a) == true) { //player pressed key
             bool blocked = false;
@@ -336,11 +337,13 @@ void IceMan::isInRange(StudentWorld* world){
         else if (a->getID() == IID_SONAR && a->is3Away(studW)=="IceMan")
         {
             sonarC++;//picks up sonar
+            getWorld()->increaseScore(75);
             return;
         }
         else if (a->getID() == IID_WATER_POOL && a->is3Away(studW)=="IceMan")
         {
             waterSq++;//picks up water
+            getWorld()->increaseScore(100);
             return;
         }
     }
@@ -348,13 +351,10 @@ void IceMan::isInRange(StudentWorld* world){
 }
 
 //NOT DONE YET
-void IceMan::getAnnoyed(int dAmage){
-    //if is shouted at
-    setHitpoints(-2);
-    if(hitPoints == 0){
+void IceMan::checkAnnoyed(){
+    if(getHitpoints() == 0){
         getWorld()->playSound(SOUND_PLAYER_GIVE_UP);
-        setAlive(false);
-        //loose a life
+        getWorld()->decLives();
     }
 }
 
@@ -401,11 +401,9 @@ void Protester::doSomething(){
                     return;
                 }
             }
-            else if(is4Away(studW) == "IceMan" && isFacingIceMan(getDirection(), studW)){
+            else if(is4Away(studW) == "IceMan"){// && isFacingIceMan(getDirection(), studW)
                 if (shoutedLast15 == 0){
-                    cout << "yell!!!" << endl;
-                    getWorld()->playSound(SOUND_PROTESTER_YELL);
-                    //iceMan -2 hitpoints
+                    yell(getX(), getY());
                     ticksToWait = 10;
                     shoutedLast15 = 15;
                 }
@@ -469,6 +467,14 @@ void Protester::isAnnoyed(){
         getWorld()->playSound(SOUND_PROTESTER_GIVE_UP);
         leave_the_oil_field = true;
     }
+}
+
+bool Protester::yell(int x, int y){
+    cout << "yell!!!" << endl;
+    getWorld()->playSound(SOUND_PROTESTER_YELL);
+    IceMan* man = getWorld()->getIceMan();
+    man->setHitpoints(-2);
+    return true;
 }
 
 void Protester::tryGold(int x, int y){
@@ -799,6 +805,7 @@ void SonarKit::doSomething(){
 void WaterPool::doSomething(){
     IceMan* man = getWorld()->getIceMan();
     tixWait = saveTix;
+    cout << "Im alive, life set!" << endl;
     if (isAlive()){
         if (is3Away(studW) == "IceMan"){//&& !timeEllapsed
             setAlive(false);
@@ -806,9 +813,8 @@ void WaterPool::doSomething(){
                 return;
             }
             tixWait--;
-            man->setWater(1);
-            getWorld()->playSound(SOUND_GOT_GOODIE);
             man->setWater(5);
+            getWorld()->playSound(SOUND_GOT_GOODIE);
             studW->increaseScore(100);
         }
         else if (tixWait == 0){
@@ -818,3 +824,15 @@ void WaterPool::doSomething(){
     return;
 }
 
+//ice
+bool Ice::overlap(StudentWorld* world) {
+    for (Actor* a : world->getCharacterList()) {
+        //Checking if overlaping with characters
+        if (a->getID() == IID_PROTESTER || a->getID() == IID_HARD_CORE_PROTESTER && (abs(getY() - a->getY()) < 4)) {
+            if (abs(getX() - a->getX()) < 4) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
