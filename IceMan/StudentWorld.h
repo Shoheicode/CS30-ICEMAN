@@ -108,7 +108,7 @@ public:
         
         
         //Spawns Oil
-        //spawnOil(oilLeft);
+        spawnOil(oilLeft);
 
         //Adds a protestor
         //spawnProtesters(pNum);
@@ -116,7 +116,7 @@ public:
         characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun, ticksToWaitBetweenMoves, this));
         currentNum++;
         //characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
-        spawnOil(oilLeft);
+       
 
         findPath(60,60,0,60);
        
