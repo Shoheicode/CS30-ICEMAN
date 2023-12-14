@@ -474,13 +474,13 @@ bool Protester::yell(int x, int y){//disabled for testingg
 
 void Protester::tryGold(int x, int y){
     if (getWorld()->pickUpGold(getX(), getY())){
-        cout << "Im walking back now!!" << endl;
-        
-        studW->increaseScore(25);
-        getWorld()->playSound(SOUND_PROTESTER_FOUND_GOLD);
-        leave_the_oil_field = true;
+            cout << "Im walking back now!!" << endl;
+            studW->increaseScore(25);
+            getWorld()->playSound(SOUND_PROTESTER_FOUND_GOLD);
+            leave_the_oil_field = true;
     }
-}
+    }
+
 
 void Protester::moveOne(int x, int y, Direction d){
     switch (d){
@@ -842,7 +842,7 @@ void WaterPool::doSomething(){
     return;
 }
 
-//ice//
+//ice
 bool Ice::overlap(StudentWorld* world) {
     for (Actor* a : world->getCharacterList()) {
         //Checking if overlaping with characters
