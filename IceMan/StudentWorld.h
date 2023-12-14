@@ -169,7 +169,7 @@ public:
         //cout << pNum << endl;
         if (spawnP == 0) {
             //int spawnP = rand() % 5 + 1;
-            cout << "SpawnP: " << spawnP << endl;
+            //cout << "SpawnP: " << spawnP << endl;
             //if (spawnP == 1 && currentNum != pNum){
             if (currentNum < pNum) {
                 if (diceShuff <= probabilityOfHardcore) {
