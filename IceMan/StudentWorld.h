@@ -94,13 +94,13 @@ public:
         
         
         //Spawns Oil
-        spawnOil(oNum);
+        spawnOil(oilLeft);
 
         //Adds a protestor
         //spawnProtesters(pNum);
         //characterList.push_back(new Protester(60, 60, IID_PROTESTER, this));
         //characterList.push_back(new HardcoreProtester(60, 60, proTickStun, this));
-        spawnOil(oilLeft);
+       
 
         findPath(60,60,0,60);
        
@@ -147,7 +147,7 @@ public:
         int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
         int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
         
-        
+        //spawn protesters and h pros
         int spawnP = rand() % tickBetween;
         if (spawnP == 1) {
             int spawnP = rand() % 5 + 1;
@@ -179,7 +179,7 @@ public:
                 else {
                        int x = 0;
                        int y = 0;
-                       while (!noIce(x, y) && !blockedbyRocksOrIce(x, y, Actor::up)) {
+                       while (blockedByIce(x, y)) {//find empty ice coord
                            x = rand() % 61;
                            y = rand() % 57;
                            
