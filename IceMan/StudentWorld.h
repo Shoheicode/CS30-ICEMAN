@@ -59,7 +59,7 @@ public:
         int gNum = max(5 - static_cast<int>(getLevel()) / 2, 2);
 
         //Number of Barrels of Oil
-        int oNum = min(static_cast<int>(getLevel()) + 2, 21);
+        oilLeft = min(static_cast<int>(getLevel()) + 2, 21);
         
         //Number of Sonar Kits and water pools
         int sWNum = max(100, 300 - (10 * static_cast<int>(getLevel())));
@@ -94,7 +94,7 @@ public:
         
         
         //Spawns Oil
-        spawnOil(oNum);
+        spawnOil(oilLeft);
 
         findPath(60,60,0,60);
        
@@ -166,6 +166,7 @@ public:
             int spawnS = rand() % 5 + 1;
             if (spawnS == 1){
                 cout << "a wild sonar appeared!" << endl;
+                playSound(SOUND_SONAR);
                 characterList.push_back(new SonarKit(0, 60, ticksSonarWater, this));
             }
             
@@ -177,6 +178,7 @@ public:
                            y = rand() % 57;
                            
                        }
+                    //playSound(SOUND_);
                     cout << "a wild water pool appeared!" << endl;
                     characterList.push_back(new WaterPool(x, y, ticksSonarWater, this));
                    }
@@ -245,7 +247,7 @@ public:
         
         //delete characterList;
     }
-
+    
     bool completeLevel();
     void moveToShortPath(int startX, int startY);
     bool blockedByIce (int x, int y);
@@ -318,6 +320,7 @@ private:
     vector<vector<Ice*>> iceMap; //Used to keep track of ice on map
     list<Actor*> characterList;
     IceMan* player;
+    int oilLeft;
     int* leavingPath[64][64];
     struct Point {
     int x;
