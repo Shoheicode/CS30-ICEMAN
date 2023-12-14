@@ -53,18 +53,28 @@ void StudentWorld::createIceMap(){
 }
 
 void StudentWorld::spawnWater(int wNum, int tickNum){
+    cout <<"spawnWater was called!" << endl;
+    int tickWait = tickNum;
+    //wait for 10 seconds to spawn
+    //look for a place on map that doesnt have ice
+    
+    //convert to ice block if not picked up
+    
     int currentNum = 0;
-
-    //Creates oil until the number of oil equals the number needed for the level.
-    while (currentNum != wNum) {
-
+    //Creates water until the number of oil equals the number needed for the level.
+    while (currentNum != wNum && tickWait !=0) {
         //Sets create boulder to true
         bool createWater = true;
 
         //Creates the random numbers
         int x = rand() % 58;
         int y = rand() % 37 + 20;
-
+        while (iceMap[x][y] !=NULL){//checks if coords dont have ice
+            x = rand() % 58;
+            y = rand() % 37 + 20;
+        }
+        cout << tickWait<< endl;
+        tickWait--;
         //Checks to make sure boulder isn't in the gap
         if (x <= 33 && x >= 27) {
             createWater = false;
@@ -73,7 +83,7 @@ void StudentWorld::spawnWater(int wNum, int tickNum){
         else {
             //For each character in character list
             for (Actor* a : characterList) {
-                //Check if the distance is less than 6 and if not, don't create boulder
+                //Check if the distance is less than 6 and if not, don't create water
                 if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
                     createWater = false;
                     break;
@@ -82,58 +92,54 @@ void StudentWorld::spawnWater(int wNum, int tickNum){
             }
         }
         //If the distance between each object is less than 6, create boulder
-        if (createWater) {
+        if (createWater && tickWait ==0) {
             //Add to character list
             characterList.push_back(new WaterPool(x, y, tickNum, this));
             //Increase the number of current boulders
             currentNum++;
+            tickWait = tickNum; //resets time to wait until next drop
+            cout << "I spawned A Water Pool at " << x << "," << y << endl;
+//                }
+            }
+                //if x && y point to a NULL pointer on icemap add to character list
+            
+//            //Add to character list
+//            characterList.push_back(new WaterPool(x, y, tickNum, this));
+//            //Increase the number of current boulders
+//            currentNum++;
+            
+
+            
         }
     }
-}
 
-void StudentWorld::spawnSonar(int sNum, int tickNum){//TICKSPAN IMPLEMENTATION and specified point?
-    //must appear in x num of ticks into the game and disappear
-    
-   
+void StudentWorld::spawnSonar(int sNum, int tickNum) {
+    int ticWait = tickNum;
     int currentNum = 0;
 
-    //Creates oil until the number of oil equals the number needed for the level.
-    
     while (currentNum != sNum) {
-
-        //Sets create boulder to true
         bool createSonar = true;
+        ticWait--;
 
-        //Creates the random numbers
-        int x = rand() % 58;
-        int y = rand() % 37 + 20;
-
-        //Checks to make sure boulder isn't in the gap
-        if (x <= 33 && x >= 27) {
-            createSonar = false;
-        }
-        //otherwise
-        else {
-            //For each character in character list
-            for (Actor* a : characterList) {
-                //Check if the distance is less than 6 and if not, don't create boulder
-                if (!checkDistance(a, a->getX(), a->getY(), x, y)) {
-                    createSonar = false;
-                    break;
-                }
-
+        // Check if the distance between existing objects and the specified point is less than 6
+        for (Actor* a : characterList) {
+            if (!checkDistance(a, a->getX(), a->getY(), 60, 60)) {
+                createSonar = false;
+                break;
             }
         }
-        //If the distance between each object is less than 6, create boulder
-        if (createSonar) {
-            //Add to character list
-            characterList.push_back(new SonarKit(x, y, false, this));
-           
-            //Increase the number of current boulders
+
+        // If createSonar is true and ticWait has reached 0, create the SonarKit
+        if (createSonar && ticWait == 0) {
+            characterList.push_back(new SonarKit(60, 60, tickNum, this));
+            cout << "sonar created get it quick!" << endl;
             currentNum++;
+            ticWait = tickNum; // Reset tick wait
         }
     }
+    cout << "all sonar created" << endl;
 }
+
 void StudentWorld::spawnOil(int oNum){
     //Sets the current number of oil to 0
     int currentNum = 0;
@@ -222,8 +228,8 @@ for (Actor* a : characterList) {
     }
 }
 //Increase the number of current boulders
-currentNum++;
-}
+        currentNum++;
+    }
 }
 
 }
@@ -315,49 +321,31 @@ return true;
 return false;
 }
 
+bool StudentWorld::blockedByIce(int x, int y){
+    for (int i = x; i < x+4; i++) {
+            for (int j = y; j < y+4; j++) {
+                if (iceMap[i][j] != nullptr)
+                    return false;
+            }
+        }
+        return true;
+   
+}
+
 bool StudentWorld::blockedbyRocksOrIce(int x, int y, Actor::Direction d){
-for (const Point& p : rockPos){
-double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
-if (radius <= 4){
-return true;
-}
-}
-// for (const auto& row : iceMap) {//iterate through the rows
-// Ice* iceObject = iceMap[y][x];
-// }
-// for (const auto& iceObject : row) {
-//
-// }
-// for (const Point& p : icePos){
-// switch (d) {
-// case Actor::up:
-// if(y + 1== p.y){
-// return true;
-// }
-// break;
-// case Actor::down:
-// if(y - 1== p.y){
-// return true;
-// }
-// break;
-// case Actor::left:
-// if(x - 1== p.x){
-// return true;
-// }
-// break;
-// case Actor::right:
-// if(x + 1== p.x){
-// return true;
-// }
-// break;
-// default:
-// break;
-// }
-// double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
-// if (radius <= 2){
-// return true;
-// }
-//}
+    if (blockedByIce(x, y) || blockedByRocks(x, y)){
+        return true;
+    }
+        
+//    for (Actor* p : characterList) {
+//        Ice* iceP = iceMap[x][y];
+//        if (a->getID() == IID_PROTESTER || a->getID() == IID_HARD_CORE_PROTESTER && (abs(iceP->getY() - a->getY()) < 4)) {
+//            if (abs(iceP->getX() - a->getX()) < 4) {
+//                return true;
+//            }
+//        }
+//    }
+
 return false;
 }
 
@@ -373,6 +361,7 @@ goldPos.push_back((Point(player->getX(), player->getY())));
 bool StudentWorld::pickUpGold(int x, int y){
 for (const Point& p : goldPos){
     double radius = sqrt(pow(x - p.x, 2) + pow(y - p.y, 2));
+    
         if (radius <= 4){
             for (Actor* a : characterList) {
                 if (a->getID() == IID_GOLD && a->getX() == p.x && a->getY() == p.y){
@@ -391,6 +380,7 @@ return false;
 bool StudentWorld::checkDistance(Actor* a, int obj1X, int obj1Y, int obj2X, int obj2Y) {
     //Checks the distnace between 2 objects using distance formula
     double distance = pow(pow(obj1X - obj2X, 2) + pow(obj1Y - obj2Y, 2), 0.5);
+    
     
     //Returns false if the distance is less than 6
     if (distance < 6) {
@@ -456,16 +446,15 @@ void StudentWorld::useSonar(int x, int y){
     if(player->getSonarCount() > 0){
         playSound(SOUND_SONAR);
         for (Actor* p : characterList){
-            if(sqrt(pow(p->getX() - x, 2) + pow(p->getY() - y, 2) <= 12)){   
-                if (p->getID() != IID_PLAYER){
-                    p->setVisible(false);
+            if(getRadius(x, p->getX(), y, p->getY()) <= 12){
+                if (p->isAlive())
+                    p->setVisible(true);
                 }
-                //im not sure if this works please check
             }
-        }      
+        }
         player->setSonar(-1);
     }
-    }
+    
     
 
 void StudentWorld::useSpray(int x, int y, Actor::Direction d){
@@ -768,3 +757,5 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
 
 
 // Students:  Add code to this file (if you wish), StudentWorld.h, Actor.h and Actor.cpp
+
+
