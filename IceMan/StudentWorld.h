@@ -85,6 +85,7 @@ public:
         int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
         
         int proTickWait = max(0, 3 - (static_cast<int>(getLevel())/4));
+        ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
         
         srand(time(NULL));
 
@@ -105,7 +106,7 @@ public:
         //spawnSonar(sNum);
         //spawnWater(wNum);
         
-        
+        numberOfScanners = player->getSonarCount();
         
         //Spawns Oil
         spawnOil(oilLeft);
@@ -188,17 +189,20 @@ public:
         }
     
         //spawn sonar and water
-        int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
-        int spawn = rand() % ticksSonarWater;
-        if (spawn == 1) {
+        
+        int spawn = --ticksSonarWater;
+        cout << spawn << endl;
+        if (spawn == 0) {
             
             int spawnS = rand() % 5 + 1;
             cout << "Spawn Number: " << spawnS << endl;
+            
             if (spawnS == 1){
-                
+                if(numberOfScanners < 2){
                 cout << "a wild sonar appeared!" << endl;
                 playSound(SOUND_SONAR);
                 characterList.push_back(new SonarKit(0, 60, ticksSonarWater, this));
+                }
             }
             
                 else {
@@ -215,7 +219,8 @@ public:
                     cout << "Y: " <<  y << endl;
                     characterList.push_back(new WaterPool(x, y, ticksSonarWater, this));
                    }
-               }
+                ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
+        }
         
         //Goes through each character and asks if it does something
         for (Actor* a : characterList) {
@@ -376,10 +381,12 @@ private:
     int pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
     int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
     int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
+    int numberOfScanners = 0;
 
     list<Point> goldPos;
     list<Point> rockPos;
     list<Point> icePos;
+    int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
     struct Node{
     Node* next;
     bool visited;

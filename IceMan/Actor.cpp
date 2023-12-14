@@ -180,7 +180,7 @@ void Boulder::overlap(StudentWorld* world) {
             if (abs(getX() - a->getX()) < 4) {
                 getWorld()->playSound(SOUND_PROTESTER_GIVE_UP);
                 studW->increaseScore(500);
-                a->setAlive(false);
+                dynamic_cast<Protester*>(a)->setLeaveOil(true);
             }
         }
     }
