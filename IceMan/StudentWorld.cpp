@@ -316,7 +316,7 @@ bool StudentWorld::blockedByIce(int x, int y){
 }
 
 bool StudentWorld::blockedbyRocksOrIce(int x, int y, Actor::Direction d){
-    if (blockedByIce(x, y) || blockedByRocks(x, y)){
+   if (blockedByIce(x, y) || noIce(x, y)){
         return true;
     }
         
