@@ -112,6 +112,27 @@ public:
         currentNum++;//increment protesters on map
 
         findPath(60,60,0,60);//sets up shortest path to exit
+
+        bool find = findPathToIceMan(60, 60, 16);
+
+        if (find) {
+            cout << "I FOUND ICEMAN" << endl;
+        }
+        else {
+            cout << "I DID NOT FIND ICEMAN" << endl;
+        }
+
+        for (int i = 63; i >= 0; i--) {
+            for (int j = 0; j < 64; j++) {
+                if (*pathToIceman[i][j] == 100000000) {
+                    cout << 0;
+                }
+                else {
+                    cout << *pathToIceman[i][j];
+                }
+            }
+            cout << endl;
+        }
         
         return GWSTATUS_CONTINUE_GAME;//once all spawned run game
     }
@@ -149,9 +170,10 @@ public:
             cout << "Spawn Number: " << spawnS << endl;
             if (spawnS == 1){//if 1/5 spawn sonar
                 if(numberOfScanners < 2){
-                cout << "a wild sonar appeared!" << endl;
-                playSound(SOUND_SONAR);
-                characterList.push_back(new SonarKit(0, 60, ticksSonarWater, this));
+                //cout << "a wild sonar appeared!" << endl;
+                    playSound(SOUND_SONAR);
+                    characterList.push_back(new SonarKit(0, 60, ticksSonarWater, this));
+                    numberOfScanners++;
                 }
             }
             
@@ -267,9 +289,15 @@ public:
 
     void findPath(int x, int y, int objx, int objy);
 
+    bool findPathToIceMan(int x, int y, int maxMoves);
+
     string getLeadingPathDistance(int x, int y);
     
     HardcoreProtester* getHardcoreProtester();
+
+    void decScanners() {
+        numberOfScanners--;
+    }
 
 private:
     Actor* a;
@@ -292,6 +320,8 @@ private:
     int proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
     int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
     int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
+
+    int* pathToIceman[64][64];
     
     int ticksToWaitBetweenMoves;
     int numberOfScanners = 0;

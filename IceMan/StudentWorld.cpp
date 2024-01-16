@@ -448,7 +448,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             }
             else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", objx - 1, objy) && *leavingPath[q.front().first.second][q.front().first.first-1] == 100000000) {
                 //if no ice at point, no boulders, and point is not taken
-                cout << "I" << endl;
+                //cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
                     if (iceMap.at(q.front().first.second + i).at(q.front().first.first - 1) != nullptr) {
@@ -542,8 +542,151 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
         }
         q.pop();
     }
+    
 }
 
+bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
+    queue<pair<pair<int, int>, int>> q;
+    pair <pair<int, int>, int> temp;
+
+    temp = make_pair(make_pair(getIceMan()->getX(),getIceMan()->getY()), 0);
+
+    int distance = 0;
+
+    q.push(temp);
+    
+    // set all array to not taken
+    for (int i = 0; i < 64; i++) {
+        for (int j = 0; j < 64; j++) {
+            pathToIceman[i][j] = new int(100000000);
+        }
+    }
+
+    pathToIceman[getIceMan()->getY()][getIceMan()->getX()] = new int(0);//ending place
+    cout << "X:" << getIceMan()->getX() << endl;
+    bool endPath = false;
+
+    while (!q.empty()) {
+
+        if (q.front().first.first >= 0) {//if current node is on left
+            if (q.front().first.first == 0) {
+                pathToIceman[q.front().first.second][q.front().first.first] = new int(q.front().second);
+
+            }
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && *pathToIceman[q.front().first.second][q.front().first.first - 1] == 100000000) {
+                //if no ice at point, no boulders, and point is not taken
+                cout << "I" << endl;
+                bool addtopath = true;
+                for (int i = 0; i < 4; i++) {
+                    if (iceMap.at(q.front().first.second + i).at(q.front().first.first - 1) != nullptr) {
+                        addtopath = false;
+                        //check 4x4 square if ice
+                        break;
+                    }
+
+                }
+                if (addtopath) {
+                    //add node to pair to make shortest path
+                    if (q.front().second == maxMoves) {
+                        endPath = true;
+                    }
+                    pathToIceman[q.front().first.second][q.front().first.first - 1] = new int(q.front().second + 1);
+                    pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first - 1, q.front().first.second), q.front().second + 1);
+                    q.push(a);
+                }
+            }
+        }
+        //checks other nodes in pair with same conditions
+        if (q.front().first.second >= 0) {//if current node is on left
+            if (q.front().first.second == 0) {
+                pathToIceman[q.front().first.second][q.front().first.first] = new int(q.front().second);
+            }
+            else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first, q.front().first.second - 1) && *pathToIceman[q.front().first.second - 1][q.front().first.first] == 100000000) {
+                bool addtopath = true;
+                for (int i = 0; i < 4; i++) {
+                    if (iceMap.at(q.front().first.second - 1).at(q.front().first.first + i) != nullptr) {
+                        addtopath = false;
+                        break;
+                    }
+
+                }
+                if (addtopath) {
+                    if (q.front().second == maxMoves) {
+                        endPath = true;
+                    }
+                    pathToIceman[q.front().first.second - 1][q.front().first.first] = new int(q.front().second + 1);
+                    pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first, q.front().first.second - 1), q.front().second + 1);
+                    q.push(a);
+                }
+            }
+        }
+        if (q.front().first.first <= 60) {
+            if (q.front().first.first == 60) {//if current node is on right
+                pathToIceman[q.front().first.second][q.front().first.first] = new int(q.front().second);
+            }
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first + 4) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && *pathToIceman[q.front().first.second][q.front().first.first + 1] == 100000000) {
+                //cout << "I" << endl;
+                bool addtopath = true;
+                for (int i = 0; i < 4; i++) {
+                    if (iceMap.at(q.front().first.second + i).at(q.front().first.first + 4) != nullptr) {
+                        addtopath = false;
+                        break;
+                    }
+
+                }
+                if (addtopath) {
+                    if (q.front().second == maxMoves) {
+                        endPath = true;
+                    }
+                    pathToIceman[q.front().first.second][q.front().first.first + 1] = new int(q.front().second + 1);
+                    pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first + 1, q.front().first.second), q.front().second + 1);
+                    q.push(a);
+                }
+            }
+        }
+
+        if (q.front().first.second <= 60) {
+
+            if (q.front().first.second == 60) {//if current node is on right
+                pathToIceman[q.front().first.second][q.front().first.first] = new int(q.front().second);
+            }
+            else if (q.front().first.second == 60 && *pathToIceman[q.front().first.second][q.front().first.first] == 100000000) {
+
+            }
+            else if (iceMap.at(q.front().first.second + 4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && *pathToIceman[q.front().first.second + 1][q.front().first.first] == 100000000) {
+                //cout << "I" << endl;
+                bool addtopath = true;
+                for (int i = 0; i < 4; i++) {
+                    if (iceMap.at(q.front().first.second + 4).at(q.front().first.first + i) != nullptr) {
+                        addtopath = false;
+                        break;
+                    }
+
+                }
+                if (addtopath) {
+                    if (q.front().second == maxMoves) {
+                        endPath = true;
+                    }
+                    pathToIceman[q.front().first.second + 1][q.front().first.first] = new int(q.front().second + 1);
+                    pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first, q.front().first.second + 1), q.front().second + 1);
+                    q.push(a);
+                }
+            }
+        }
+
+        if ((q.front().first.first == x && q.front().first.second == y)) {
+            return true;
+            break;        // exit loop if destination reached
+        }
+        if (endPath) {
+            return false;
+            break;
+        }
+        q.pop();
+        //count++;
+    }
+    return false;
+}
 
 bool StudentWorld::checkFacingDirection(int x, int y, Actor::Direction d) {
     // Check if the player is in a specific direction from given coordinates (x, y)

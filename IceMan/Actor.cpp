@@ -314,25 +314,25 @@ void IceMan::overlap(StudentWorld* world) {
 
 void IceMan::isInRange(StudentWorld* world){
     for (Actor* a : world->getCharacterList()) {
-        if (a->getID() == IID_GOLD && a->is3Away(studW)=="IceMan")
+        if (a->getID() == IID_GOLD && a->is3Away(studW) == "IceMan")
         {
             //gold++;//picks up gold
             return;
         }
-        else if (a->getID() == IID_BARREL && a->is3Away(studW)=="IceMan")
+        else if (a->getID() == IID_BARREL && a->is3Away(studW) == "IceMan")
         {
             oil++;//picks up oil
             return;
         }
-        else if (a->getID() == IID_SONAR && a->is3Away(studW)=="IceMan")
+        else if (a->getID() == IID_SONAR && a->is3Away(studW) == "IceMan")
         {
             sonarC++;//picks up sonar
             getWorld()->increaseScore(75);
             return;
         }
-        else if (a->getID() == IID_WATER_POOL && a->is3Away(studW)=="IceMan")
+        else if (a->getID() == IID_WATER_POOL && a->is3Away(studW) == "IceMan")
         {
-            waterSq++;//picks up water
+            //waterSq++;//picks up water
             getWorld()->increaseScore(100);
             return;
         }
@@ -346,6 +346,10 @@ void IceMan::checkAnnoyed(){
         getWorld()->playSound(SOUND_PLAYER_GIVE_UP);//if no health set dead
         setAlive(false);
     }
+}
+
+string doSomethingYou(StudentWorld* world, int x, int y) {
+    return world->getLeadingPathDistance(x, y);
 }
 
 //protester
@@ -368,7 +372,8 @@ void Protester::doSomething(){
         if (ticksToWait == 0) {
             if (leave_the_oil_field) {
                 getWorld()->findPath(60,60, getX(), getY());//find shortest path to exit
-                string movement = getWorld()->getLeadingPathDistance(getX(),getY());
+                future<string> a = async(doSomethingYou, getWorld(), getX(), getY());
+                string movement = a.get();
                 if (movement == "left") {
                     setDirection(left);
                     moveTo(getX() - 1, getY());//move left if x != 60
@@ -388,7 +393,6 @@ void Protester::doSomething(){
                 if (getX() == 60 && getY() == 60) {
                     setAlive(false);//exit reached, set dead
                 }
-
             }
             else {
                 tryGold(getX(), getY());//try to pick up gold every step
@@ -922,6 +926,7 @@ void SonarKit::doSomething(){
         if(is3Away(studW) == "IceMan"){
             setAlive(false);//3 away from iceman inc score and inventory set dead
             getWorld()->playSound(SOUND_GOT_GOODIE);
+            getWorld()->decScanners();
             man->setSonar(1);
             studW->increaseScore(75);
         }

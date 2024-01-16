@@ -87,7 +87,7 @@ public:
     virtual void isAnnoyed();
     virtual bool setHit(int a) {hitPoints += 2; stun = true; return stun;}
     void virtual tryGold(int x, int y);
-    virtual bool yell(int x, int y);
+    //virtual bool yell(int x, int y);
     virtual void det15(){shoutLast15--;}
     virtual int getStun(){return tickStun;}
     virtual void detStun(){tickStun--;}
