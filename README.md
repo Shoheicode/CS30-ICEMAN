@@ -1,4 +1,4 @@
-This project contains IceMan, a project which encorporates multiple inheritance, algorithims, and some data structures to create a working video game.
+This project contains IceMan, a project which encorporates multiple inheritance, algorithims, and data structures to create a working video game.
 
 This project tested my ability to work in a team setting, developing and creating different code as well as utilize different code bases in order to create functional working code.
 
