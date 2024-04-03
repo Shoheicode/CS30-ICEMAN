@@ -1,7 +1,10 @@
+# ICEMAN
+
 This project contains IceMan, a project which encorporates multiple inheritance, algorithims, and data structures to create a working video game.
 
 This project tested my ability to work in a team setting, developing and creating different code as well as utilize different code bases in order to create functional working code.
 
+## Jason Portion:
 In my Advanced C++ Course, I was involved in a complex project focused on developing a video game using many advanced C++ concepts such as concurrency, inheritance, and the Standard Template Library (STL). As a member of the programming team, my responsibilities included designing and implementing key algorithms, conducting thorough research on the implementation and usage of certain data structures to optimize the game running, and collaborating with many team members to merge our code into one project.
 
 During the project, one of the things I had to do was to learn how to implement a first-breadth search algorithm into a new system. Using an array data structure and stack, I managed to create an algorithm that allowed the enemy to find the exit after the enemy died. At first, this caused the game to run slower due to taking up a lot of storage and processing power but through concurrency, it managed to significantly speed up the program.
