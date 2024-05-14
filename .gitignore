@@ -31,10 +31,3 @@
 *.out
 *.app
 
-*
-.gitignore
-!IceMan
-!IceMan/Actor.h
-!IceMan/Actor.cpp
-!IceMan/StudentWorld.h
-!IceMan/StudentWorld.cpp
