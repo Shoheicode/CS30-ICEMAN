@@ -122,17 +122,17 @@ public:
             cout << "I DID NOT FIND ICEMAN" << endl;
         }
 
-        for (int i = 63; i >= 0; i--) {
-            for (int j = 0; j < 64; j++) {
-                if (*pathToIceman[i][j] == 100000000) {
-                    cout << 0;
-                }
-                else {
-                    cout << *pathToIceman[i][j];
-                }
-            }
-            cout << endl;
-        }
+        //for (int i = 63; i >= 0; i--) {
+        //    for (int j = 0; j < 64; j++) {
+        //        if (*pathToIceman[i][j] == -1) {
+        //            //cout << 0;
+        //        }
+        //        else {
+        //            cout << *pathToIceman[i][j];
+        //        }
+        //    }
+        //    cout << endl;
+        //}
         
         return GWSTATUS_CONTINUE_GAME;//once all spawned run game
     }
@@ -199,6 +199,7 @@ public:
                 a->doSomething();
                 
                 if (!player->isAlive()) { //Checks if player dies and returns dies
+                    decLives();
                     return GWSTATUS_PLAYER_DIED;
                 }
                 
@@ -214,6 +215,7 @@ public:
 
         //Asks if player is alive
         if (!player->isAlive()) {
+            decLives();
             return GWSTATUS_PLAYER_DIED;
         }
         //If the lives equal zero, then return the player has perished

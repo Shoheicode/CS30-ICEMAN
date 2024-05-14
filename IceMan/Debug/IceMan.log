@@ -1,0 +1,17 @@
+﻿  Actor.cpp
+C:\Users\jsiri\CS30-ICEMAN\IceMan\StudentWorld.h(90,19): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  (compiling source file 'Actor.cpp')
+  
+C:\Users\jsiri\CS30-ICEMAN\IceMan\StudentWorld.h(239,23): warning C4146: unary minus operator applied to unsigned type, result still unsigned
+  (compiling source file 'Actor.cpp')
+  
+  StudentWorld.cpp
+C:\Users\jsiri\CS30-ICEMAN\IceMan\StudentWorld.h(90,19): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  (compiling source file 'StudentWorld.cpp')
+  
+C:\Users\jsiri\CS30-ICEMAN\IceMan\StudentWorld.h(239,23): warning C4146: unary minus operator applied to unsigned type, result still unsigned
+  (compiling source file 'StudentWorld.cpp')
+  
+C:\Users\jsiri\CS30-ICEMAN\IceMan\StudentWorld.cpp(309,23): warning C4146: unary minus operator applied to unsigned type, result still unsigned
+  Generating Code...
+  IceMan.vcxproj -> C:\Users\jsiri\CS30-ICEMAN\Debug\IceMan.exe
