@@ -43,6 +43,9 @@ with level 0, and each level has its own unique oil field configuration. During 
 the Iceman (controlled by the player) must dig and find all of the oil hidden within the oil 
 field in order to move on to the next level.
 
+Upon starting each level, the player’s Iceman avatar (a miner) is placed at the top-middle of the oil field just above the tunnel. Every time the player starts (or re-starts) a level, the Iceman is restored to 100% health, given fresh water for their squirt gun (enough for 5 
+squirts), and given a single sonar charge that they can use to search for nearby items within  the ice. Each oil field has a number of Boulders, Gold Nuggets, and Barrels of oil randomly  distributed throughout the field. Only the Boulders will be visible initially – the other items must be discovered by the Iceman before they become visible. The player must use the arrow  keys to move the Iceman left, right, up and down through the oil field; the Iceman digs through any ice in the direction of motion. The Iceman may move/dig anywhere in the oil field except for locations occupied by Boulders
+
 ## Obstacles
 
 ## Pseudocode
