@@ -37,14 +37,50 @@ This project tested our ability to work in a team setting, developing and creati
 
 ## Game Description
 
-In Iceman, the player starts out a new game with three lives and continues to play until 
-all of his/her lives have been exhausted. There are multiple levels in Iceman, beginning 
-with level 0, and each level has its own unique oil field configuration. During each level, 
-the Iceman (controlled by the player) must dig and find all of the oil hidden within the oil 
-field in order to move on to the next level.
+The game "Iceman" involves the player controlling an Iceman character to dig through underground tunnels in an oil field to collect barrels of oil. The player starts with three lives and must complete multiple levels, each with a unique configuration. The Iceman is placed at the top-middle of the oil field at the start of each level with full health, water for the squirt gun, and a sonar charge.
 
-Upon starting each level, the player’s Iceman avatar (a miner) is placed at the top-middle of the oil field just above the tunnel. Every time the player starts (or re-starts) a level, the Iceman is restored to 100% health, given fresh water for their squirt gun (enough for 5 
-squirts), and given a single sonar charge that they can use to search for nearby items within  the ice. Each oil field has a number of Boulders, Gold Nuggets, and Barrels of oil randomly  distributed throughout the field. Only the Boulders will be visible initially – the other items must be discovered by the Iceman before they become visible. The player must use the arrow  keys to move the Iceman left, right, up and down through the oil field; the Iceman digs through any ice in the direction of motion. The Iceman may move/dig anywhere in the oil field except for locations occupied by Boulders
+Game Setup and Objective:
+
+- The player must dig and find all hidden oil barrels to progress to the next level.
+- Each level has boulders, gold nuggets, and barrels of oil randomly distributed. Only boulders are visible initially.
+
+Iceman's Actions:
+
+- The Iceman can move using arrow keys, dig through ice, and avoid boulders.
+- The squirt gun can be used to stun protesters.
+- Gold nuggets can be used to bribe protesters.
+- Sonar charges reveal hidden items within a radius.
+
+Enemies (Protesters):
+
+- Regular Protesters: Easier to deal with, can be bribed or stunned.
+- Hardcore Protesters: More challenging, cannot be bribed, and track the Iceman's location if close enough.
+- Both types of protesters roam the field and irritate the Iceman by shouting, which decreases his health.
+
+Game Mechanics:
+
+- Iceman loses health when shouted at by protesters or hit by falling boulders.
+- Lives are lost when health reaches zero; the game ends when all lives are lost.
+- Water pools occasionally appear for refilling the squirt gun.
+- Friends drop sonar kits to help find hidden items.
+
+Points are earned for various actions such as squirting protesters, dropping boulders on them, and collecting items.
+Scoring:
+- Regular Protester gives up: 100 points
+- Hardcore Protester gives up: 250 points
+- Boulder bonks Protester: 500 points
+- Bribing Regular Protester: 25 points
+- Bribing Hardcore Protester: 50 points
+- Barrel of oil: 1000 points
+- Gold Nugget: 10 points
+- Water: 100 points
+- Sonar Kit: 75 points
+
+Game Play:
+
+- Game play is divided into ticks, with each tick allowing the Iceman and other objects to perform actions.
+- The Iceman can move, shoot, use sonar, or restart the level with the escape key.
+- Protesters and other objects have their own actions and interactions within each tick.
 
 ## Obstacles
 
