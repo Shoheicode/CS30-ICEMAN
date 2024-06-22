@@ -1,5 +1,37 @@
 # ICEMAN
 
+## Table of Contents:
+
+<details>
+  <summary>Project Overview</summary>
+  
+- [Project Description](#description)
+- [Project Obstacles](#obstacles)
+- [Test Cases](#test-cases)
+- [Pseudocode](#pseudocode)
+  
+</details>
+
+<details>
+  <summary>Student World Class</summary>
+
+- <details>
+  <summary>init</summary>
+</details>
+  
+</details>
+
+<details>
+  <summary>Actors</summary>
+
+- <details>
+  <summary>IceMan</summary>
+</details>
+  
+</details>
+
+---
+
 This project contains IceMan, a project which encorporates multiple inheritance, algorithims, and data structures to create a working video game.
 
 This project tested my ability to work in a team setting, developing and creating different code as well as utilize different code bases in order to create functional working code.
