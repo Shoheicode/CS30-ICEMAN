@@ -15,9 +15,9 @@
 <details>
   <summary>Student World Class</summary>
 
-- <details>
+  <details>
   <summary>init</summary>
-</details>
+  </details>
   
 </details>
 
