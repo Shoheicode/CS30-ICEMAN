@@ -5,7 +5,7 @@
 <details>
   <summary>Project Overview</summary>
   
-- [Project Description](##description)
+- [Project Description](#description)
 - [Project Obstacles](#obstacles)
 - [Test Cases](#test-cases)
 - [Pseudocode](#pseudocode)
