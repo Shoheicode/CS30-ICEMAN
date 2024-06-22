@@ -34,6 +34,12 @@ This project contains IceMan, a project which encorporates multiple inheritance,
 
 This project tested my ability to work in a team setting, developing and creating different code as well as utilize different code bases in order to create functional working code.
 
+## Obstacles
+
+## Pseudocode
+
+
+
 ## Jason's Portion:
 In my Advanced C++ Course, I was involved in a complex project focused on developing a video game using many advanced C++ concepts such as concurrency, inheritance, and the Standard Template Library (STL). As a member of the programming team, my responsibilities included designing and implementing key algorithms, conducting thorough research on the implementation and usage of certain data structures to optimize the game running, and collaborating with many team members to merge our code into one project.
 
