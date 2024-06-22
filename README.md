@@ -79,7 +79,11 @@ Scoring:
 Game Play:
 
 - Game play is divided into ticks, with each tick allowing the Iceman and other objects to perform actions.
-- The Iceman can move, shoot, use sonar, or restart the level with the escape key.
+- The Iceman can:
+  - move using WSAD or the Arrow Keys
+  - shoot using space bar
+  - use sonar using ___
+  - restart the level with the escape key.
 - Protesters and other objects have their own actions and interactions within each tick.
 
 ## Obstacles
