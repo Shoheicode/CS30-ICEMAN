@@ -1,4 +1,4 @@
-# ICEMAN
+### ICEMAN
 
 ## Table of Contents:
 
@@ -14,10 +14,6 @@
 
 <details>
   <summary>Student World Class</summary>
-
-  <details>
-  <summary>init</summary>
-  </details>
   
 </details>
 
@@ -31,6 +27,8 @@
 </details>
 
 ---
+
+# Description
 
 This project contains IceMan, a project which encorporates multiple inheritance, algorithims, and data structures to create a working video game.
 
