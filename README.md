@@ -1,11 +1,11 @@
-### ICEMAN
+# ICEMAN
 
 ## Table of Contents:
 
 <details>
   <summary>Project Overview</summary>
   
-- [Project Description](#description)
+- [Project Description](##description)
 - [Project Obstacles](#obstacles)
 - [Test Cases](#test-cases)
 - [Pseudocode](#pseudocode)
@@ -28,7 +28,7 @@
 
 ---
 
-# Description
+## Description
 
 This project contains IceMan, a project which encorporates multiple inheritance, algorithims, and data structures to create a working video game.
 
