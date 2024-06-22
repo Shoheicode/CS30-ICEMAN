@@ -6,6 +6,7 @@
   <summary>Project Overview</summary>
   
 - [Project Description](#description)
+- [Game Description](#game-description)
 - [Project Obstacles](#obstacles)
 - [Test Cases](#test-cases)
 - [Pseudocode](#pseudocode)
@@ -32,7 +33,9 @@
 
 This project contains IceMan, a project which encorporates multiple inheritance, algorithims, and data structures to create a working video game.
 
-This project tested my ability to work in a team setting, developing and creating different code as well as utilize different code bases in order to create functional working code.
+This project tested our ability to work in a team setting, developing and creating different code as well as utilize different code bases in order to create functional working code.
+
+## Game Description
 
 ## Obstacles
 
