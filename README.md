@@ -37,6 +37,12 @@ This project tested our ability to work in a team setting, developing and creati
 
 ## Game Description
 
+In Iceman, the player starts out a new game with three lives and continues to play until 
+all of his/her lives have been exhausted. There are multiple levels in Iceman, beginning 
+with level 0, and each level has its own unique oil field configuration. During each level, 
+the Iceman (controlled by the player) must dig and find all of the oil hidden within the oil 
+field in order to move on to the next level.
+
 ## Obstacles
 
 ## Pseudocode
