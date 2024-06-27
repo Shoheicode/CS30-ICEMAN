@@ -20,8 +20,11 @@
   <summary>Actors</summary>
 
 - <details>
-  <summary>IceMan</summary>
-</details>
+    <summary>IceMan</summary>
+  </details>
+- <details>
+    <summary>Protestors</summary>
+  </details>
   
 </details>
 
