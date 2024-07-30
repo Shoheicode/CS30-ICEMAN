@@ -1,0 +1,5 @@
+﻿  StudentWorld.cpp
+C:\Users\jsiri\IceMan\IceMan\StudentWorld.h(90,19): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\jsiri\IceMan\IceMan\StudentWorld.h(227,23): warning C4146: unary minus operator applied to unsigned type, result still unsigned
+C:\Users\jsiri\IceMan\IceMan\StudentWorld.cpp(309,23): warning C4146: unary minus operator applied to unsigned type, result still unsigned
+  IceMan.vcxproj -> C:\Users\jsiri\IceMan\Debug\IceMan.exe
