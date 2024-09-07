@@ -443,7 +443,6 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
         if (q.front().first.first >= 0) {//if current node is on left
             if (q.front().first.first == 0) {
                 leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
-
             }
             else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", objx - 1, objy) && *leavingPath[q.front().first.second][q.front().first.first - 1] == -1) {
                 //if no ice at point, no boulders, and point is not taken

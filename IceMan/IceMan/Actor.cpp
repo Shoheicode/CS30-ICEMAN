@@ -376,6 +376,7 @@ void Protester::doSomething(){
                 cout << "PROTEST Y: " << getY() << endl;
                 
                 future<string> a = async(doSomethingYou, getWorld(), getX(), getY());
+                a.wait();
                 string movement = a.get();
                 if (movement == "left") {
                     setDirection(left);

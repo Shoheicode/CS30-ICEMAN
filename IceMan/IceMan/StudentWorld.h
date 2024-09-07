@@ -138,7 +138,7 @@ public:
         }
 
         //spawn sonar and water
-        //int spawn = --ticksSonarWater;//decrement ticks
+        int spawn = --ticksSonarWater;//decrement ticks
         //cout << spawn << endl;
         if (spawn == 0) {//check if time to spawn
             int spawnS = rand() % 5 + 1;//calculate random 1/5 and 4/5 chance
