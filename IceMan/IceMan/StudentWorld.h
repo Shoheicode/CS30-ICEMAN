@@ -36,11 +36,11 @@ public:
         }
         characterList.clear();
 
-        for (int i = 0; i < 64; i++) {
-            for (int j = 0; j < 64; j++) {
-                delete leavingPath[i][j]; //deletes every ice in vector;
-            }
-        }
+        //for (int i = 0; i < 64; i++) {
+        //    for (int j = 0; j < 64; j++) {
+        //        delete leavingPath[i][j]; //deletes every ice in vector;
+        //    }
+        //}
 
     }
 
@@ -220,11 +220,11 @@ public:
         }
         characterList.clear();
 
-        for (int i = 0; i < 64; i++) {
-            for (int j = 0; j < 64; j++) {
-                delete leavingPath[i][j]; //deletes every ice in vector;
-            }
-        }
+        //for (int i = 0; i < 64; i++) {
+        //    for (int j = 0; j < 64; j++) {
+        //        delete leavingPath[i][j]; //deletes every ice in vector;
+        //    }
+        //}
 
         //delete characterList;
     }
@@ -282,7 +282,7 @@ private:
     list<Actor*> characterList;
     IceMan* player;
     int oilLeft;
-    int* leavingPath[64][64];
+    int leavingPath[64][64];
 
     struct Point {
         int x;

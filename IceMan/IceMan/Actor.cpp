@@ -361,6 +361,7 @@ void Protester::doSomething(){
         if (getHitpoints() <= 0 && leave_the_oil_field == false) {//check if no health
             getWorld()->playSound(SOUND_PROTESTER_GIVE_UP);
             leave_the_oil_field = true;//leave field
+
         }
         if (ticksToWait > 0){
             ticksToWait--;//decrement ticks

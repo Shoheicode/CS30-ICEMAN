@@ -402,18 +402,18 @@ string StudentWorld::getLeadingPathDistance(int x, int y) {
     string direction = "right";//starting dir
 
     //fine the smallest value in array
-    int smallest = *(leavingPath[y][x + 1]);
-    if (*(leavingPath[y + 1][x]) < smallest) {
+    int smallest = (leavingPath[y][x + 1]);
+    if ((leavingPath[y + 1][x]) < smallest) {
         direction = "up";
-        smallest = *(leavingPath[y + 1][x]);
+        smallest = (leavingPath[y + 1][x]);
     }
-    if (*leavingPath[y - 1][x] < smallest) {
+    if (leavingPath[y - 1][x] < smallest) {
         direction = "down";
-        smallest = *(leavingPath[y - 1][x]);
+        smallest = (leavingPath[y - 1][x]);
     }
-    if (*leavingPath[y][x - 1] < smallest) {
+    if (leavingPath[y][x - 1] < smallest) {
         direction = "left";
-        smallest = *(leavingPath[y][x - 1]);
+        smallest = (leavingPath[y][x - 1]);
     }
     cout << smallest << endl;
     return direction;
@@ -434,19 +434,37 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
     // set all array to not taken
     for (int i = 0; i < 64; i++) {
         for (int j = 0; j < 64; j++) {
-            leavingPath[i][j] = new int(1000);
+            leavingPath[i][j] = -1;
         }
     }
-    leavingPath[y][x] = new int(0);//ending place
+
+    leavingPath[y][x] = 0;//ending place
+
+    cout << "PRINTING PATH TO LEAVE BEFORE" << endl;
+    for (int i = 63; i >= 0; i--) {
+        for (int j = 0; j < 64; j++) {
+            if (leavingPath[j][i] == -1) {
+                cout << "X";
+            }
+            else {
+                cout << "O";
+            }
+        }
+        cout << endl;
+    }
     while (!q.empty()) {
         cout << "RUNNING" << endl;
+        cout << "QUEUE X: " << q.front().first.first << endl;
+        cout << "QUEUE Y: " << q.front().first.second << endl;
         if (q.front().first.first >= 0) {//if current node is on left
+            cout << "HIHIHI" << endl;
             if (q.front().first.first == 0) {
-                leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
+                leavingPath[q.front().first.second][q.front().first.first] = q.front().second;
             }
-            else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", objx - 1, objy) && *leavingPath[q.front().first.second][q.front().first.first - 1] == -1) {
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", objx - 1, objy) && leavingPath[q.front().first.second][q.front().first.first - 1] == -1) {
                 //if no ice at point, no boulders, and point is not taken
                 //cout << "I" << endl;
+                cout << "ADDING TO PATH POTENTAl" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
                     if (iceMap.at(q.front().first.second + i).at(q.front().first.first - 1) != nullptr) {
@@ -454,11 +472,10 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
                         //check 4x4 square if ice
                         break;
                     }
-
                 }
                 if (addtopath) {
                     //add node to pair to make shortest path
-                    leavingPath[q.front().first.second][q.front().first.first - 1] = new int(q.front().second + 1);
+                    leavingPath[q.front().first.second][q.front().first.first - 1] = q.front().second + 1;
                     pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first - 1, q.front().first.second), q.front().second + 1);
                     q.push(a);
                 }
@@ -466,10 +483,11 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
         }
         //checks other nodes in pair with same conditions
         if (q.front().first.second >= 0) {//if current node is on left
+            cout << "BYBYBYBYE" << endl;
             if (q.front().first.second == 0) {
-                leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
+                leavingPath[q.front().first.second][q.front().first.first] = q.front().second;
             }
-            else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx, objy - 1) && *leavingPath[q.front().first.second - 1][q.front().first.first] == -1) {
+            else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx, objy - 1) && leavingPath[q.front().first.second - 1][q.front().first.first] == -1) {
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
                     if (iceMap.at(q.front().first.second - 1).at(q.front().first.first + i) != nullptr) {
@@ -479,17 +497,18 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
 
                 }
                 if (addtopath) {
-                    leavingPath[q.front().first.second - 1][q.front().first.first] = new int(q.front().second + 1);
+                    leavingPath[q.front().first.second - 1][q.front().first.first] = q.front().second + 1;
                     pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first, q.front().first.second - 1), q.front().second + 1);
                     q.push(a);
                 }
             }
         }
         if (q.front().first.first <= 60) {
+            cout << "HEWWOWOWOW" << endl;
             if (q.front().first.first == 60) {//if current node is on right
-                leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
+                leavingPath[q.front().first.second][q.front().first.first] = q.front().second;
             }
-            else if (iceMap.at(q.front().first.second).at(q.front().first.first + 4) == nullptr && !checkSpot("Boulder", objx - 1, objy) && *leavingPath[q.front().first.second][q.front().first.first + 1] == -1) {
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first + 4) == nullptr && !checkSpot("Boulder", objx - 1, objy) && leavingPath[q.front().first.second][q.front().first.first + 1] == -1) {
                 //cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
@@ -501,7 +520,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
                 }
                 if (addtopath) {
 
-                    leavingPath[q.front().first.second][q.front().first.first + 1] = new int(q.front().second + 1);
+                    leavingPath[q.front().first.second][q.front().first.first + 1] = q.front().second + 1;
                     pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first + 1, q.front().first.second), q.front().second + 1);
                     q.push(a);
                 }
@@ -509,13 +528,14 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
         }
 
         if (q.front().first.second <= 60) {
+            cout << "GOOD BYEEEE" << endl;
             if (q.front().first.second == 60) {//if current node is on right
-                leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
+                leavingPath[q.front().first.second][q.front().first.first] = q.front().second;
             }
-            else if (q.front().first.second == 60 && *leavingPath[q.front().first.second][q.front().first.first] == -1) {
+            else if (q.front().first.second == 60 && leavingPath[q.front().first.second][q.front().first.first] == -1) {
 
             }
-            else if (iceMap.at(q.front().first.second + 4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx - 1, objy) && *leavingPath[q.front().first.second + 1][q.front().first.first] == -1) {
+            else if (iceMap.at(q.front().first.second + 4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx - 1, objy) && leavingPath[q.front().first.second + 1][q.front().first.first] == -1) {
                 //cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
@@ -527,7 +547,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
                 }
                 if (addtopath) {
 
-                    leavingPath[q.front().first.second + 1][q.front().first.first] = new int(q.front().second + 1);
+                    leavingPath[q.front().first.second + 1][q.front().first.first] = q.front().second + 1;
                     pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first, q.front().first.second + 1), q.front().second + 1);
                     q.push(a);
                 }
@@ -535,6 +555,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
         }
 
         if (q.front().first.first == objx && q.front().first.second == objy) {
+            cout << "I HAVE ENDED" << endl;
             break;        // exit loop if destination reached
         }
         q.pop();
@@ -542,13 +563,13 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
     }
 
     cout << "PRINTING PATH TO LEAVE" << endl;
-    for (int i = 0; i < 64; i++) {
+    for (int i = 63; i >= 0; i--) {
         for (int j = 0; j < 64; j++) {
-            if (*(leavingPath[i][j]) == 1000) {
+            if (leavingPath[j][i] == -1) {
                 cout << "X";
             }
             else {
-                cout << "O";
+                cout << leavingPath[j][i];
             }
         }
         cout << endl;
