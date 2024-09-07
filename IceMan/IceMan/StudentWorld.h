@@ -133,15 +133,13 @@ public:
                     cout << "a wild protester appeared!" << endl;
                 }
             }
-            currentNum++;//update current pros
-            cout << currentNum << endl;
             tickBetween = max(25, 200 - static_cast<int>(getLevel())); // reset tick count
             diceShuff = rand() % 101;//get another random num
         }
 
         //spawn sonar and water
-        int spawn = --ticksSonarWater;//decrement ticks
-        cout << spawn << endl;
+        //int spawn = --ticksSonarWater;//decrement ticks
+        //cout << spawn << endl;
         if (spawn == 0) {//check if time to spawn
             int spawnS = rand() % 5 + 1;//calculate random 1/5 and 4/5 chance
             cout << "Spawn Number: " << spawnS << endl;

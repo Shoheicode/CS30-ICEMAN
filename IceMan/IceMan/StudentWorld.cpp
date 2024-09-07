@@ -439,7 +439,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
     }
     leavingPath[y][x] = new int(0);//ending place
     while (!q.empty()) {
-
+        cout << "RUNNING" << endl;
         if (q.front().first.first >= 0) {//if current node is on left
             if (q.front().first.first == 0) {
                 leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
@@ -510,7 +510,6 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
         }
 
         if (q.front().first.second <= 60) {
-
             if (q.front().first.second == 60) {//if current node is on right
                 leavingPath[q.front().first.second][q.front().first.first] = new int(q.front().second);
             }
@@ -542,6 +541,8 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
         q.pop();
 
     }
+
+    cout << "PRINTING PATH TO LEAVE" << endl;
     for (int i = 0; i < 64; i++) {
         for (int j = 0; j < 64; j++) {
             if (*(leavingPath[i][j]) == 1000) {

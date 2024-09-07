@@ -1,9 +1,5 @@
-﻿  Actor.cpp
-C:\Users\Jason Irie\Documents\GitHub\CS30-ICEMAN\IceMan\IceMan\StudentWorld.h(90,19): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\Jason Irie\Documents\GitHub\CS30-ICEMAN\IceMan\IceMan\StudentWorld.h(216,23): warning C4146: unary minus operator applied to unsigned type, result still unsigned
-  StudentWorld.cpp
+﻿  StudentWorld.cpp
 C:\Users\Jason Irie\Documents\GitHub\CS30-ICEMAN\IceMan\IceMan\StudentWorld.h(90,19): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
 C:\Users\Jason Irie\Documents\GitHub\CS30-ICEMAN\IceMan\IceMan\StudentWorld.h(216,23): warning C4146: unary minus operator applied to unsigned type, result still unsigned
 C:\Users\Jason Irie\Documents\GitHub\CS30-ICEMAN\IceMan\IceMan\StudentWorld.cpp(309,23): warning C4146: unary minus operator applied to unsigned type, result still unsigned
-  Generating Code...
   IceMan.vcxproj -> C:\Users\Jason Irie\Documents\GitHub\CS30-ICEMAN\IceMan\Debug\IceMan.exe
