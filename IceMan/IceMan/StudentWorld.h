@@ -78,7 +78,7 @@ public:
         tickBetween = max(25, 200 - static_cast<int>(getLevel()));
         currentNum = 0;
         pNum = min(15, static_cast<int>(2 + getLevel() * 1.5));
-        cout << "NUMBER OF PROSTERS:" << pNum << endl;
+        //cout << "NUMBER OF PROSTERS:" << pNum << endl;
         proTickStun = max(50, 100 - (10 * static_cast<int>(getLevel())));
         probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
 
@@ -110,17 +110,6 @@ public:
         //Adds a protestor at start
         characterList.push_back(new Protester(60, 60, IID_PROTESTER, proTickStun, ticksToWaitBetweenMoves, this));
         currentNum++;//increment protesters on map
-
-        findPath(60, 60, 0, 60);//sets up shortest path to exit
-
-        bool find = findPathToIceMan(60, 60, 16);
-
-        if (find) {
-            cout << "I FOUND ICEMAN" << endl;
-        }
-        else {
-            cout << "I DID NOT FIND ICEMAN" << endl;
-        }
 
         return GWSTATUS_CONTINUE_GAME;//once all spawned run game
     }
