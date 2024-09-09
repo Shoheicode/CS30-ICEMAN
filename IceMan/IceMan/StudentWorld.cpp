@@ -631,7 +631,7 @@ bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
         //checks other nodes in pair with same conditions
         if (q.front().first.second >= 0) {//if current node is on left
             if (q.front().first.second == 0) {
-                pathToIceman[q.front().first.second][q.front().first.first] = new int(q.front().second);
+                pathToIceman[q.front().first.second][q.front().first.first] = q.front().second;
             }
             else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first, q.front().first.second - 1) && pathToIceman[q.front().first.second - 1][q.front().first.first] == 1000) {
                 bool addtopath = true;
