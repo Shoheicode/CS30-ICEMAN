@@ -622,7 +622,7 @@ bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
                     if (q.front().second == maxMoves) {
                         endPath = true;
                     }
-                    pathToIceman[q.front().first.second][q.front().first.first - 1] = new int(q.front().second + 1);
+                    pathToIceman[q.front().first.second][q.front().first.first - 1] = q.front().second + 1;
                     pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first - 1, q.front().first.second), q.front().second + 1);
                     q.push(a);
                 }
@@ -670,7 +670,7 @@ bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
                     if (q.front().second == maxMoves) {
                         endPath = true;
                     }
-                    pathToIceman[q.front().first.second][q.front().first.first + 1] = new int(q.front().second + 1);
+                    pathToIceman[q.front().first.second][q.front().first.first + 1] = q.front().second + 1;
                     pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first + 1, q.front().first.second), q.front().second + 1);
                     q.push(a);
                 }
