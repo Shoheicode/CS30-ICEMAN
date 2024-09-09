@@ -298,7 +298,7 @@ private:
     int probabilityOfHardcore = min(90, static_cast<int>(getLevel()) * 10 + 30);
     int ticksSonarWater = max(100, (300 - 10) * static_cast<int>(getLevel()));
 
-    int* pathToIceman[64][64];
+    int pathToIceman[64][64];
 
     int ticksToWaitBetweenMoves;
     int numberOfScanners = 0;

@@ -434,7 +434,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
     // set all array to not taken
     for (int i = 0; i < 64; i++) {
         for (int j = 0; j < 64; j++) {
-            leavingPath[i][j] = -1;
+            leavingPath[i][j] = 1000;
         }
     }
 
@@ -443,7 +443,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
     cout << "PRINTING PATH TO LEAVE BEFORE" << endl;
     for (int i = 63; i >= 0; i--) {
         for (int j = 0; j < 64; j++) {
-            if (leavingPath[j][i] == -1) {
+            if (leavingPath[j][i] == 1000) {
                 cout << "X";
             }
             else {
@@ -461,7 +461,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             if (q.front().first.first == 0) {
                 leavingPath[q.front().first.second][q.front().first.first] = q.front().second;
             }
-            else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", objx - 1, objy) && leavingPath[q.front().first.second][q.front().first.first - 1] == -1) {
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", objx - 1, objy) && leavingPath[q.front().first.second][q.front().first.first - 1] == 1000) {
                 //if no ice at point, no boulders, and point is not taken
                 //cout << "I" << endl;
                 cout << "ADDING TO PATH POTENTAl" << endl;
@@ -487,7 +487,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             if (q.front().first.second == 0) {
                 leavingPath[q.front().first.second][q.front().first.first] = q.front().second;
             }
-            else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx, objy - 1) && leavingPath[q.front().first.second - 1][q.front().first.first] == -1) {
+            else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx, objy - 1) && leavingPath[q.front().first.second - 1][q.front().first.first] == 1000) {
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
                     if (iceMap.at(q.front().first.second - 1).at(q.front().first.first + i) != nullptr) {
@@ -508,7 +508,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             if (q.front().first.first == 60) {//if current node is on right
                 leavingPath[q.front().first.second][q.front().first.first] = q.front().second;
             }
-            else if (iceMap.at(q.front().first.second).at(q.front().first.first + 4) == nullptr && !checkSpot("Boulder", objx - 1, objy) && leavingPath[q.front().first.second][q.front().first.first + 1] == -1) {
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first + 4) == nullptr && !checkSpot("Boulder", objx - 1, objy) && leavingPath[q.front().first.second][q.front().first.first + 1] == 1000) {
                 //cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
@@ -532,10 +532,10 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             if (q.front().first.second == 60) {//if current node is on right
                 leavingPath[q.front().first.second][q.front().first.first] = q.front().second;
             }
-            else if (q.front().first.second == 60 && leavingPath[q.front().first.second][q.front().first.first] == -1) {
+            else if (q.front().first.second == 60 && leavingPath[q.front().first.second][q.front().first.first] == 1000) {
 
             }
-            else if (iceMap.at(q.front().first.second + 4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx - 1, objy) && leavingPath[q.front().first.second + 1][q.front().first.first] == -1) {
+            else if (iceMap.at(q.front().first.second + 4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", objx - 1, objy) && leavingPath[q.front().first.second + 1][q.front().first.first] == 1000) {
                 //cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
@@ -565,7 +565,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
     cout << "PRINTING PATH TO LEAVE" << endl;
     for (int i = 63; i >= 0; i--) {
         for (int j = 0; j < 64; j++) {
-            if (leavingPath[j][i] == -1) {
+            if (leavingPath[i][j] == 1000) {
                 cout << "X";
             }
             else {
@@ -590,11 +590,11 @@ bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
     // set all array to not taken
     for (int i = 0; i < 64; i++) {
         for (int j = 0; j < 64; j++) {
-            pathToIceman[i][j] = new int(-1);
+            pathToIceman[i][j] = int(1000);
         }
     }
 
-    pathToIceman[getIceMan()->getY()][getIceMan()->getX()] = new int(0);//ending place
+    pathToIceman[getIceMan()->getY()][getIceMan()->getX()] = 0;//ending place
     //cout << "X:" << getIceMan()->getX() << endl;
     bool endPath = false;
 
@@ -602,10 +602,10 @@ bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
 
         if (q.front().first.first >= 0) {//if current node is on left
             if (q.front().first.first == 0) {
-                pathToIceman[q.front().first.second][q.front().first.first] = new int(q.front().second);
+                pathToIceman[q.front().first.second][q.front().first.first] = q.front().second;
 
             }
-            else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && *pathToIceman[q.front().first.second][q.front().first.first - 1] == -1) {
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && pathToIceman[q.front().first.second][q.front().first.first - 1] == 1000) {
                 //if no ice at point, no boulders, and point is not taken
                 //cout << "I" << endl;
                 bool addtopath = true;
@@ -633,7 +633,7 @@ bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
             if (q.front().first.second == 0) {
                 pathToIceman[q.front().first.second][q.front().first.first] = new int(q.front().second);
             }
-            else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first, q.front().first.second - 1) && *pathToIceman[q.front().first.second - 1][q.front().first.first] == -1) {
+            else if (iceMap.at(q.front().first.second - 1).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first, q.front().first.second - 1) && pathToIceman[q.front().first.second - 1][q.front().first.first] == 1000) {
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
                     if (iceMap.at(q.front().first.second - 1).at(q.front().first.first + i) != nullptr) {
@@ -646,7 +646,7 @@ bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
                     if (q.front().second == maxMoves) {
                         endPath = true;
                     }
-                    pathToIceman[q.front().first.second - 1][q.front().first.first] = new int(q.front().second + 1);
+                    pathToIceman[q.front().first.second - 1][q.front().first.first] = q.front().second + 1;
                     pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first, q.front().first.second - 1), q.front().second + 1);
                     q.push(a);
                 }
@@ -654,9 +654,9 @@ bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
         }
         if (q.front().first.first <= 60) {
             if (q.front().first.first == 60) {//if current node is on right
-                pathToIceman[q.front().first.second][q.front().first.first] = new int(q.front().second);
+                pathToIceman[q.front().first.second][q.front().first.first] = q.front().second;
             }
-            else if (iceMap.at(q.front().first.second).at(q.front().first.first + 4) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && *pathToIceman[q.front().first.second][q.front().first.first + 1] == -1) {
+            else if (iceMap.at(q.front().first.second).at(q.front().first.first + 4) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && pathToIceman[q.front().first.second][q.front().first.first + 1] == 1000) {
                 //cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
@@ -680,12 +680,12 @@ bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
         if (q.front().first.second <= 60) {
 
             if (q.front().first.second == 60) {//if current node is on right
-                pathToIceman[q.front().first.second][q.front().first.first] = new int(q.front().second);
+                pathToIceman[q.front().first.second][q.front().first.first] = q.front().second;
             }
-            else if (q.front().first.second == 60 && *pathToIceman[q.front().first.second][q.front().first.first] == -1) {
+            else if (q.front().first.second == 60 && pathToIceman[q.front().first.second][q.front().first.first] == 1000) {
 
             }
-            else if (iceMap.at(q.front().first.second + 4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && *pathToIceman[q.front().first.second + 1][q.front().first.first] == -1) {
+            else if (iceMap.at(q.front().first.second + 4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && pathToIceman[q.front().first.second + 1][q.front().first.first] == 1000) {
                 //cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
@@ -699,7 +699,7 @@ bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
                     if (q.front().second == maxMoves) {
                         endPath = true;
                     }
-                    pathToIceman[q.front().first.second + 1][q.front().first.first] = new int(q.front().second + 1);
+                    pathToIceman[q.front().first.second + 1][q.front().first.first] = q.front().second + 1;
                     pair<pair<int, int>, int> a = make_pair(make_pair(q.front().first.first, q.front().first.second + 1), q.front().second + 1);
                     q.push(a);
                 }
