@@ -392,7 +392,6 @@ bool StudentWorld::checkSpot(string actorType, int x, int y) {
             }
         }
     }
-    //cout << "THERE IS NOTHING TRUE" << endl;
     return false;
 }
 
