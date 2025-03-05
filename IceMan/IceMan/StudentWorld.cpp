@@ -449,9 +449,6 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
         cout << endl;
     }*/
     while (!q.empty()) {
-        cout << "RUNNING" << endl;
-        cout << "QUEUE X: " << q.front().first.first << endl;
-        cout << "QUEUE Y: " << q.front().first.second << endl;
         if (q.front().first.first >= 0) {//if current node is on left
             cout << "HIHIHI" << endl;
             if (q.front().first.first == 0) {
