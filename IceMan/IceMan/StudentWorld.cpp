@@ -450,7 +450,6 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
     }*/
     while (!q.empty()) {
         if (q.front().first.first >= 0) {//if current node is on left
-            cout << "HIHIHI" << endl;
             if (q.front().first.first == 0) {
                 leavingPath[q.front().first.second][q.front().first.first] = q.front().second;
             }
