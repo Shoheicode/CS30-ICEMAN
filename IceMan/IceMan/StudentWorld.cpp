@@ -455,8 +455,6 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             }
             else if (iceMap.at(q.front().first.second).at(q.front().first.first - 1) == nullptr && !checkSpot("Boulder", objx - 1, objy) && leavingPath[q.front().first.second][q.front().first.first - 1] == 1000) {
                 //if no ice at point, no boulders, and point is not taken
-                //cout << "I" << endl;
-                cout << "ADDING TO PATH POTENTAl" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
                     if (iceMap.at(q.front().first.second + i).at(q.front().first.first - 1) != nullptr) {
