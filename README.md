@@ -13,6 +13,7 @@
 
 <details>
   <summary>Student World Class</summary>
+  
 - [Project Description](#description)
 - [Game Description](#game-description)
 - [Project Members](#members)
