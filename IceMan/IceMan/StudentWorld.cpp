@@ -45,7 +45,6 @@ void StudentWorld::createIceMap() {
             }
             else if (!(j <= 33 && j >= 30 && i >= 4)) {
                 temp.push_back(new Ice(j, i)); //Create the ice
-                // cout << 1;
             }
             else {
                 temp.push_back(nullptr); //Otherwise, set empty spots to nullptr
@@ -235,7 +234,6 @@ bool StudentWorld::pickUpGold(int x, int y) {
         if (radius <= 4) {//if dropped gold within rad of 4
             for (Actor* a : characterList) {
                 if (a->getID() == IID_GOLD && a->getX() == p.x && a->getY() == p.y) {
-                    cout << "protester picked up gold!" << endl;
                     a->setAlive(false);//actor(protester) picks up gold, gold dies
                     return true;
                 }
@@ -686,7 +684,6 @@ bool StudentWorld::findPathToIceMan(int x, int y, int maxMoves) {
 
             }
             else if (iceMap.at(q.front().first.second + 4).at(q.front().first.first) == nullptr && !checkSpot("Boulder", q.front().first.first - 1, q.front().first.second) && pathToIceman[q.front().first.second + 1][q.front().first.first] == 1000) {
-                //cout << "I" << endl;
                 bool addtopath = true;
                 for (int i = 0; i < 4; i++) {
                     if (iceMap.at(q.front().first.second + 4).at(q.front().first.first + i) != nullptr) {
