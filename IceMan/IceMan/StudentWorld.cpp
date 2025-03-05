@@ -412,7 +412,6 @@ string StudentWorld::getLeadingPathDistance(int x, int y) {
         direction = "left";
         smallest = (leavingPath[y][x - 1]);
     }
-    cout << smallest << endl;
     return direction;
 }
 
