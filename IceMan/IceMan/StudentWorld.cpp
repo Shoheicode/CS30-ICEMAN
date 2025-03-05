@@ -436,7 +436,6 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
 
     leavingPath[y][x] = 0;//ending place
 
-    cout << "PRINTING PATH TO LEAVE BEFORE" << endl;
     for (int i = 63; i >= 0; i--) {
         for (int j = 0; j < 64; j++) {
             if (leavingPath[j][i] == 1000) {
