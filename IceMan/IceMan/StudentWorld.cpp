@@ -436,7 +436,8 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
 
     leavingPath[y][x] = 0;//ending place
 
-    for (int i = 63; i >= 0; i--) {
+    // Prints path. Good for debugging
+    /*for (int i = 63; i >= 0; i--) {
         for (int j = 0; j < 64; j++) {
             if (leavingPath[j][i] == 1000) {
                 cout << "X";
@@ -446,7 +447,7 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             }
         }
         cout << endl;
-    }
+    }*/
     while (!q.empty()) {
         cout << "RUNNING" << endl;
         cout << "QUEUE X: " << q.front().first.first << endl;
