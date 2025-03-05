@@ -493,7 +493,6 @@ void StudentWorld::findPath(int x, int y, int objx, int objy) {
             }
         }
         if (q.front().first.first <= 60) {
-            cout << "HEWWOWOWOW" << endl;
             if (q.front().first.first == 60) {//if current node is on right
                 leavingPath[q.front().first.second][q.front().first.first] = q.front().second;
             }
