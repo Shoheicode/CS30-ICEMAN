@@ -16,12 +16,11 @@ private:
     //string imageID;
     //double size;
 protected:
-    int hitPoints;
-    int xCoord;
-    int yCoord;
-    bool amIAlive;
+    int hitPoints; // Represents the health of the actor
+    int xCoord, yCoord; // Position of the actor in the game world
+    bool amIAlive; // Indicates if the actor is alive
 
-    StudentWorld* studW;
+    StudentWorld* studW; // Pointer to the game world
 public:
     Actor(int imageID, int startX, int startY, Direction startDirection, StudentWorld* world, double size = 1.0, int depth = 0) :
         GraphObject(imageID, startX, startY, startDirection, size, depth) {
