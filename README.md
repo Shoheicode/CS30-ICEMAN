@@ -174,4 +174,149 @@ This experience not only enhanced my technical and computer skills but also hone
 ---
 
 ## Actors
+### Overview
+This header file defines various classes representing actors in a 2D game environment. The game includes characters such as Protesters, IceMan, and various props like Boulders, Oil Barrels, and Sonar Kits. The file structures the game's actor system using inheritance, encapsulating behavior and attributes for each type of game entity.
 
+### Class Structure
+
+#### **Actor (Base Class)**
+**Attributes:**
+- `int hitPoints`: Represents the health of the actor.
+- `int xCoord, yCoord`: Stores the x and y coordinates of the actor.
+- `bool amIAlive`: Indicates if the actor is alive or dead.
+- `StudentWorld* studW`: Pointer to the game world instance.
+
+**Methods:**
+- `Actor(int imageID, int startX, int startY, Direction startDirection, StudentWorld* world, double size = 1.0, int depth = 0)`: Constructor initializing the actor.
+- `StudentWorld* getWorld()`: Returns the game world instance.
+- `bool outOfField(int x, int y, Direction d)`: Checks if an actor is out of the game field.
+- `string is4Away(StudentWorld* world)`: Determines if another object is four units away.
+- `string is3Away(StudentWorld* world)`: Determines if another object is three units away.
+- `bool isFacingIceMan(Direction d, StudentWorld* world)`: Checks if an actor is facing IceMan.
+- `void setFacingIceMan(Direction d, StudentWorld* world)`: Sets an actor's direction toward IceMan.
+- `int getHitpoints()`: Returns the hit points of the actor.
+- `virtual void setHitpoints(int a)`: Adjusts the hit points.
+- `bool isAlive()`: Checks if the actor is still alive.
+- `void setAlive(bool alive)`: Sets the actor's life status.
+- `virtual void doSomething() = 0`: Pure virtual function that must be implemented in derived classes.
+- `virtual void overlap(StudentWorld* world)`: Handles behavior when overlapping with another object.
+- `virtual ~Actor() {}`: Destructor.
+
+---
+
+#### **AnnoyedActor (Derived from Actor)**
+Represents actors that can be annoyed (i.e., harmed).
+
+**Methods:**
+- `AnnoyedActor(int imageID, int startX, int startY, Direction startDirection, StudentWorld* world, double size = 1.0, int depth = 0)`: Constructor.
+- `virtual void isAnnoyed() = 0`: Pure virtual function that must be implemented in derived classes.
+
+---
+
+#### **Protester (Derived from AnnoyedActor)**
+Represents hostile NPCs that obstruct the player.
+
+**Attributes:**
+- `bool leave_the_oil_field`: Determines if the Protester is exiting.
+- `int hasShoutedLast15`: Counter tracking shout cooldown.
+- `int shoutLast15`: Timer for when a Protester last shouted.
+- `int moves`: Number of moves before changing direction.
+- `int tickStun`: Tracks stun duration.
+- `int ticksToWait`: Number of ticks before a Protester moves again.
+- `int numSquaresToMoveInCurrentDirection`: Movement length before a direction change.
+- `bool stun`: Determines if the Protester is stunned.
+- `Direction listOfDir[4]`: Stores available movement directions.
+- `int ticksforFork`: Time before a Protester considers changing direction at an intersection.
+- `int path[64][64]`: Stores pathfinding information.
+
+**Methods:**
+- `Protester(int startX, int startY, int imageID, int tStun, int waitTime, StudentWorld* world)`: Constructor.
+- `virtual void isAnnoyed() override`: Defines behavior when Protester is annoyed.
+- `virtual bool setHit(int a)`: Increases hit points and stuns the Protester.
+- `virtual void tryGold(int x, int y)`: Defines behavior when Protester encounters gold.
+- `virtual void det15()`: Decrements shout cooldown.
+- `virtual int getStun()`: Returns stun duration.
+- `virtual void detStun()`: Decrements stun counter.
+- `virtual void reset15()`: Resets shout cooldown.
+- `virtual bool iceManisInSight(int x, int y, StudentWorld* world)`: Determines if IceMan is in line of sight.
+- `virtual bool isAtFork(int x, int y, StudentWorld* world, vector<Direction>& path)`: Determines if a Protester is at an intersection.
+- `virtual void doSomething() override`: Main logic defining Protester behavior.
+- `virtual void setLeaveOil(bool leave)`: Marks a Protester for leaving the game world.
+- `virtual void moveOne(int x, int y, Direction d)`: Moves the Protester.
+- `virtual ~Protester() {}`: Destructor.
+
+---
+
+#### **HardcoreProtester (Derived from Protester)**
+A more advanced version of the Protester.
+
+**Attributes:**
+- `int ticksToWaitBetweenMoves`: Delay between movements.
+- `int ticks_to_stare`: Tracks how long the Protester stares at IceMan.
+- `int goldInv`: Stores gold inventory.
+
+**Methods:**
+- `HardcoreProtester(int startX, int startY, int ticks_to_stare, int waitTime, StudentWorld* world)`: Constructor.
+- `virtual void doSomething() override`: Overrides Protester behavior.
+- `virtual void tryGold(int x, int y) override`: Defines how Hardcore Protesters react to gold.
+- `void setGoldInv(int a)`: Modifies gold inventory.
+- `int getGold()`: Returns the amount of gold held.
+- `int getTickStare()`: Returns the stare duration.
+
+---
+
+#### **IceMan (Derived from Actor)**
+Represents the player's character.
+
+**Attributes:**
+- `int damage`: Determines the damage IceMan can take.
+- `int waterSq`: Number of available water squirts.
+- `int sonarC`: Number of sonar charges.
+- `int oil`: Number of collected oil barrels.
+- `int gold`: Number of collected gold nuggets.
+
+**Methods:**
+- `IceMan(int startX, int startY, StudentWorld* world)`: Constructor.
+- `void isInRange(StudentWorld* world)`: Checks nearby objects.
+- `void dropGold(StudentWorld* world)`: Drops gold for Protesters.
+- `void checkAnnoyed()`: Determines if IceMan is harmed.
+- `int getGold()`, `int getOil()`, `int getSonarCount()`, `double getHealth()`, `int getSquirt()`: Getters.
+- `void setWater(int a)`, `void setOil(int a)`, `void setGold(int a)`, `void setSonar(int a)`: Setters.
+- `virtual void doSomething() override`: Defines player behavior.
+
+---
+
+#### **Prop (Derived from Actor)**
+Base class for non-living game elements.
+
+**Attributes:**
+- `int tickRange`: Determines lifespan.
+
+**Methods:**
+- `Prop(int imageID, int startX, int startY, float size, int depth, Direction startDirection, StudentWorld* world)`: Constructor.
+- `bool canPickUp()`, `bool pickUp()`: Handles pickup mechanics.
+- `virtual void doSomething() = 0`: Must be implemented by derived classes.
+
+---
+
+#### **Other Classes**
+- **Boulder**: Implements different states (`stable`, `waiting`, `falling`).
+- **Oil**: Represents collectible barrels.
+- **Gold**: Can be either dropped by IceMan or hidden.
+- **Squirt**: Water projectiles fired by IceMan.
+- **SonarKit**: Temporary item that reveals objects.
+- **WaterPool**: Restores IceMan’s water supply.
+- **Ice**: Represents destructible game terrain.
+
+---
+
+### Key Features
+- Object-oriented approach using inheritance.
+- Encapsulation of behaviors within classes.
+- Interaction between NPCs and IceMan.
+- Various game mechanics like movement, visibility, and pickups.
+
+### Dependencies
+- `GraphObject.h`
+- `GameWorld.h`
+- `StudentWorld.h`
