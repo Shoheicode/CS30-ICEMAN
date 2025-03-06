@@ -129,12 +129,6 @@ This experience not only enhanced my technical and computer skills but also hone
   - Detects proximity between player and game objects.
   - Updates the game status text dynamically.
 
-### File Structure
-- `StudentWorld.h` - Header file containing class declarations.
-- `StudentWorld.cpp` - Implementation of `StudentWorld` class functions.
-- `Actor.h` - Base class defining game objects.
-- `Actor.cpp` - Implementation of actors such as Ice, Gold, Boulder, and Protester.
-
 ### Code Breakdown
 
 #### 1. **Object Spawning**
