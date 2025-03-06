@@ -19,6 +19,7 @@
   - [Features](#Features)
   - [Code Breakdown](#Code-Breakdown)
   - [Dependencies](#Dependencies)
+  - [Future Improvements](#Future-Improvements)
 </details>
 
 <details>
