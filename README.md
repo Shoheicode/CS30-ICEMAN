@@ -18,6 +18,7 @@
   - [Description](#Description)
   - [Features](#Features)
   - [Code Breakdown](#Code-Breakdown)
+  - [Dependencies](#Dependencies)
 </details>
 
 <details>
