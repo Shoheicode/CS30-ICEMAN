@@ -12,9 +12,9 @@ class StudentWorld; //already initialized added bc need to use dataType
 
 class Actor : public GraphObject {
 private:
-    int m_life; // How many lives a user has
-    string imageID;
-    double size;
+    //int m_life; // How many lives a user has
+    //string imageID;
+    //double size;
 protected:
     int hitPoints;
     int xCoord;
