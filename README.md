@@ -15,7 +15,7 @@
   <summary>Student World Class</summary>
   
 - [StudentWorld](#StudentWorld)
-  - [Game Description](#game-description)
+  - [Game Description](# Description)
   - [Project Members](#members)
 </details>
 
