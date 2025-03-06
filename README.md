@@ -16,7 +16,8 @@
   
 - [StudentWorld](#StudentWorld)
   - [Description](#Description)
-  - [Project Members](#Features)
+  - [Features](#Features)
+  - [Code Breakdown](#Code-Breakdown)
 </details>
 
 <details>
