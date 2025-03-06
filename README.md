@@ -14,6 +14,12 @@
 <details>
   <summary>Student World Class</summary>
   
+- [StudentWorld](#StudentWorld)
+  - [Description](#Description)
+  - [Features](#Features)
+  - [Code Breakdown](#Code-Breakdown)
+  - [Dependencies](#Dependencies)
+  - [Future Improvements](#Future-Improvements)
 </details>
 
 <details>
@@ -106,6 +112,64 @@ This experience not only enhanced my technical and computer skills but also hone
 ---
 
 ## StudentWorld 
+### Description
+`StudentWorld` is a C++ class that manages the game environment, object spawning, and game mechanics for a game inspired by the "Ice Man" concept. It extends `GameWorld` and is responsible for handling game objects, collision detection, AI logic, and player interactions.
+
+### Features
+- **Object Management:**
+  - Spawns game objects like oil, boulders, gold nuggets, and ice.
+  - Removes dead objects from the game world.
+  - Manages player interactions with objects.
+
+- **Pathfinding:**
+  - Implements breadth-first search (BFS) to determine paths.
+  - Calculates shortest paths for AI characters (protesters) to reach the player.
+  - Detects obstacles (ice and boulders) to adjust movement decisions.
+
+- **Player Interaction:**
+  - Allows the player to collect and use gold, sonar, and water.
+  - Detects proximity between player and game objects.
+  - Updates the game status text dynamically.
+
+### Code Breakdown
+
+#### 1. **Object Spawning**
+- **`createIceMap()`**: Creates a 2D vector representing the ice map with a predefined empty gap.
+- **`spawnOil(int oNum)`**: Randomly places oil barrels, ensuring proper spacing.
+- **`spawnBoulders(int bNum)`**: Randomly places boulders, clearing the ice from the area.
+- **`spawnNuggets(int num)`**: Randomly places gold nuggets within the game area.
+
+#### 2. **Object Removal**
+- **`removeDeadObjects()`**: Iterates through the list of actors and deletes those marked as dead.
+
+#### 3. **Pathfinding and AI Movement**
+- **`findPath(int x, int y, int objx, int objy)`**: Uses BFS to generate the shortest path for AI-controlled characters.
+- **`getLeadingPathDistance(int x, int y)`**: Determines the best direction for AI to move toward a target.
+- **`findPathToIceMan(int x, int y, int maxMoves)`**: AI-controlled Protesters use this to find a path to the player.
+
+#### 4. **Player Actions**
+- **`dropGold(int x, int y)`**: Drops gold for AI characters to pick up.
+- **`useSonar(int x, int y)`**: Reveals hidden objects within a radius.
+- **`useSpray(int x, int y)`**: Fires water to hit AI-controlled enemies.
+- **`completeLevel()`**: Checks if the player has collected all required oil barrels.
+
+#### 5. **Collision and Movement Logic**
+- **`blockedByRocks(int x, int y)`**: Checks if a boulder is blocking a movement.
+- **`blockedByIce(int x, int y)`**: Checks if ice is blocking movement.
+- **`blockedbyRocksOrIce(int x, int y, Actor::Direction d)`**: Combines both checks for ease of movement logic.
+- **`checkFacingDirection(int x, int y, Actor::Direction d)`**: Determines if an object is facing the player.
+
+#### 6. **Game Status Updates**
+- **`updateTextBox()`**: Updates the heads-up display (HUD) with current game stats.
+- **`formatText(...)`**: Formats the game status information into a readable string.
+
+### Dependencies
+- Standard C++ libraries (`<vector>`, `<list>`, `<string>`, `<queue>`, `<cmath>`, `<iostream>`)
+
+### Future Improvements
+- Optimize `removeDeadObjects()` by avoiding unnecessary memory operations.
+- Improve AI movement efficiency using heuristic pathfinding (e.g., A* algorithm).
+- Implement difficulty scaling with more advanced AI behaviors.
 
 ---
 
