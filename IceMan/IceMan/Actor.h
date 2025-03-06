@@ -8,7 +8,6 @@
 #include <queue>
 using namespace std;
 
-// Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
 class StudentWorld; //already initialized added bc need to use dataType
 
 class Actor : public GraphObject {
